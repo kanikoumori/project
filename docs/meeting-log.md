@@ -26,16 +26,28 @@
 - migration整理
 
 #記入例２ファイルの変更
-## YYYY-MM-DD
+# 2026-05-28
+
+## フォルダ構成変更
 
 ### 変更者
-名前 or 担当
+フロントエンドB(変更した人の名前)
 
-### 変更内容
-変更前
+### 内容
+
+resources/js/editor.js
+
 ↓
-変更後
+
+resources/js/editor/block-manager.js
+
+へ変更。
 
 ### 理由
 
-### 影響範囲
+editor.js が肥大化したため、
+ブロック管理機能を分離した。
+
+### 影響
+
+Blade側の import 修正必要。
