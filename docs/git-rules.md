@@ -28,8 +28,8 @@
 git pull origin main
 git checkout -b feature/作業名
 
-## 作業保存
+## gitコマンド一覧
 
-git add .
-git commit -m "feat: ログイン画面を追加"
-git push origin feature/作業名
+git add . #すべての自分の変更をステージに上げる
+git commit -m "コメント"　#コメント付きでコミット
+git pull　#他の人の変更を反映
