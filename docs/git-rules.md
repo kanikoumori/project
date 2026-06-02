@@ -34,4 +34,15 @@ git checkout -b feature/作業名
 git add . #すべての自分の変更をステージに上げる
 git commit -m "コメント"　#コメント付きでコミット
 git pull　#他の人の変更を反映
-Get checkout -- ファイル名　#間違って変更してしまったときもとに、戻す
+git checkout -- ファイル名　#間違って変更してしまったときもとに、戻す
+git branch -m (ブランチ名) #ブランチ名変更
+git branch -d (ブランチ名) #ブランチ削除
+git branch -D               #強制削除
+git merge origin/master #変更履歴をマージする
+git check out -b (ブランチ名)　#切替する
+git switch #切替
+git fetch #プルリクエスト
+git log– oneline #更新などのログがわかる
+git commit #変更を記録する
+git commit -v　#変更点を見れる
+git status #変更されたファイル
