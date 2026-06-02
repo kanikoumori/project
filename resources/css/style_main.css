@@ -1,0 +1,61 @@
+body{
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    background-color: rgb(243, 250, 255);
+}
+
+/* ヘッダー */
+
+header{
+    display: flex;
+    justify-content: space-between;
+    background-color: rgba(134, 169, 214, 0.8);
+    color: white;
+    margin-bottom: 3px;
+}
+
+/* タブ切り替え */
+
+#main{
+    display: flex;
+    width: fit-content;
+    height: 100vh;
+}
+#main_tab{
+    width: 200px;
+    height: auto;
+    background-color: rgba(4, 20, 41, 0.8);
+    color: white;
+}
+#main_tab ul{
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+
+}
+#main_tab ul li{
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 10px;
+    color: white;
+}
+#main_tab ul li:hover{
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 10px;
+    background-color: rgba(4, 20, 41, 0.8);
+}
+#main_tab a{
+    color: white;
+    text-decoration: none;
+}
+
+/* メイン画面 */
+
+#main_screen{
+    margin: 10px;
+}
