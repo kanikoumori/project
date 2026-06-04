@@ -109,11 +109,11 @@ Laravel Breezeで自動生成されたルートを使用する。
 
 指定したサイト情報を取得する。
 
-| 項目     | 内容           |
-| ------ | ------------ |
-| 認証     | 必要           |
+| 項目 | 内容 |
+|------|------|
+| 認証 | 必要 |
 | 使用テーブル | sites, pages |
-| 優先度    | 中            |
+| 優先度 | 中 |
 
 ### Response
 
@@ -130,6 +130,59 @@ Laravel Breezeで自動生成されたルートを使用する。
       "slug": "home"
     }
   ]
+}
+```
+
+
+## サイト更新
+
+### PUT /sites/{id}
+
+サイト情報を更新する。
+
+| 項目 | 内容 |
+|------|------|
+| 認証 | 必要 |
+| 使用テーブル | sites |
+| 優先度 | 低 |
+
+### Request
+
+```json
+{
+  "title": "更新後のサイト名",
+  "description": "更新後の説明"
+}
+```
+
+### Response
+
+```json
+{
+  "message": "Site updated successfully",
+  "id": 1
+}
+```
+
+---
+
+## サイト削除
+
+### DELETE /sites/{id}
+
+指定したサイトを削除する。
+
+| 項目 | 内容 |
+|------|------|
+| 認証 | 必要 |
+| 使用テーブル | sites |
+| 優先度 | 低 |
+
+### Response
+
+```json
+{
+  "message": "Site deleted successfully"
 }
 ```
 
@@ -165,11 +218,36 @@ Laravel Breezeで自動生成されたルートを使用する。
   "id": 1,
   "site_id": 1,
   "title": "トップページ",
-  "slug": "home",
-  "content": "<h1>Hello</h1>"
+  "slug": "home"
 }
 ```
+## ページ一覧取得
 
+### GET /sites/{site}/pages
+
+指定したサイトに含まれるページ一覧を取得する。
+
+| 項目 | 内容 |
+|---|---|
+| 認証 | 必要 |
+| 使用テーブル | pages |
+| 優先度 | 高 |
+
+### Response
+
+```json
+[
+  {
+    "id": 1,
+    "site_id": 1,
+    "title": "トップページ",
+    "slug": "home",
+    "sort_order": 1,
+    "is_home": true,
+    "status": "draft"
+  }
+]
+```
 ---
 
 ## ページ更新・保存
@@ -226,7 +304,6 @@ Laravel Breezeで自動生成されたルートを使用する。
   "site_id": 1,
   "title": "トップページ",
   "slug": "home",
-  "content": "<h1>Hello</h1>",
   "updated_at": "2026-06-04 12:00:00"
 }
 ```
@@ -288,6 +365,40 @@ HTMLページを返す。
 ---
 
 # ブロック関連API
+
+## ブロック一覧取得
+
+### GET /pages/{id}/blocks
+
+指定したページに含まれるブロック一覧を取得する。
+
+| 項目 | 内容 |
+|---|---|
+| 認証 | 必要 |
+| 使用テーブル | blocks |
+| 優先度 | 高 |
+
+### Response
+
+```json
+[
+  {
+    "id": 1,
+    "page_id": 1,
+    "type": "text",
+    "data": {
+      "content": "本文テキスト",
+      "style": {
+        "fontSize": "16px",
+        "color": "#000000"
+      }
+    },
+    "sort_order": 1
+  }
+]
+```
+
+---
 
 ## ブロック作成
 
@@ -399,7 +510,7 @@ HTMLページを返す。
 | 項目     | 内容    |
 | ------ | ----- |
 | 認証     | 必要    |
-| 使用テーブル | media |
+| 使用テーブル | media_files |
 | 優先度    | 中     |
 
 ### Request
@@ -583,8 +694,9 @@ POST /sites
 GET /sites
 POST /sites/{site}/pages
 GET /sites/{site}/pages
-GET /sites/{site}/pages/{id}
-GET /preview/{id}
+GET /pages/{id}
+GET /pages/{id}?mode=preview
+GET /pages/{id}/blocks
 
 ```
 
@@ -609,6 +721,8 @@ GET /themes
 PUT /sites/{id}/theme
 POST /analytics/view
 POST /feedbacks
+PUT /sites/{id}
+DELETE /sites/{id}
 ```
 
 ---

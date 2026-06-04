@@ -88,9 +88,10 @@ Laravel Breeze標準
 | id           | bigint             |
 | user_id      | bigint FK          |
 | theme_id     | bigint FK nullable |
-| title        | string             |
-| slug         | string             |
-| logo_path    | string nullable    |
+| title | string |
+| description | text nullable |
+| slug | string |
+| logo_path | string nullable |
 | favicon_path | string nullable    |
 | status       | enum               |
 | created_at   | timestamp          |
