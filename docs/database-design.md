@@ -2,55 +2,153 @@
 
 ## 目的
 
-本ファイルでは、本プロジェクトで使用するデータベース設計を管理する。
+本ドキュメントは、卒業研究で作成するWebサイト作成アプリのデータベース設計をまとめる。
 
-主に以下を定義する。
+本アプリでは、ユーザーがログインし、サイトを作成し、ページ・画像・テーマ・公開状態などを管理できるようにする。
 
-* テーブル構造
-* リレーション
-* 各カラムの意味
-* 今後追加予定のテーブル
+---
+
+# 使用DB
+
+開発環境では SQLite または MySQL を使用する。
+本番環境では Render で利用可能な PostgreSQL を想定する。
 
 ---
 
 # ER図
 
-```text
-users
-│
-└── sites
-      │
-      ├── pages
-      │     │
-      │     └── blocks
-      │
-      ├── media
-      │
-      ├── themes
-      │
-      ├── feedbacks
-      │
-      └── analytics
+```mermaid
+erDiagram
+    users ||--o{ sites : owns
+    users ||--o{ media_files : uploads
+
+    sites ||--o{ pages : has
+    sites ||--o{ site_settings : has
+    sites ||--o{ comments : receives
+    sites ||--o{ analytics : tracks
+
+    pages ||--o{ page_blocks : contains
+    pages ||--o{ analytics : tracks
+
+    themes ||--o{ sites : applied_to
+    media_files ||--o{ page_blocks : used_in
+
+    users {
+        bigint id PK
+        string name
+        string email
+        string password
+        timestamp email_verified_at
+        timestamps created_at
+        timestamps updated_at
+    }
+
+    sites {
+        bigint id PK
+        bigint user_id FK
+        bigint theme_id FK
+        string title
+        string slug
+        string logo_path
+        string favicon_path
+        string status
+        timestamps created_at
+        timestamps updated_at
+    }
+
+    pages {
+        bigint id PK
+        bigint site_id FK
+        string title
+        string slug
+        longtext content
+        integer sort_order
+        boolean is_home
+        string status
+        timestamps created_at
+        timestamps updated_at
+    }
+
+    page_blocks {
+        bigint id PK
+        bigint page_id FK
+        bigint media_file_id FK
+        string type
+        json data
+        integer sort_order
+        timestamps created_at
+        timestamps updated_at
+    }
+
+    media_files {
+        bigint id PK
+        bigint user_id FK
+        string file_name
+        string file_path
+        string file_type
+        integer file_size
+        timestamps created_at
+        timestamps updated_at
+    }
+
+    themes {
+        bigint id PK
+        string name
+        string description
+        json settings
+        timestamps created_at
+        timestamps updated_at
+    }
+
+    site_settings {
+        bigint id PK
+        bigint site_id FK
+        json settings
+        timestamps created_at
+        timestamps updated_at
+    }
+
+    comments {
+        bigint id PK
+        bigint site_id FK
+        string name
+        string email
+        text body
+        string status
+        timestamps created_at
+        timestamps updated_at
+    }
+
+    analytics {
+        bigint id PK
+        bigint site_id FK
+        bigint page_id FK
+        string event_type
+        string ip_address
+        string user_agent
+        timestamps created_at
+        timestamps updated_at
+    }
 ```
 
 ---
 
-# テーブル一覧
+# テーブル設計
 
 ## users
 
 Laravel Breezeで作成されるユーザーテーブル。
+ログイン、登録、プロフィール管理に使用する。
 
-| column            | type               | note         |
-| ----------------- | ------------------ | ------------ |
-| id                | bigint             | 主キー          |
-| name              | string             | ユーザー名        |
-| email             | string             | メールアドレス      |
-| email_verified_at | timestamp nullable | メール認証日時      |
-| password          | string             | ハッシュ化済みパスワード |
-| remember_token    | string nullable    | ログイン保持用トークン  |
-| created_at        | timestamp          | 作成日時         |
-| updated_at        | timestamp          | 更新日時         |
+| カラム名              | 型         | 内容      |
+| ----------------- | --------- | ------- |
+| id                | bigint    | ユーザーID  |
+| name              | string    | ユーザー名   |
+| email             | string    | メールアドレス |
+| password          | string    | パスワード   |
+| email_verified_at | timestamp | メール認証日時 |
+| created_at        | timestamp | 作成日時    |
+| updated_at        | timestamp | 更新日時    |
 
 ---
 
@@ -58,19 +156,18 @@ Laravel Breezeで作成されるユーザーテーブル。
 
 ユーザーが作成するWebサイトを管理するテーブル。
 
-| column        | type            | note              |
-| ------------- | --------------- | ----------------- |
-| id            | bigint          | 主キー               |
-| user_id       | bigint          | users.id への外部キー   |
-| title         | string          | サイト名              |
-| description   | text nullable   | サイト説明             |
-| logo_path     | string nullable | サイトロゴ画像のパス        |
-| favicon_path  | string nullable | サイトアイコンのパス        |
-| theme_id      | bigint nullable | themes.id への外部キー  |
-| status        | string          | draft / published |
-| published_url | string nullable | 公開URL             |
-| created_at    | timestamp       | 作成日時              |
-| updated_at    | timestamp       | 更新日時              |
+| カラム名         | 型         | 内容                |
+| ------------ | --------- | ----------------- |
+| id           | bigint    | サイトID             |
+| user_id      | bigint    | 作成者ID             |
+| theme_id     | bigint    | 使用テーマID           |
+| title        | string    | サイトタイトル           |
+| slug         | string    | URL用の名前           |
+| logo_path    | string    | ロゴ画像パス            |
+| favicon_path | string    | サイトアイコンパス         |
+| status       | string    | draft / published |
+| created_at   | timestamp | 作成日時              |
+| updated_at   | timestamp | 更新日時              |
 
 ---
 
@@ -78,190 +175,179 @@ Laravel Breezeで作成されるユーザーテーブル。
 
 サイト内の各ページを管理するテーブル。
 
-| column     | type              | note              |
-| ---------- | ----------------- | ----------------- |
-| id         | bigint            | 主キー               |
-| site_id    | bigint            | sites.id への外部キー   |
-| title      | string            | ページ名              |
-| slug       | string            | URL用の文字列          |
-| content    | longText nullable | ページ全体のHTMLまたはJSON |
-| order      | integer           | ページ表示順            |
-| is_home    | boolean           | トップページかどうか        |
-| created_at | timestamp         | 作成日時              |
-| updated_at | timestamp         | 更新日時              |
+| カラム名       | 型         | 内容                |
+| ---------- | --------- | ----------------- |
+| id         | bigint    | ページID             |
+| site_id    | bigint    | 所属サイトID           |
+| title      | string    | ページタイトル           |
+| slug       | string    | URL用の名前           |
+| content    | longtext  | ページ内容             |
+| sort_order | integer   | 表示順               |
+| is_home    | boolean   | トップページかどうか        |
+| status     | string    | draft / published |
+| created_at | timestamp | 作成日時              |
+| updated_at | timestamp | 更新日時              |
 
 ---
 
-## blocks
+## page_blocks
 
-ページ内の要素を管理するテーブル。
+ページ内の段落・画像・動画・テーブルなどをブロック単位で管理するテーブル。
 
-テキスト、画像、動画、テーブル、リンクなどをブロック単位で保存する。
-
-| column     | type              | note                                           |
-| ---------- | ----------------- | ---------------------------------------------- |
-| id         | bigint            | 主キー                                            |
-| page_id    | bigint            | pages.id への外部キー                                |
-| type       | string            | text / image / video / audio / table / link など |
-| content    | longText nullable | ブロック内容                                         |
-| style      | json nullable     | 色、サイズ、余白などのデザイン情報                              |
-| order      | integer           | ブロック表示順                                        |
-| created_at | timestamp         | 作成日時                                           |
-| updated_at | timestamp         | 更新日時                                           |
+| カラム名          | 型         | 内容                                  |
+| ------------- | --------- | ----------------------------------- |
+| id            | bigint    | ブロックID                              |
+| page_id       | bigint    | 所属ページID                             |
+| media_file_id | bigint    | 使用メディアID                            |
+| type          | string    | text / image / video / table / link |
+| data          | json      | ブロック内容                              |
+| sort_order    | integer   | 表示順                                 |
+| created_at    | timestamp | 作成日時                                |
+| updated_at    | timestamp | 更新日時                                |
 
 ---
 
-## media
+## media_files
 
-画像・動画・音声・ファイルを管理するテーブル。
+画像・動画・音声・ファイルなどのアップロード情報を管理するテーブル。
 
-| column     | type             | note                         |
-| ---------- | ---------------- | ---------------------------- |
-| id         | bigint           | 主キー                          |
-| site_id    | bigint           | sites.id への外部キー              |
-| user_id    | bigint           | users.id への外部キー              |
-| file_name  | string           | 元ファイル名                       |
-| file_path  | string           | 保存先パス                        |
-| file_type  | string           | image / video / audio / file |
-| mime_type  | string nullable  | MIMEタイプ                      |
-| file_size  | integer nullable | ファイルサイズ                      |
-| created_at | timestamp        | 作成日時                         |
-| updated_at | timestamp        | 更新日時                         |
+| カラム名       | 型         | 内容                           |
+| ---------- | --------- | ---------------------------- |
+| id         | bigint    | メディアID                       |
+| user_id    | bigint    | アップロードしたユーザーID               |
+| file_name  | string    | ファイル名                        |
+| file_path  | string    | 保存先パス                        |
+| file_type  | string    | image / video / audio / file |
+| file_size  | integer   | ファイルサイズ                      |
+| created_at | timestamp | 作成日時                         |
+| updated_at | timestamp | 更新日時                         |
 
 ---
 
 ## themes
 
-テーマ情報を管理するテーブル。
+サイトテーマを管理するテーブル。
 
-| column     | type            | note        |
-| ---------- | --------------- | ----------- |
-| id         | bigint          | 主キー         |
-| name       | string          | テーマ名        |
-| css_path   | string nullable | テーマCSSのパス   |
-| settings   | json nullable   | 色、フォントなどの設定 |
-| created_at | timestamp       | 作成日時        |
-| updated_at | timestamp       | 更新日時        |
+| カラム名        | 型         | 内容          |
+| ----------- | --------- | ----------- |
+| id          | bigint    | テーマID       |
+| name        | string    | テーマ名        |
+| description | string    | テーマ説明       |
+| settings    | json      | 色・フォントなどの設定 |
+| created_at  | timestamp | 作成日時        |
+| updated_at  | timestamp | 更新日時        |
 
 ---
 
-## feedbacks
+## site_settings
 
-公開されたサイトに対するコメント・フィードバックを管理するテーブル。
+サイトごとの詳細設定を管理するテーブル。
 
-| column     | type            | note            |
-| ---------- | --------------- | --------------- |
-| id         | bigint          | 主キー             |
-| site_id    | bigint          | sites.id への外部キー |
-| name       | string nullable | コメント投稿者名        |
-| email      | string nullable | メールアドレス         |
-| comment    | text            | コメント内容          |
-| created_at | timestamp       | 作成日時            |
-| updated_at | timestamp       | 更新日時            |
+| カラム名       | 型         | 内容    |
+| ---------- | --------- | ----- |
+| id         | bigint    | 設定ID  |
+| site_id    | bigint    | サイトID |
+| settings   | json      | サイト設定 |
+| created_at | timestamp | 作成日時  |
+| updated_at | timestamp | 更新日時  |
+
+---
+
+## comments
+
+公開サイトに対するコメント・フィードバックを管理するテーブル。
+
+| カラム名       | 型         | 内容               |
+| ---------- | --------- | ---------------- |
+| id         | bigint    | コメントID           |
+| site_id    | bigint    | 対象サイトID          |
+| name       | string    | 投稿者名             |
+| email      | string    | 投稿者メール           |
+| body       | text      | コメント本文           |
+| status     | string    | visible / hidden |
+| created_at | timestamp | 作成日時             |
+| updated_at | timestamp | 更新日時             |
 
 ---
 
 ## analytics
 
-サイトの閲覧数などを管理するテーブル。
+閲覧数やページ遷移などの統計情報を管理するテーブル。
 
-| column     | type            | note                   |
-| ---------- | --------------- | ---------------------- |
-| id         | bigint          | 主キー                    |
-| site_id    | bigint          | sites.id への外部キー        |
-| page_id    | bigint nullable | pages.id への外部キー        |
-| event_type | string          | view / click / jump など |
-| ip_address | string nullable | IPアドレス                 |
-| user_agent | text nullable   | ブラウザ情報                 |
-| created_at | timestamp       | 作成日時                   |
+| カラム名       | 型         | 内容                  |
+| ---------- | --------- | ------------------- |
+| id         | bigint    | 統計ID                |
+| site_id    | bigint    | サイトID               |
+| page_id    | bigint    | ページID               |
+| event_type | string    | view / click / jump |
+| ip_address | string    | IPアドレス              |
+| user_agent | string    | ブラウザ情報              |
+| created_at | timestamp | 作成日時                |
+| updated_at | timestamp | 更新日時                |
 
 ---
 
-# 最初に実装するテーブル
+# 最初に作成するテーブル
 
-6月中は以下のテーブルを優先する。
+6月時点では、以下のテーブルから作成する。
 
 ```text
 users
 sites
 pages
-blocks
-media
-```
-
----
-
-# 後回しにするテーブル
-
-以下は後半または余裕がある場合に実装する。
-
-```text
+page_blocks
+media_files
 themes
-feedbacks
+```
+
+以下は後回しにする。
+
+```text
+comments
 analytics
+site_settings
 ```
 
 ---
 
-# 命名規則
+# 作成しない機能
 
-## テーブル名
-
-複数形のスネークケースを使用する。
-
-例：
+卒研の初期段階では、以下の機能はDB設計のみ残し、実装は後回しにする。
 
 ```text
-users
-sites
-pages
-blocks
-media
-themes
-feedbacks
-analytics
-```
-
-## カラム名
-
-スネークケースを使用する。
-
-例：
-
-```text
-user_id
-site_id
-page_id
-file_path
-created_at
-updated_at
-```
-
-## 外部キー
-
-関連するテーブル名の単数形 + `_id` を使用する。
-
-例：
-
-```text
-user_id
-site_id
-page_id
-theme_id
+クレジットカード支払い
+予約フォーム
+高度なアクセス解析
+ストーリー機能
+スライドショー
+コメント承認機能
 ```
 
 ---
 
-# 注意事項
+# migration作成順
 
-* usersテーブルはLaravel Breezeの標準構成を利用する
-* パスワードは必ずハッシュ化して保存する
-* 画像や動画本体はDBに直接保存しない
-* 画像や動画はstorageに保存し、DBにはパスのみ保存する
-* pages.content は初期段階ではHTMLまたはJSONを保存してよい
-* 将来的に細かく管理したい場合は blocks テーブルを中心にする
-* クレジットカード情報は保存しない
-* 決済機能は今回の初期実装では対象外とする
+```bash
+php artisan make:migration create_themes_table
+php artisan make:migration create_sites_table
+php artisan make:migration create_pages_table
+php artisan make:migration create_page_blocks_table
+php artisan make:migration create_media_files_table
+php artisan make:migration create_site_settings_table
+php artisan make:migration create_comments_table
+php artisan make:migration create_analytics_table
+```
 
-```
-```
+usersテーブルはLaravel Breeze導入時点で作成済みのため、新規作成しない。
+
+---
+
+# 注意点
+
+* usersテーブルはLaravel Breezeの標準構成を使う
+* sitesは必ずusersに紐づける
+* pagesは必ずsitesに紐づける
+* page_blocksはページ編集機能の中心になる
+* media_filesは画像・動画・音声・ファイルをまとめて管理する
+* commentsとanalyticsは後半の発展機能として扱う
+* migrationを追加・変更する場合は必ずチームに共有する
