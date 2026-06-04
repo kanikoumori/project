@@ -1,4 +1,4 @@
-# Database Design v2.1
+# Database Design v3.0
 
 ## 目的
 
@@ -32,12 +32,12 @@ Render PostgreSQL
 
 users
 ├ sites
-│  ├ pages
-│  │  ├ page_blocks
-│  │  └ page_histories
-│  ├ analytics
-│  ├ comments
-│  └ site_settings
+│ ├ pages
+│ │ ├ page_blocks
+│ │ └ page_histories
+│ ├ analytics
+│ ├ comments
+│ └ site_settings
 │
 └ media_files
 
@@ -92,18 +92,19 @@ Laravel Breeze標準
 | slug         | string             |
 | logo_path    | string nullable    |
 | favicon_path | string nullable    |
-| status       | string             |
+| status       | enum               |
 | created_at   | timestamp          |
 | updated_at   | timestamp          |
 
-## 制約
+### 制約
 
+```sql
 UNIQUE(user_id, slug)
+```
 
-同一ユーザー内でslugの重複を禁止する。
-他ユーザーとの重複は許可する。
+同一ユーザー内で slug の重複を禁止する。
 
-status
+### status
 
 * draft
 * published
@@ -114,30 +115,36 @@ status
 
 サイト内ページ
 
-| カラム名       | 型                 |
-| ---------- | ----------------- |
-| id         | bigint            |
-| site_id    | bigint FK         |
-| title      | string            |
-| slug       | string            |
-| content    | longText nullable |
-| sort_order | integer           |
-| is_home    | boolean           |
-| status     | string            |
-| created_at | timestamp         |
-| updated_at | timestamp         |
+| カラム名       | 型         |
+| ---------- | --------- |
+| id         | bigint    |
+| site_id    | bigint FK |
+| title      | string    |
+| slug       | string    |
+| sort_order | integer   |
+| is_home    | boolean   |
+| status     | enum      |
+| created_at | timestamp |
+| updated_at | timestamp |
 
-## 制約
+### 制約
 
+```sql
 UNIQUE(site_id, slug)
+```
 
-同一サイト内でslugの重複を禁止する。
-他サイトとの重複は許可する。
+同一サイト内で slug の重複を禁止する。
 
-status
+### status
 
 * draft
 * published
+
+### 備考
+
+ページ本文は保持しない。
+
+コンテンツはすべて page_blocks テーブルで管理する。
 
 ---
 
@@ -150,13 +157,13 @@ status
 | id            | bigint             |
 | page_id       | bigint FK          |
 | media_file_id | bigint FK nullable |
-| type          | string             |
+| type          | enum               |
 | data          | json               |
 | sort_order    | integer            |
 | created_at    | timestamp          |
 | updated_at    | timestamp          |
 
-type
+### type
 
 * text
 * image
@@ -179,6 +186,8 @@ type
 | page_data      | json      |
 | created_at     | timestamp |
 
+### 備考
+
 保存のたびに履歴を残す。
 
 ---
@@ -193,12 +202,12 @@ type
 | user_id    | bigint FK |
 | file_name  | string    |
 | file_path  | string    |
-| file_type  | string    |
+| file_type  | enum      |
 | file_size  | bigint    |
 | created_at | timestamp |
 | updated_at | timestamp |
 
-file_type
+### file_type
 
 * image
 * video
@@ -237,11 +246,11 @@ file_type
 | name       | string    |
 | email      | string    |
 | body       | text      |
-| status     | string    |
+| status     | enum      |
 | created_at | timestamp |
 | updated_at | timestamp |
 
-status
+### status
 
 * visible
 * hidden
@@ -260,25 +269,68 @@ status
 | created_at | timestamp |
 | updated_at | timestamp |
 
-## 制約
+### 制約
 
+```sql
 UNIQUE(site_id)
+```
 
 1サイトにつき1設定のみ保持する。
 
 ---
 
+# ENUM方針
+
+以下のカラムは許可値を固定する。
+
+## sites.status
+
+* draft
+* published
+
+## pages.status
+
+* draft
+* published
+
+## page_blocks.type
+
+* text
+* image
+* button
+* video
+* table
+* link
+
+## media_files.file_type
+
+* image
+* video
+* audio
+* file
+
+## comments.status
+
+* visible
+* hidden
+
+Laravel Migrationでは enum または validation により制限する。
+
+---
+
 # 外部キー方針
 
-親レコード削除時は
-関連子レコードも削除する
-(CASCADE DELETE)
+親レコード削除時は関連子レコードも削除する。
+
+```text
+CASCADE DELETE
+```
 
 ---
 
 # 実装順
 
-Phase1
+## Phase1
 
 * Breeze認証
 * users
@@ -286,18 +338,18 @@ Phase1
 * sites
 * pages
 
-Phase2
+## Phase2
 
 * page_blocks
 * media_files
 * プレビュー
 
-Phase3
+## Phase3
 
 * page_histories
 * 自動保存
 
-Phase4
+## Phase4
 
 * analytics
 * comments
@@ -311,15 +363,19 @@ migration追加時は必ず共有する。
 
 実行後は
 
+```bash
 php artisan migrate:status
+```
 
 で確認する。
 
+以下はGitHubへpushしない。
+
+```text
 vendor
 node_modules
 .env
-
-はGitHubへpushしない。
+```
 
 ---
 
