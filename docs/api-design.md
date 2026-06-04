@@ -139,7 +139,7 @@ Laravel Breezeで自動生成されたルートを使用する。
 
 ## ページ作成
 
-### POST /pages
+### POST /sites/{site}/pages
 
 新しいページを作成する。
 
@@ -153,10 +153,8 @@ Laravel Breezeで自動生成されたルートを使用する。
 
 ```json
 {
-  "site_id": 1,
   "title": "トップページ",
-  "slug": "home",
-  "content": "<h1>Hello</h1>"
+  "slug": "home"
 }
 ```
 
@@ -191,8 +189,7 @@ Laravel Breezeで自動生成されたルートを使用する。
 ```json
 {
   "title": "トップページ",
-  "slug": "home",
-  "content": "<h1>更新後の内容</h1>"
+  "slug": "home"
 }
 ```
 
@@ -262,7 +259,7 @@ Laravel Breezeで自動生成されたルートを使用する。
 
 ## 作成中ページのプレビュー
 
-### GET /preview/{id}
+### GET /pages/{id}?mode=preview
 
 作成中のページをプレビュー表示する。
 
@@ -315,7 +312,7 @@ HTMLページを返す。
     "fontSize": "16px",
     "color": "#000000"
   },
-  "order": 1
+  "sort_order": 1
 }
 ```
 
@@ -327,7 +324,7 @@ HTMLページを返す。
   "page_id": 1,
   "type": "text",
   "content": "本文テキスト",
-  "order": 1
+  "sort_order": 1
 }
 ```
 
@@ -354,7 +351,7 @@ HTMLページを返す。
     "fontSize": "20px",
     "color": "#333333"
   },
-  "order": 1
+  "sort_order": 1
 }
 ```
 
@@ -411,7 +408,7 @@ HTMLページを返す。
 multipart/form-data
 file: アップロードファイル
 site_id: 1
-file_type: image
+file → Laravelが自動判定
 ```
 
 ### Response
@@ -584,10 +581,11 @@ file_type: image
 ```text
 POST /sites
 GET /sites
-POST /pages
-PUT /pages/{id}
-GET /pages/{id}
+POST /sites/{site}/pages
+GET /sites/{site}/pages
+GET /sites/{site}/pages/{id}
 GET /preview/{id}
+
 ```
 
 ## 優先度 中
@@ -595,8 +593,8 @@ GET /preview/{id}
 基本機能が完成してから実装する。
 
 ```text
-DELETE /pages/{id}
-POST /blocks
+DELETE /sites/{site}/pages/{id}
+POST /sites/{site}/pages/{page}/blocks
 PUT /blocks/{id}
 DELETE /blocks/{id}
 POST /media
