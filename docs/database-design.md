@@ -1,4 +1,4 @@
-# Database Design v3.0
+# Database Design v3.1
 
 ## 目的
 
@@ -33,7 +33,7 @@ Render PostgreSQL
 users
 ├ sites
 │ ├ pages
-│ │ ├ page_blocks
+│ │ ├ blocks
 │ │ └ page_histories
 │ ├ analytics
 │ ├ comments
@@ -144,11 +144,11 @@ UNIQUE(site_id, slug)
 
 ページ本文は保持しない。
 
-コンテンツはすべて page_blocks テーブルで管理する。
+コンテンツはすべて blocks テーブルで管理する。
 
 ---
 
-## page_blocks
+## blocks
 
 ノーコードエディタの実体
 
@@ -293,7 +293,7 @@ UNIQUE(site_id)
 * draft
 * published
 
-## page_blocks.type
+## blocks.type
 
 * text
 * image
@@ -340,7 +340,7 @@ CASCADE DELETE
 
 ## Phase2
 
-* page_blocks
+* blocks
 * media_files
 * プレビュー
 
