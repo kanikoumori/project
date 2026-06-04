@@ -1,4 +1,4 @@
-# Database Design v2.0
+# Database Design v2.1
 
 ## 目的
 
@@ -31,21 +31,18 @@ Render PostgreSQL
 # ER構造
 
 users
-└ sites
-└ pages
-├ page_blocks
-└ page_histories
-
-users
+├ sites
+│  ├ pages
+│  │  ├ page_blocks
+│  │  └ page_histories
+│  ├ analytics
+│  ├ comments
+│  └ site_settings
+│
 └ media_files
 
 themes
 └ sites
-
-sites
-├ analytics
-├ comments
-└ site_settings
 
 ---
 
@@ -92,12 +89,19 @@ Laravel Breeze標準
 | user_id      | bigint FK          |
 | theme_id     | bigint FK nullable |
 | title        | string             |
-| slug         | string unique      |
+| slug         | string             |
 | logo_path    | string nullable    |
 | favicon_path | string nullable    |
 | status       | string             |
 | created_at   | timestamp          |
 | updated_at   | timestamp          |
+
+## 制約
+
+UNIQUE(user_id, slug)
+
+同一ユーザー内でslugの重複を禁止する。
+他ユーザーとの重複は許可する。
 
 status
 
@@ -122,6 +126,13 @@ status
 | status     | string            |
 | created_at | timestamp         |
 | updated_at | timestamp         |
+
+## 制約
+
+UNIQUE(site_id, slug)
+
+同一サイト内でslugの重複を禁止する。
+他サイトとの重複は許可する。
 
 status
 
@@ -165,7 +176,7 @@ type
 | id             | bigint    |
 | page_id        | bigint FK |
 | version_number | integer   |
-| content        | json      |
+| page_data      | json      |
 | created_at     | timestamp |
 
 保存のたびに履歴を残す。
@@ -248,6 +259,20 @@ status
 | settings   | json      |
 | created_at | timestamp |
 | updated_at | timestamp |
+
+## 制約
+
+UNIQUE(site_id)
+
+1サイトにつき1設定のみ保持する。
+
+---
+
+# 外部キー方針
+
+親レコード削除時は
+関連子レコードも削除する
+(CASCADE DELETE)
 
 ---
 
