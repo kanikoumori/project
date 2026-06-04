@@ -4,7 +4,7 @@
 #記入例
 # Database Design
 
-## users
+## users?
 
 | column | type | note |
 |---|---|---|
@@ -15,7 +15,7 @@
 
 ---
 
-## sites
+## sites?
 
 | column | type | note |
 |---|---|---|
@@ -26,7 +26,7 @@
 
 ---
 
-## pages
+## pages?
 
 | column | type | note |
 |---|---|---|
@@ -34,3 +34,15 @@
 | site_id | bigint | sites FK |
 | title | string | ページ名 |
 | content | text | HTML保存 |
+
+## projects
+
+| column | type | note |
+|---|---|---|
+| id | bigint | ？ |
+| user_id | bigint | ？ |
+| title | string | ？ |
+| description | text nullable | ？ |
+| status | string | ? |
+| created_at | timestamp | ? |
+| updated_at | updated_at | ? |
