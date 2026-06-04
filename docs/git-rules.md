@@ -25,6 +25,12 @@ git commit -v　#変更点を見れる
 git status #変更されたファイル
 git push origin <ブランチ名>　＃githubへプッシュ
 git switch -c <変更していくフォルダ名>　#新規ブランチ作成
+#データごとfeatureブランチを削除する一連の手順
+git checkout main
+git reset --hard
+git clean -fd
+git branch -D
+git switch -c ブランチ名
 ---
 
 # 基本ルール
