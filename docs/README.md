@@ -43,3 +43,22 @@ Laravel:http://127.0.0.1:8000
 
 ```txt id="7"
 要件定義
+
+## ER図
+
+users
+│
+├── projects
+│     │
+│     ├── pages
+│     │     │
+│     │     └── blocks
+│     │
+│     ├── project_versions
+│     │
+│     ├── feedbacks
+│     │
+│     └── analytics
+│
+└── (認証管理)
+
