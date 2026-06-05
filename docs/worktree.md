@@ -163,6 +163,7 @@ C:.
 |       coding-rules.md
 |       database-design.md
 |       deployment.md
+│       frontend-api-guide.md
 |       git-rules.md
 |       meeting-log.md
 |       README.md
@@ -7218,6 +7219,10 @@ C:.
 |   |   index.php
 |   |   robots.txt
 |   |   
+│   +---images
+|   |       Image.jpeg
+|   |       Image.png
+│   │
 |   \---build
 |       |   manifest.json
 |       |   
