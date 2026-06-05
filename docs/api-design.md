@@ -441,28 +441,38 @@ HTMLページを返す。
 
 ---
 
-## ブロック更新
+## ブロック並び替え（一括更新）
 
-### PUT /blocks/{id}
+### PUT /pages/{page_id}/blocks/reorder
 
-ブロック内容を更新する。
+ページ内の全ブロックの並び順を一括で更新する。ドラッグ＆ドロップ完了時にフロントから送信される。
 
 | 項目     | 内容     |
 | ------ | ------ |
 | 認証     | 必要     |
 | 使用テーブル | blocks |
-| 優先度    | 中      |
+| 優先度    | 高      |
 
 ### Request
 
+orders 配列の中に、そのページに存在するすべてのブロックの「ID」と「新しい並び順（1から始まる連番）」を格納して送信する。
+
 ```json
 {
-  "content": "更新後の本文",
-  "style": {
-    "fontSize": "20px",
-    "color": "#333333"
-  },
-  "sort_order": 1
+  "orders": [
+    {
+      "id": 102,
+      "sort_order": 1
+    },
+    {
+      "id": 103,
+      "sort_order": 2
+    },
+    {
+      "id": 101,
+      "sort_order": 3
+    }
+  ]
 }
 ```
 
@@ -470,8 +480,7 @@ HTMLページを返す。
 
 ```json
 {
-  "message": "Block updated successfully",
-  "id": 1
+  "message": "Block order updated successfully"
 }
 ```
 
