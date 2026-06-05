@@ -736,6 +736,14 @@ DELETE /sites/{id}
 
 ---
 
+### Phase2対応
+
+・Site所有者チェック
+・Page所有者チェック
+・Block所有者チェック
+
+---
+
 # 注意事項
 
 * 認証が必要なAPIはLaravel Breezeのログイン状態を使用する
