@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SiteController;
 use Illuminate\Support\Facades\Route;
@@ -20,6 +21,10 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/sites', [SiteController::class, 'index']);
     Route::post('/sites', [SiteController::class, 'store']);
+
+    Route::get('/sites/{site}/pages', [PageController::class, 'index']);
+Route::post('/sites/{site}/pages', [PageController::class, 'store']);
+Route::get('/pages/{page}', [PageController::class, 'show']);
 });
 
 require __DIR__.'/auth.php';
