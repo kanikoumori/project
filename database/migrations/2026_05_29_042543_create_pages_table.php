@@ -12,11 +12,32 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('pages', function (Blueprint $table) {
+
             $table->id();
-            $table->foreignId('site_id')->constrained()->cascadeOnDelete();
+
+            $table->foreignId('site_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
             $table->string('title');
+
             $table->string('slug');
+
+            $table->integer('sort_order')
+                ->default(0);
+
+            $table->boolean('is_home')
+                ->default(false);
+
+            $table->string('status')
+                ->default('draft');
+
             $table->timestamps();
+
+            $table->unique([
+                'site_id',
+                'slug'
+            ]);
         });
     }
 
