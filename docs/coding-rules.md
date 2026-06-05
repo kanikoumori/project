@@ -333,7 +333,9 @@ migrationファイルは必ず中身を作成してからpushする。
 Schema::create('sites', function (Blueprint $table) {
     $table->id();
     $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-    $table->string('name');
+    $table->string('title');
+    $table->text('description')->nullable();
+    $table->string('slug');
     $table->timestamps();
 });
 ```
@@ -350,8 +352,21 @@ Schema::create('sites', function (Blueprint $table) {
 
 * main直push禁止
 * 必ずfeatureブランチで作業する
-* 作業前に `git pull origin main`
+* 作業前に develop を最新化する
+
+```bash
+git checkout develop
+git pull origin develop
+```
+
 * 完成後にPull Requestを作成する
+* Pull Requestを作成する前に以下を確認する
+
+```bash
+php artisan route:list
+php artisan migrate:status
+git status
+```
 * 他人の担当ファイルを変更する場合は事前に相談する
 * `.env` は絶対にpushしない
 * `vendor/` と `node_modules/` はpushしない
