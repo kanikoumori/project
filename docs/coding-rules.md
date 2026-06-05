@@ -366,6 +366,7 @@ git pull origin develop
 php artisan route:list
 php artisan migrate:status
 git status
+php artisan serve
 ```
 * 他人の担当ファイルを変更する場合は事前に相談する
 * `.env` は絶対にpushしない
@@ -449,21 +450,63 @@ AIにコードを作らせた場合でも、内容を理解してからpushす�
 
 ---
 
+## Laravel Breezeルール
+
+Laravel Breezeは導入済みである。
+
+以下のコマンドは担当者以外実行しない。
+
+```bash
+composer require laravel/breeze --dev
+php artisan breeze:install
+```
+他メンバーは以下を実行する。
+
+```bash
+composer install
+npm install
+php artisan migrate
+```
+
+---
+
 ## 動作確認ルール
 
 作業後は最低限以下を確認する。
 
 ```bash
+git status
+php artisan route:list
+```
+
+必要に応じて
+
+```bash
 php artisan serve
 npm run dev
-php artisan migrate
 ```
 
-ブラウザで以下を確認する。
+を実行し、ブラウザで画面確認を行う。
 
-```txt
-http://127.0.0.1:8000
+---
+## Pull Requestレビュー
+
+Pull Requestを出した人以外がレビューを行う。
+
+レビュー時は以下を確認する。
+
+```bash
+php artisan route:list
+php artisan migrate:status
 ```
+
+必要に応じて
+
+```bash
+php artisan migrate:fresh
+```
+
+を実行する。
 
 ---
 
