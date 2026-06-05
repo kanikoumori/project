@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BlockController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SiteController;
@@ -23,8 +24,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/sites', [SiteController::class, 'store']);
 
     Route::get('/sites/{site}/pages', [PageController::class, 'index']);
-Route::post('/sites/{site}/pages', [PageController::class, 'store']);
-Route::get('/pages/{page}', [PageController::class, 'show']);
+    Route::post('/sites/{site}/pages', [PageController::class, 'store']);
+    Route::get('/pages/{page}', [PageController::class, 'show']);
+
+    Route::get('/pages/{page}/blocks', [BlockController::class, 'index']);
+
+    Route::post('/blocks', [BlockController::class, 'store']);
 });
 
 require __DIR__.'/auth.php';
