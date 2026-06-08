@@ -10,6 +10,7 @@
 
 ## 使用技術
 
+* XAMPP
 * Laravel 12
 * PHP 8.2
 * PostgreSQL 16
