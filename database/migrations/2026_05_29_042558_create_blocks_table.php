@@ -12,11 +12,21 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('blocks', function (Blueprint $table) {
+
             $table->id();
-            $table->foreignId('page_id')->constrained()->cascadeOnDelete();
+
+            $table->foreignId('page_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
             $table->string('type');
-            $table->json('content')->nullable();
-            $table->integer('sort_order')->default(0);
+
+            $table->json('data')
+                ->nullable();
+
+            $table->integer('sort_order')
+                ->default(0);
+
             $table->timestamps();
         });
     }

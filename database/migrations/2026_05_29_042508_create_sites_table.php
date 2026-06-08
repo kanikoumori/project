@@ -12,10 +12,29 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('sites', function (Blueprint $table) {
+
             $table->id();
-            $table->string('name');
-            $table->string('description')->nullable();
+
+            $table->foreignId('user_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
+            $table->string('title');
+
+            $table->text('description')
+                ->nullable();
+
+            $table->string('slug');
+
+            $table->string('status')
+                ->default('draft');
+
             $table->timestamps();
+
+            $table->unique([
+                'user_id',
+                'slug'
+            ]);
         });
     }
 

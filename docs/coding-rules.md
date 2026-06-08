@@ -1,3 +1,4 @@
+
 # Coding Rules
 
 ## 目的
@@ -333,7 +334,9 @@ migrationファイルは必ず中身を作成してからpushする。
 Schema::create('sites', function (Blueprint $table) {
     $table->id();
     $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-    $table->string('name');
+    $table->string('title');
+    $table->text('description')->nullable();
+    $table->string('slug');
     $table->timestamps();
 });
 ```
@@ -350,8 +353,22 @@ Schema::create('sites', function (Blueprint $table) {
 
 * main直push禁止
 * 必ずfeatureブランチで作業する
-* 作業前に `git pull origin main`
+* 作業前に develop を最新化する
+
+```bash
+git checkout develop
+git pull origin develop
+```
+
 * 完成後にPull Requestを作成する
+* Pull Requestを作成する前に以下を確認する
+
+```bash
+php artisan route:list
+php artisan migrate:status
+git status
+php artisan serve
+```
 * 他人の担当ファイルを変更する場合は事前に相談する
 * `.env` は絶対にpushしない
 * `vendor/` と `node_modules/` はpushしない
@@ -434,21 +451,63 @@ AIにコードを作らせた場合でも、内容を理解してからpushす�
 
 ---
 
+## Laravel Breezeルール
+
+Laravel Breezeは導入済みである。
+
+以下のコマンドは担当者以外実行しない。
+
+```bash
+composer require laravel/breeze --dev
+php artisan breeze:install
+```
+他メンバーは以下を実行する。
+
+```bash
+composer install
+npm install
+php artisan migrate
+```
+
+---
+
 ## 動作確認ルール
 
 作業後は最低限以下を確認する。
 
 ```bash
+git status
+php artisan route:list
+```
+
+必要に応じて
+
+```bash
 php artisan serve
 npm run dev
-php artisan migrate
 ```
 
-ブラウザで以下を確認する。
+を実行し、ブラウザで画面確認を行う。
 
-```txt
-http://127.0.0.1:8000
+---
+## Pull Requestレビュー
+
+Pull Requestを出した人以外がレビューを行う。
+
+レビュー時は以下を確認する。
+
+```bash
+php artisan route:list
+php artisan migrate:status
 ```
+
+必要に応じて
+
+```bash
+php artisan migrate:fresh
+```
+
+を実行する。
 
 ---
 
