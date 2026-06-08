@@ -4,6 +4,7 @@ use App\Http\Controllers\BlockController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SiteController;
+use App\Http\Controllers\PageHistoryController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -38,6 +39,21 @@ Route::middleware('auth')->group(function () {
     Route::put('/pages/{page}', [PageController::class, 'update']);
 
     Route::delete('/pages/{page}', [PageController::class, 'destroy']);
+
+    Route::post(
+        '/pages/{page}/autosave',
+        [PageHistoryController::class, 'autosave']
+    );
+
+    Route::get(
+        '/pages/{page}/histories',
+        [PageHistoryController::class, 'index']
+    );
+
+    Route::post(
+        '/histories/{history}/restore',
+        [PageHistoryController::class, 'restore']
+    );
 });
 
 require __DIR__.'/auth.php';
