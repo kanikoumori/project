@@ -50,11 +50,7 @@ class BlockController extends Controller
             'sort_order' => ['sometimes', 'integer'],
         ]);
 
-        $block->update([
-            'type' => $validated['type'],
-            'data' => $validated['data'] ?? [],
-            'sort_order' => $validated['sort_order'] ?? $block->sort_order,
-        ]);
+        $block->update($validated);
 
         return response()->json($block);
     }
