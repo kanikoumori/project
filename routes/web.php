@@ -30,6 +30,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/pages/{page}/blocks', [BlockController::class, 'index']);
 
     Route::post('/blocks', [BlockController::class, 'store']);
+
+    Route::put('/blocks/{block}', [BlockController::class, 'update']);
+    Route::delete('/blocks/{block}', [BlockController::class, 'destroy']);
+    Route::put('/pages/{page}/blocks/reorder', [BlockController::class, 'reorder']);
+
+    Route::put('/pages/{page}', [PageController::class, 'update']);
+
+    Route::delete('/pages/{page}', [PageController::class, 'destroy']);
 });
 
 require __DIR__.'/auth.php';

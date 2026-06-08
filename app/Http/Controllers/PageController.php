@@ -47,4 +47,33 @@ class PageController extends Controller
     {
         return response()->json($page);
     }
+    /**
+     * ページ更新
+     */
+    public function update(Request $request, Page $page)
+    {
+        $validated = $request->validate([
+            'title' => ['sometimes', 'string', 'max:255'],
+            'slug' => ['sometimes', 'string', 'max:255'],
+            'sort_order' => ['sometimes', 'integer'],
+            'is_home' => ['sometimes', 'boolean'],
+            'status' => ['sometimes', 'string', 'max:50'],
+        ]);
+
+        $page->update($validated);
+
+        return response()->json($page);
+    }
+
+    /**
+     * ページ削除
+     */
+    public function destroy(Page $page)
+    {
+        $page->delete();
+
+        return response()->json([
+            'message' => 'Page deleted successfully'
+        ]);
+    }
 }
