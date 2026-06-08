@@ -263,6 +263,7 @@ tests/
 
 
 ```txt id="7"
+<<<<<<< HEAD
 
 ##要件定義
 
@@ -282,3 +283,25 @@ tests/
 - [ ] プレビュー
 - [ ] 公開機能
 - [ ] アクセス解析
+=======
+要件定義
+
+## ER図
+
+users
+│
+├── projects
+│     │
+│     ├── pages
+│     │     │
+│     │     └── blocks
+│     │
+│     ├── project_versions
+│     │
+│     ├── feedbacks
+│     │
+│     └── analytics
+│
+└── (認証管理)
+
+>>>>>>> e6092741f65aa06ea48dd411449fbed43845b5fc

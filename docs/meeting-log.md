@@ -5,6 +5,27 @@
 ## ファイル構成変更
 
 ### 変更者
+ツグイ
+
+### 内容
+
+database/migrations/
+
+↓
+
+database/migrations/2026_06_04_012739_create_projects_table.php
+
+を追加。
+
+### 理由
+
+マイグレーション作成
+
+### 影響
+
+不明
+
+### 変更者
 小野崎
 
 ### 内容
