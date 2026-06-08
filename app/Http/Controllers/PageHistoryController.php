@@ -14,6 +14,8 @@ class PageHistoryController extends Controller
      */
     public function autosave(Page $page)
     {
+        $this->authorize('update', $page);
+
         $snapshot = [
             'page' => $page->toArray(),
 
@@ -38,6 +40,8 @@ class PageHistoryController extends Controller
      */
     public function index(Page $page)
     {
+        $this->authorize('view', $page);
+
         return response()->json(
             $page->histories()
                 ->latest()
@@ -49,6 +53,8 @@ class PageHistoryController extends Controller
      */
     public function restore(PageHistory $history)
     {
+        $this->authorize('restore', $history);
+
         DB::transaction(function () use ($history) {
 
             $snapshot = $history->snapshot;

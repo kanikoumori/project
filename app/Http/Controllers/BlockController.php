@@ -14,6 +14,8 @@ class BlockController extends Controller
      */
     public function index(Page $page)
     {
+        $this->authorize('view', $page);
+
         return $page->blocks()
             ->orderBy('sort_order')
             ->get();
@@ -30,6 +32,10 @@ class BlockController extends Controller
             'sort_order' => ['nullable', 'integer'],
         ]);
 
+        $page = Page::findOrFail($validated['page_id']);
+
+        $this->authorize('update', $page);
+
         $block = Block::create([
             'page_id' => $validated['page_id'],
             'type' => $validated['type'],
@@ -44,6 +50,8 @@ class BlockController extends Controller
      */
     public function update(Request $request, Block $block)
     {
+        $this->authorize('update', $block);
+
         $validated = $request->validate([
             'type' => ['sometimes', 'string', 'max:50'],
             'data' => ['sometimes', 'array'],
@@ -59,6 +67,8 @@ class BlockController extends Controller
      */
     public function destroy(Block $block)
     {
+        $this->authorize('delete', $block);
+
         $block->delete();
 
         return response()->json([
@@ -70,6 +80,8 @@ class BlockController extends Controller
      */
     public function reorder(Request $request, Page $page)
     {
+        $this->authorize('update', $page);
+        
         $validated = $request->validate([
             'blocks' => ['required', 'array'],
             'blocks.*.id' => ['required', 'exists:blocks,id'],

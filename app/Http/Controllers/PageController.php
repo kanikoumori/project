@@ -13,6 +13,8 @@ class PageController extends Controller
      */
     public function index(Site $site)
     {
+        $this->authorize('view', $site);
+
         return $site->pages()
             ->orderBy('sort_order')
             ->get();
@@ -23,6 +25,7 @@ class PageController extends Controller
      */
     public function store(Request $request, Site $site)
     {
+        $this->authorize('update', $site);
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'slug' => ['required', 'string', 'max:255'],
@@ -45,6 +48,8 @@ class PageController extends Controller
      */
     public function show(Page $page)
     {
+        $this->authorize('view', $page);
+
         return response()->json($page);
     }
     /**
@@ -52,6 +57,7 @@ class PageController extends Controller
      */
     public function update(Request $request, Page $page)
     {
+        $this->authorize('update', $page);
         $validated = $request->validate([
             'title' => ['sometimes', 'string', 'max:255'],
             'slug' => ['sometimes', 'string', 'max:255'],
@@ -70,6 +76,7 @@ class PageController extends Controller
      */
     public function destroy(Page $page)
     {
+        $this->authorize('delete', $page);
         $page->delete();
 
         return response()->json([
