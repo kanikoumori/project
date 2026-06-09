@@ -4,24 +4,19 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Page extends Model
+class PageHistory extends Model
 {
     protected $fillable = [
-        'site_id',
-        'title',
-        'slug',
-        'sort_order',
-        'is_home',
-        'status',
+        'page_id',
+        'snapshot',
     ];
 
-    public function site()
-    {
-        return $this->belongsTo(Site::class);
-    }
+    protected $casts = [
+        'snapshot' => 'array',
+    ];
 
-    public function blocks()
+    public function page()
     {
-        return $this->hasMany(Block::class);
+        return $this->belongsTo(Page::class);
     }
 }
