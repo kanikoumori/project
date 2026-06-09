@@ -151,8 +151,9 @@ C:.
 |   |   |   |   BlockController.php
 |   |   |   |   Controller.php
 |   |   |   |   DashboardController.php　※未実装
-|   |   |   |   EditorController.php　※未実装
+|   |   |   |   EditorController.php
 |   |   |   |   PageController.php
+|   |   |   |   PageHistoryController.php
 |   |   |   |   PreviewController.php　※未実装
 |   |   |   |   ProfileController.php
 |   |   |   |   PublishController.php　※未実装
