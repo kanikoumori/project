@@ -181,6 +181,12 @@ C:.
 |   |       PageHistory.php
 |   |       Site.php
 |   |       User.php
+|   |
+|   +---Policies
+|   |       BlockPolicy.php
+|   |       PageHistoryPolicy.php
+|   |       PagePolicy.php
+|   |       SitePolicy.php       
 |   |       
 |   +---Providers
 |   |       AppServiceProvider.php
