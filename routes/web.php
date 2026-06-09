@@ -24,11 +24,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/pages/{page}', [PageController::class, 'show'])->name('pages.show');
 
     // Editor
-    Route::get('/editor/{page}', [PageController::class, 'editor'])->name('editor.show');
-
+    Route::get('/editor/{page}', [EditorController::class, 'show'])
+        ->name('editor.show');
+    
     // Sites
     Route::post('/sites', [SiteController::class, 'store'])->name('sites.store');
-
+    
     // Pages
     Route::post('/sites/{site}/pages', [PageController::class, 'store'])->name('pages.store');
 
