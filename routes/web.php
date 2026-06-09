@@ -6,6 +6,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\PageHistoryController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\EditorController;
 
 Route::get('/', function () {
     return view('welcome');
