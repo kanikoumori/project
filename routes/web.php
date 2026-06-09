@@ -11,49 +11,40 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
 Route::middleware('auth')->group(function () {
 
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    // Dashboard
+    Route::get('/dashboard', fn () => view('dashboard'))->name('dashboard');
 
-    Route::get('/sites', [SiteController::class, 'index']);
-    Route::post('/sites', [SiteController::class, 'store']);
+    // Sites
+    Route::get('/sites', [SiteController::class, 'index'])->name('sites.index');
 
-    Route::get('/sites/{site}/pages', [PageController::class, 'index']);
-    Route::post('/sites/{site}/pages', [PageController::class, 'store']);
-    Route::get('/pages/{page}', [PageController::class, 'show']);
+    // Pages
+    Route::get('/sites/{site}/pages', [PageController::class, 'index'])->name('pages.index');
+    Route::get('/pages/{page}', [PageController::class, 'show'])->name('pages.show');
 
-    Route::get('/pages/{page}/blocks', [BlockController::class, 'index']);
+    // Editor
+    Route::get('/editor/{page}', [PageController::class, 'editor'])->name('editor.show');
 
-    Route::post('/blocks', [BlockController::class, 'store']);
+    // Sites
+    Route::post('/sites', [SiteController::class, 'store'])->name('sites.store');
 
-    Route::put('/blocks/{block}', [BlockController::class, 'update']);
-    Route::delete('/blocks/{block}', [BlockController::class, 'destroy']);
-    Route::put('/pages/{page}/blocks/reorder', [BlockController::class, 'reorder']);
+    // Pages
+    Route::post('/sites/{site}/pages', [PageController::class, 'store'])->name('pages.store');
 
-    Route::put('/pages/{page}', [PageController::class, 'update']);
+    // Blocks
+    Route::post('/blocks', [BlockController::class, 'store'])->name('blocks.store');
+    Route::put('/blocks/{block}', [BlockController::class, 'update'])->name('blocks.update');
+    Route::delete('/blocks/{block}', [BlockController::class, 'destroy'])->name('blocks.destroy');
 
-    Route::delete('/pages/{page}', [PageController::class, 'destroy']);
+    // reorder
+    Route::put('/pages/{page}/blocks/reorder', [BlockController::class, 'reorder'])->name('blocks.reorder');
 
-    Route::post(
-        '/pages/{page}/autosave',
-        [PageHistoryController::class, 'autosave']
-    );
+    Route::post('/pages/{page}/autosave', [PageHistoryController::class, 'autosave'])->name('pages.autosave');
 
-    Route::get(
-        '/pages/{page}/histories',
-        [PageHistoryController::class, 'index']
-    );
+    Route::get('/pages/{page}/histories', [PageHistoryController::class, 'index'])->name('pages.histories');
 
-    Route::post(
-        '/histories/{history}/restore',
-        [PageHistoryController::class, 'restore']
-    );
+    Route::post('/histories/{history}/restore', [PageHistoryController::class, 'restore'])->name('histories.restore');
 });
 
 require __DIR__.'/auth.php';
