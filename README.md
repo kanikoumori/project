@@ -13,16 +13,16 @@
 
 ## 使用技術
 
-* Laravel 12
-* PHP 8.2
-* PostgreSQL 16
-* Laravel Breeze
-* Blade
-* Vite
-* JavaScript
-* CSS
-* GitHub
-* Render
+Laravel 12
+PHP 8.2
+PostgreSQL 16
+Laravel Breeze
+Blade
+Vite
+JavaScript
+CSS
+GitHub
+Render
 
 ---
 
