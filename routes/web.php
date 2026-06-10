@@ -43,11 +43,18 @@ Route::middleware('auth')->group(function () {
     
     // Pages
     Route::post('/sites/{site}/pages', [PageController::class, 'store'])->name('pages.store');
+    Route::put('/pages/{page}', [PageController::class, 'update'])
+        ->name('pages.update');
+    Route::delete('/pages/{page}', [PageController::class, 'destroy'])
+        ->name('pages.destroy');
 
     // Blocks
+    Route::get('/pages/{page}/blocks', [BlockController::class, 'index'])
+        ->name('blocks.index');
     Route::post('/blocks', [BlockController::class, 'store'])->name('blocks.store');
     Route::put('/blocks/{block}', [BlockController::class, 'update'])->name('blocks.update');
     Route::delete('/blocks/{block}', [BlockController::class, 'destroy'])->name('blocks.destroy');
+    
 
     // reorder
     Route::put('/pages/{page}/blocks/reorder', [BlockController::class, 'reorder'])->name('blocks.reorder');
