@@ -87,7 +87,6 @@ Laravel:http://127.0.0.1:8000
 
 # ドキュメント一覧
 
-<<<<<<< HEAD
 ## 起動方法
 
 ### Laravel
@@ -98,16 +97,18 @@ php artisan serve
 
 ### Vite
 
-```bash
+ ```bash
 npm run dev
 ```
 
 アクセス先
 
-```txt
+ ```txt
 Laravel:http://127.0.0.1:8000
 
 ---
+```
+
 
 ## Git運用
 
@@ -138,7 +139,7 @@ feature/template
 5. Pull Request
 6. merge
 
-## ディレクトリ構成
+ディレクトリ構成
 
 project/
 
@@ -265,7 +266,7 @@ tests/
 
 
 ```txt id="7"
-<<<<<<< HEAD
+```
 
 ##要件定義
 
@@ -291,7 +292,6 @@ tests/
 ## requirements.md
 
 プロジェクトの要件定義書。
->>>>>>> 3a97c8aeff9fdfb72c8025d93cc912efb2546dca
 
 記載内容：
 
@@ -300,9 +300,7 @@ tests/
 * 必要機能
 * 非機能要件
 
-<<<<<<< HEAD
->>>>>>> e6092741f65aa06ea48dd411449fbed43845b5fc
-=======
+
 ---
 
 ## database-design.md
