@@ -15,7 +15,17 @@ Route::get('/', function () {
 Route::middleware('auth')->group(function () {
 
     // Dashboard
-    Route::get('/dashboard', fn () => view('dashboard'))->name('dashboard');
+    Route::get('/dashboard', fn () => view('dashboard.index'))
+        ->name('dashboard');
+
+    Route::get('/dashboard/sites', fn () => view('dashboard.sites'))
+        ->name('dashboard.sites');
+
+    Route::get('/dashboard/analytics', fn () => view('dashboard.analytics'))
+        ->name('dashboard.analytics');
+
+    Route::get('/dashboard/settings', fn () => view('dashboard.settings'))
+        ->name('dashboard.settings');
 
     // Sites
     Route::get('/sites', [SiteController::class, 'index'])->name('sites.index');
