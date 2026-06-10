@@ -43,16 +43,17 @@
             </h1>
 
             <div class="mb-10">
-
+                {{-- TODO: モーダル表示に変更予定 --}}
                 <a href="#"
-                    class="block max-w-md p-6 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">
-
+                    class="block max-w-md p-6 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">   
+                    
                     <h2 class="text-2xl font-bold mb-2">
                         ＋ 新規サイト作成
-                        <div class="mt-4 text-sm text-gray-600">
-                            現在作成中のサイト：0件
-                        </div>
                     </h2>
+                    <div class="mt-4 text-sm opacity-80">
+                        現在作成中のサイト：0件
+                    </div>
+                    
 
                     <p>
                         新しいWebサイトを作成します
@@ -61,71 +62,57 @@
                 </a>
 
             </div>
+             {{-- 最近編集したサイト --}}
+                <div class="mt-12">
 
+                    <h2 class="text-xl font-semibold mb-4">
+                        最近編集したサイト
+                    </h2>
+
+                    <div class="space-y-4">
+
+                        @forelse ($sites ?? [] as $site)
+
+                            <div class="bg-white border rounded-lg shadow p-5 hover:shadow-lg transition">
+
+                                <div class="flex justify-between items-center">
+
+                                    <div>
+                                        <h3 class="text-lg font-bold">
+                                            {{ $site->title }}
+                                        </h3>
+
+                                        <p class="text-sm text-gray-500">
+                                            最終更新：
+                                            {{ $site->updated_at }}
+                                        </p>
+                                    </div>
+
+                                    <span class="px-3 py-1 text-sm rounded">
+                                        {{ $site->status }}
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        @empty
+
+                            <div class="bg-white border rounded-lg p-6 text-gray-500">
+                                サイトがまだ作成されていません
+                            </div>
+
+                        @endforelse
+
+                    </div>
+
+                </div>
             <div class="mt-10">
 
                 <h2 class="text-xl font-semibold mb-4">
                     テンプレート一覧
-                    {{-- 最近編集したサイト --}}
-                    <div class="mt-12">
-
-                        <h2 class="text-xl font-semibold mb-4">
-                            最近編集したサイト
-                        </h2>
-
-                        <div class="space-y-4">
-
-                            {{-- Site Card 1 --}}
-                            <div class="bg-white border rounded-lg shadow p-5 hover:shadow-lg transition">
-
-                                <div class="flex justify-between items-center">
-
-                                    <div>
-                                        <h3 class="text-lg font-bold">
-                                            卒業研究サイト
-                                        </h3>
-
-                                        <p class="text-sm text-gray-500">
-                                            最終更新：2026/06/10
-                                        </p>
-                                    </div>
-
-                                    <span class="px-3 py-1 text-sm bg-yellow-100 text-yellow-700 rounded">
-                                        Draft
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-                            {{-- Site Card 2 --}}
-                            <div class="bg-white border rounded-lg shadow p-5 hover:shadow-lg transition">
-
-                                <div class="flex justify-between items-center">
-
-                                    <div>
-                                        <h3 class="text-lg font-bold">
-                                            Portfolio Site
-                                        </h3>
-
-                                        <p class="text-sm text-gray-500">
-                                            最終更新：2026/06/08
-                                        </p>
-                                    </div>
-
-                                    <span class="px-3 py-1 text-sm bg-green-100 text-green-700 rounded">
-                                        Published
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
                 </h2>
-
+               
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
 
                     <div class="border rounded-lg p-4 shadow bg-white">
