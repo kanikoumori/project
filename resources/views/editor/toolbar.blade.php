@@ -1,22 +1,22 @@
-<div class="h-14 bg-white border-b flex items-center px-4 gap-3">
+<div class="toolbar">
 
-    <button class="px-3 py-2 border rounded">
+    <button class="toolbar-button">
         ←
     </button>
 
-    <button class="px-3 py-2 border rounded">
+    <button class="toolbar-button">
         →
     </button>
 
-    <button class="px-3 py-2 border rounded">
+    <button class="toolbar-button">
         一時保存
     </button>
 
-    <button class="px-3 py-2 border rounded">
+    <button class="toolbar-button">
         プレビュー
     </button>
 
-    <button class="ml-auto px-4 py-2 bg-blue-600 text-white rounded">
+    <button class="toolbar-publish">
         公開
     </button>
 

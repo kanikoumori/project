@@ -1,3 +1,5 @@
+@vite(['resources/css/app.css', 'resources/js/app.js'])
+
 <div class="editor">
 
     @include('editor.toolbar')
@@ -21,9 +23,9 @@
         block.addEventListener('click', () => {
 
             document.querySelectorAll('.block')
-                .forEach(b => b.classList.remove('ring-2', 'ring-blue-500'));
+                .forEach(b => b.classList.remove('selected'));
 
-            block.classList.add('ring-2', 'ring-blue-500');
+            block.classList.add('selected');
 
         });
 
@@ -34,11 +36,11 @@
 
         const block = document.createElement('div');
 
-        block.className = 'block border p-4 rounded mb-4';
+        block.className = 'block p-6 rounded mb-4';
         setupBlock(block);
 
         block.innerHTML = `
-            <h1 contenteditable="true">
+            <h1 contenteditable="true" class="editor-heading">
                 見出しを入力
             </h1>
         `;
@@ -52,7 +54,7 @@
 
         const block = document.createElement('div');
 
-        block.className = 'block border p-4 rounded mb-4';
+        block.className = 'block p-4 rounded mb-4';
         setupBlock(block);
 
         block.innerHTML = `
@@ -70,7 +72,7 @@
 
         const block = document.createElement('div');
 
-        block.className = 'block border p-4 rounded mb-4';
+        block.className = 'block p-4 rounded mb-4';
         setupBlock(block);
 
         block.innerHTML = `
@@ -90,12 +92,14 @@
 
         const block = document.createElement('div');
 
-        block.className = 'block border p-4 rounded mb-4';
+        block.className = 'block p-4 rounded mb-4';
         setupBlock(block);
 
         block.innerHTML = `
             <button class="px-4 py-2 bg-blue-500 text-white rounded">
-                ボタン
+                <span contenteditable="true">
+                    ボタン
+                </span>
             </button>
         `;
 
@@ -123,7 +127,7 @@
 
                 const block = document.createElement('div');
 
-                block.className = 'block border p-4 rounded mb-4';
+                block.className = 'block p-4 rounded mb-4';
                 setupBlock(block);
 
                 block.innerHTML = `
@@ -151,7 +155,7 @@
 
         const block = document.createElement('div');
 
-        block.className = 'block border p-4 rounded mb-4';
+        block.className = 'block p-4 rounded mb-4';
         setupBlock(block);
 
         block.innerHTML = `

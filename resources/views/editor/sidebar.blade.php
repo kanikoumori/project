@@ -1,39 +1,47 @@
-<div class="w-64 bg-white border-r p-4">
+<div class="sidebar">
 
-    <h2 class="font-bold mb-4">要素追加</h2>
+    <h2 class="accordion-title" data-target="elements-menu">
+        ▼ 要素追加
+    </h2>
 
-    <div class="space-y-2">
-        <button  id="add-heading" class="w-full border rounded p-2">
+    <div id="elements-menu" class="accordion-content open elements-grid">
+
+        <button id="add-heading" class="sidebar-button">
             見出し
         </button>
 
-        <button id="add-text" class="w-full border rounded p-2">
+        <button id="add-text" class="sidebar-button">
             テキスト
         </button>
 
-        <button id="add-list" class="w-full border rounded p-2">
+        <button id="add-list" class="sidebar-button">
             リスト
         </button>
 
-        <button id="add-button" class="w-full border rounded p-2">
+        <button id="add-button" class="sidebar-button">
             ボタン
         </button>
 
-        <button id="add-image" class="w-full border rounded p-2">
+        <button id="add-image" class="sidebar-button">
             画像
         </button>
 
-        <button id="add-form" class="w-full border rounded p-2">
+        <button id="add-form" class="sidebar-button">
             入力欄
         </button>
 
-        <button id="add-container" class="w-full border rounded p-2">
+        <button id="add-container" class="sidebar-button">
             コンテナ
         </button>
+
     </div>
 
-    <h2 class="font-bold mt-8 mb-4">レイヤー</h2>
+    <h2 class="accordion-title" data-target="layers-menu">
+        ▼ レイヤー
+    </h2>
 
-    <!-- 追加するごとに更新 -->
+    <div id="layers-menu" class="accordion-content">
+        <!-- レイヤー一覧 -->
+    </div>
 
 </div>
