@@ -18,8 +18,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', fn () => view('dashboard.index'))
         ->name('dashboard');
 
-    Route::get('/dashboard/sites', fn () => view('dashboard.sites'))
-        ->name('dashboard.sites');
+    Route::get('/dashboard/sites', [SiteController::class, 'index'])
+    ->name('dashboard.sites');
 
     Route::get('/dashboard/analytics', fn () => view('dashboard.analytics'))
         ->name('dashboard.analytics');
@@ -29,20 +29,19 @@ Route::middleware('auth')->group(function () {
 
     // Sites
     Route::get('/sites', [SiteController::class, 'index'])->name('sites.index');
+    Route::post('/sites', [SiteController::class, 'store'])->name('sites.store');
 
     // Pages
     Route::get('/sites/{site}/pages', [PageController::class, 'index'])->name('pages.index');
-    Route::get('/pages/{page}', [PageController::class, 'show'])->name('pages.show');
-
+    Route::get('/pages/{page}', [PageController::class, 'show'])->name('pages.show');   
+    Route::post('/sites/{site}/pages', [PageController::class, 'store'])->name('pages.store');
+    // TODO: PageController実装時に置換
+    Route::view('/pages', 'pages.index')
+        ->name('pages.index.temp');
+    
     // Editor
     Route::get('/editor/{page}', [EditorController::class, 'show'])
         ->name('editor.show');
-    
-    // Sites
-    Route::post('/sites', [SiteController::class, 'store'])->name('sites.store');
-    
-    // Pages
-    Route::post('/sites/{site}/pages', [PageController::class, 'store'])->name('pages.store');
 
     // Blocks
     Route::post('/blocks', [BlockController::class, 'store'])->name('blocks.store');
