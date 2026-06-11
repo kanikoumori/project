@@ -10,7 +10,9 @@
             </h1>   
             
             {{-- TODO: モーダル表示に変更予定 --}}
-            <button
+
+            <button     
+                onclick="openModal()"
                 class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
                 + 新規ページ作成
             </button>
@@ -20,80 +22,162 @@
         {{-- ページ一覧 --}}
         <div class="space-y-6">
 
-            {{-- Page Card 1 --}}
-            <div class="bg-white rounded-lg shadow p-6">
+            {{-- TODO: PageController接続後に$pagesを受け取る --}}
+            @forelse($pages ?? [] as $page)
 
-                <h2 class="text-xl font-semibold mb-2">
-                    HOME
-                </h2>
+                <div class="bg-white rounded-lg shadow p-6">
 
-                <p class="text-gray-500 mb-2">
-                    slug : /
-                </p>
+                    <div class="flex justify-between items-start">
 
-                <p class="text-sm text-gray-400 mb-2">
-                    更新日 : 2026/06/11
-                </p>
+                        <div>
 
-                <span
-                    class="inline-block px-3 py-1 text-sm bg-yellow-100 text-yellow-700 rounded mb-4">
-                    Draft
-                </span>
+                            <h2 class="text-xl font-semibold mb-2">
+                                {{ $page->title }}
+                            </h2>
 
-                <div class="flex gap-2">
+                            <p class="text-gray-500 mb-2">
+                                slug : {{ $page->slug }}
+                            </p>
 
-                    <button
-                        class="bg-green-500 text-white px-3 py-1 rounded">
-                        編集
-                    </button>
+                            <p class="text-sm text-gray-400">
+                                更新日 : {{ $page->updated_at }}
+                            </p>
 
-                    <button
-                        class="bg-red-500 text-white px-3 py-1 rounded">
-                        削除
-                    </button>
+                        </div>
 
-                </div>
+                        <span
+                            class="inline-block px-3 py-1 text-sm bg-yellow-100 text-yellow-700 rounded">
 
-            </div>
+                            Draft
 
-            {{-- Page Card 2 --}}
-            <div class="bg-white rounded-lg shadow p-6">
+                        </span>
 
-                <h2 class="text-xl font-semibold mb-2">
-                    会社概要
-                </h2>
+                    </div>
 
-                <p class="text-gray-500 mb-2">
-                    slug : about
-                </p>
+                    <div class="flex gap-2 mt-4">
 
-                <p class="text-sm text-gray-400 mb-2">
-                    更新日 : 2026/06/10
-                </p>
+                        {{-- TODO: editor.show 接続 --}}
+                        <button
+                            class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
 
-                <span
-                    class="inline-block px-3 py-1 text-sm bg-green-100 text-green-700 rounded mb-4">
-                    Published
-                </span>
+                            編集
 
-                <div class="flex gap-2">
+                        </button>
 
-                    <button
-                        class="bg-green-500 text-white px-3 py-1 rounded">
-                        編集
-                    </button>
+                        {{-- TODO: pages.destroy 接続 --}}
+                        <button
+                            class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
 
-                    <button
-                        class="bg-red-500 text-white px-3 py-1 rounded">
-                        削除
-                    </button>
+                            削除
+
+                        </button>
+
+                    </div>
 
                 </div>
 
-            </div>
+            @empty
+
+                <div class="bg-white rounded-lg shadow p-8 text-center">
+
+                    <p class="text-gray-500 text-lg">
+                        作成されたページはありません
+                    </p>
+
+                    <p class="text-sm text-gray-400 mt-2">
+                        「新規ページ作成」から最初のページを作成してください
+                    </p>
+
+                </div>
+
+            @endforelse
 
         </div>
 
     </div>
 
+<!-- 新規ページ作成モーダル -->
+<div
+    id="pageModal"
+    onclick="closeModal()"
+    class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+
+    <div
+        onclick="event.stopPropagation()"
+        class="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
+
+        <h2 class="text-2xl font-bold mb-4">
+            新規ページ作成
+        </h2>
+
+        <form>
+
+            <div class="mb-4">
+
+                <label class="block mb-1">
+                    ページ名
+                </label>
+
+                <input
+                    type="text"
+                    class="w-full border rounded p-2"
+                    placeholder="TOPページ">
+
+            </div>
+
+            <div class="mb-4">
+
+                <label class="block mb-1">
+                    slug
+                </label>
+
+                <input
+                    type="text"
+                    class="w-full border rounded p-2"
+                    placeholder="home">
+
+            </div>
+
+            <div class="flex justify-end gap-2">
+
+                <button
+                    type="button"
+                    onclick="closeModal()"
+                    class="bg-gray-300 px-4 py-2 rounded">
+
+                    キャンセル
+
+                </button>
+
+                <button
+                    type="submit"
+                    class="bg-blue-600 text-white px-4 py-2 rounded">
+
+                    作成
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>  
+{{-- TODO: JS肥大化時は resources/js/pages へ移動 --}}
+<script>
+
+    function openModal() {
+        document
+            .getElementById('pageModal')
+            .classList.remove('hidden');
+    }
+
+    function closeModal() {
+        document
+            .getElementById('pageModal')
+            .classList.add('hidden');
+    }
+
+</script>
 </x-app-layout>
