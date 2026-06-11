@@ -20,67 +20,7 @@
         {{-- サイト一覧 --}}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-            {{-- サイトカード1 --}}
-            <div class="bg-white rounded-lg shadow p-6">
-
-                <h2 class="text-xl font-semibold mb-2">
-                    ポートフォリオサイト
-                </h2>
-
-                <p class="text-gray-500 mb-2">
-                    draft
-                </p>
-
-                <p class="text-sm text-gray-400 mb-4">
-                    更新日: 2026/06/10
-                </p>
-
-                <div class="flex gap-2">
-
-                    <button
-                        class="bg-green-500 text-white px-3 py-1 rounded">
-                        編集
-                    </button>
-
-                    <button
-                        class="bg-red-500 text-white px-3 py-1 rounded">
-                        削除
-                    </button>
-
-                </div>
-
-            </div>
-
-            {{-- サイトカード2 --}}
-            <div class="bg-white rounded-lg shadow p-6">
-
-                <h2 class="text-xl font-semibold mb-2">
-                    ブログサイト
-                </h2>
-
-                <p class="text-gray-500 mb-2">
-                    draft
-                </p>
-
-                <p class="text-sm text-gray-400 mb-4">
-                    更新日: 2026/06/08
-                </p>
-
-                <div class="flex gap-2">
-
-                    <button
-                        class="bg-green-500 text-white px-3 py-1 rounded">
-                        編集
-                    </button>
-
-                    <button
-                        class="bg-red-500 text-white px-3 py-1 rounded">
-                        削除
-                    </button>
-
-                </div>
-
-            </div>
+         {{-- TODO: Backend連携後に@foreach($sites)へ変更 --}}   
 
         </div>
 
@@ -173,6 +113,8 @@
     </div>
 
 </div>
+
+{{-- TODO: JS肥大化時は resources/js/dashboard へ移動 --}}
 <script>
     function openModal() {
         document
