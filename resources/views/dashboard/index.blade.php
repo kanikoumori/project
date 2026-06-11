@@ -71,6 +71,7 @@
 
                     <div class="space-y-4">
 
+                        {{-- TODO: SiteController または DashboardController から $sites を受け取る予定 --}}
                         @forelse ($sites ?? [] as $site)
 
                             <div class="bg-white border rounded-lg shadow p-5 hover:shadow-lg transition">

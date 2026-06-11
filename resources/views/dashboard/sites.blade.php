@@ -113,6 +113,8 @@
     </div>
 
 </div>
+
+{{-- TODO: JS肥大化時は resources/js/dashboard へ移動 --}}
 <script>
     function openModal() {
         document
