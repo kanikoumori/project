@@ -15,29 +15,41 @@ Route::get('/', function () {
 Route::middleware('auth')->group(function () {
 
     // Dashboard
-    Route::get('/dashboard', fn () => view('dashboard'))->name('dashboard');
+    Route::get('/dashboard', fn () => view('dashboard.index'))
+        ->name('dashboard');
+
+    Route::get('/dashboard/sites', [SiteController::class, 'index'])
+    ->name('dashboard.sites');
+
+    Route::get('/dashboard/analytics', fn () => view('dashboard.analytics'))
+        ->name('dashboard.analytics');
+
+    Route::get('/dashboard/settings', fn () => view('dashboard.settings'))
+        ->name('dashboard.settings');
 
     // Sites
     Route::get('/sites', [SiteController::class, 'index'])->name('sites.index');
+    Route::post('/sites', [SiteController::class, 'store'])->name('sites.store');
 
     // Pages
     Route::get('/sites/{site}/pages', [PageController::class, 'index'])->name('pages.index');
-    Route::get('/pages/{page}', [PageController::class, 'show'])->name('pages.show');
-
+    Route::get('/pages/{page}', [PageController::class, 'show'])->name('pages.show');   
+    Route::post('/sites/{site}/pages', [PageController::class, 'store'])->name('pages.store');
+    // TODO: PageController実装時に置換
+    Route::view('/pages', 'pages.index')
+        ->name('pages.index.temp');
+    
     // Editor
     Route::get('/editor/{page}', [EditorController::class, 'show'])
         ->name('editor.show');
-    
-    // Sites
-    Route::post('/sites', [SiteController::class, 'store'])->name('sites.store');
-    
-    // Pages
-    Route::post('/sites/{site}/pages', [PageController::class, 'store'])->name('pages.store');
 
     // Blocks
+    Route::get('/pages/{page}/blocks', [BlockController::class, 'index'])
+        ->name('blocks.index');
     Route::post('/blocks', [BlockController::class, 'store'])->name('blocks.store');
     Route::put('/blocks/{block}', [BlockController::class, 'update'])->name('blocks.update');
     Route::delete('/blocks/{block}', [BlockController::class, 'destroy'])->name('blocks.destroy');
+    
 
     // reorder
     Route::put('/pages/{page}/blocks/reorder', [BlockController::class, 'reorder'])->name('blocks.reorder');

@@ -1,0 +1,135 @@
+.property {
+    width: 320px;
+
+    background: rgba(255, 255, 255, 0.85);
+
+    backdrop-filter: blur(12px);
+
+    border-left: 1px solid #e5e7eb;
+
+    padding: 20px;
+
+    flex-shrink: 0;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    box-shadow: -2px 0 12px rgba(0, 0, 0, 0.03);
+}
+
+/* タイトル */
+.property-title {
+    font-size: 20px;
+    font-weight: 700;
+
+    margin-bottom: 24px;
+}
+
+/* アコーディオン見出し */
+.property .accordion-title {
+    font-size: 16px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    padding: 12px 0;
+
+    border-bottom: 1px solid #e5e7eb;
+
+    user-select: none;
+
+    transition: color 0.2s;
+}
+
+.property .accordion-title:hover {
+    color: #5B9DFF;
+}
+
+/* 開閉部分 */
+.property .accordion-content {
+    display: none;
+
+    margin-top: 12px;
+    margin-bottom: 24px;
+}
+
+/* 開いている状態 */
+.property .accordion-content.open {
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+/* ラベル */
+.property label {
+    display: block;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    color: #374151;
+
+    margin-top: 8px;
+}
+
+/* 入力欄 */
+.property input,
+.property select {
+    width: 100%;
+
+    padding: 10px 12px;
+
+    border: 1px solid #d1d5db;
+    border-radius: 12px;
+
+    box-sizing: border-box;
+
+    background: #ffffff;
+
+    margin-bottom: 12px;
+
+    transition:
+        border-color 0.2s,
+        box-shadow 0.2s;
+}
+
+/* フォーカス時 */
+.property input:focus,
+.property select:focus {
+    outline: none;
+
+    border-color: #5B9DFF;
+
+    box-shadow: 0 0 0 4px rgba(91, 157, 255, 0.15);
+}
+
+/* カラーピッカー */
+.property input[type="color"] {
+    width: 64px;
+    height: 40px;
+
+    padding: 0;
+
+    cursor: pointer;
+
+    border-radius: 8px;
+}
+
+/* セレクトボックス */
+.property select {
+    cursor: pointer;
+}
+
+/* 「要素を選択してください」 */
+.property p {
+    color: #6b7280;
+
+    font-size: 14px;
+
+    padding: 12px;
+
+    background: #f8fafc;
+
+    border-radius: 12px;
+}

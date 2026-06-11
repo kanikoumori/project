@@ -151,8 +151,9 @@ C:.
 |   |   |   |   BlockController.php
 |   |   |   |   Controller.php
 |   |   |   |   DashboardController.php　※未実装
-|   |   |   |   EditorController.php　※未実装
+|   |   |   |   EditorController.php
 |   |   |   |   PageController.php
+|   |   |   |   PageHistoryController.php
 |   |   |   |   PreviewController.php　※未実装
 |   |   |   |   ProfileController.php
 |   |   |   |   PublishController.php　※未実装
@@ -231,8 +232,9 @@ C:.
 |   |       
 |   \---seeders
 |           DatabaseSeeder.php
+|           DemoCmsSeeder.php
 |           TemplateSeeder.php
-|           UserSeeder.php
+|           UserSeeder.php     
 |           
 +---docs
 |       api-design.md

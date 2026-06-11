@@ -1,0 +1,36 @@
+/* 作業スペース */
+.canvas-wrapper {
+    flex: 1;
+
+    overflow-y: auto;
+    overflow-x: auto;
+
+    padding: 32px;
+
+    background: linear-gradient(
+        340deg,
+        #f7fbff,
+        #fff8f5
+    );
+}
+
+/* 実際のページ */
+.canvas {
+    width: 100%;
+    max-width: 1200px;
+
+    min-height: calc(100vh - 140px);
+
+    margin: 0 auto;
+
+    padding: 48px;
+
+    background: #ffffff;
+
+    border-radius: 20px;
+
+    box-shadow:
+        0 12px 30px rgba(0, 0, 0, 0.08);
+
+    box-sizing: border-box;
+}

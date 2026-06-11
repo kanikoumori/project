@@ -1,0 +1,96 @@
+.sidebar {
+    width: 256px;
+
+    background: rgba(255, 255, 255, 0.85);
+
+    backdrop-filter: blur(12px);
+
+    border-right: 1px solid #e5e7eb;
+
+    padding: 20px;
+
+    flex-shrink: 0;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.03);
+}
+
+/* アコーディオンの見出し */
+.accordion-title {
+    font-size: 16px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    padding: 12px 0;
+
+    user-select: none;
+
+    border-bottom: 1px solid #e5e7eb;
+
+    transition: 0.2s;
+}
+
+.accordion-title:hover {
+    color: #5B9DFF;
+}
+
+/* 開閉部分 */
+.accordion-content {
+    display: none;
+
+    margin-top: 12px;
+    margin-bottom: 24px;
+}
+
+/* 開いている状態 */
+.accordion-content.open {
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+/* 要素追加は2列表示 */
+.elements-grid.open {
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 8px;
+}
+
+/* 左メニューのボタン */
+.sidebar-button {
+    width: 100%;
+    padding: 16px 12px;
+
+    background: rgba(255,255,255,0.8);
+
+    border: 1px solid rgba(255,255,255,0.5);
+
+    border-radius: 16px;
+
+    backdrop-filter: blur(8px);
+
+    font-weight: 600;
+
+    transition: all 0.2s;
+
+    cursor: pointer;
+}
+
+.sidebar-button:hover {
+    transform: translateY(-2px);
+
+    border-color: #5B9DFF;
+
+    box-shadow:
+        0 8px 20px rgba(91,157,255,0.15);
+}
+
+.sidebar-button:active {
+    transform: translateY(0);
+}

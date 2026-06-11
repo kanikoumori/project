@@ -12,10 +12,12 @@ class SiteController extends Controller
      */
     public function index()
     {
-        return auth()->user()
+        $sites = auth()->user()
             ->sites()
             ->latest()
             ->get();
+
+        return view('dashboard.sites', compact('sites'));
     }
 
     /**

@@ -1,0 +1,95 @@
+.toolbar {
+    height: 64px;
+
+    background: rgba(255, 255, 255, 0.85);
+
+    backdrop-filter: blur(12px);
+
+    border-bottom: 1px solid rgba(255,255,255,0.5);
+
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 0 20px;
+
+    flex-shrink: 0;
+
+    z-index: 10;
+}
+
+/* 共通ボタン */
+.toolbar-button {
+    padding: 10px 16px;
+
+    background: rgba(255,255,255,0.8);
+
+    border: 1px solid #dbe3ee;
+
+    border-radius: 14px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s,
+        box-shadow 0.2s,
+        border-color 0.2s,
+        background 0.2s;
+}
+
+.toolbar-button:hover {
+    transform: translateY(-2px);
+
+    border-color: #5B9DFF;
+
+    box-shadow:
+        0 8px 20px rgba(91,157,255,0.15);
+
+    background: #ffffff;
+}
+
+.toolbar-button:active {
+    transform: translateY(0);
+}
+
+/* 公開ボタン */
+.toolbar-publish {
+    margin-left: auto;
+
+    padding: 10px 22px;
+
+    background: linear-gradient(
+        135deg,
+        #6FAEFF,
+        #5B9DFF
+    );
+
+    color: #ffffff;
+
+    border: none;
+
+    border-radius: 14px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s,
+        box-shadow 0.2s;
+}
+
+.toolbar-publish:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 10px 24px rgba(91,157,255,0.35);
+}
+
+.toolbar-publish:active {
+    transform: translateY(0);
+}
