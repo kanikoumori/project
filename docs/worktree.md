@@ -232,8 +232,9 @@ C:.
 |   |       
 |   \---seeders
 |           DatabaseSeeder.php
+|           DemoCmsSeeder.php
 |           TemplateSeeder.php
-|           UserSeeder.php
+|           UserSeeder.php     
 |           
 +---docs
 |       api-design.md
