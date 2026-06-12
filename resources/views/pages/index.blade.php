@@ -67,6 +67,7 @@
 
                         {{-- TODO: pages.destroy 接続 --}}
                         <button
+                            onclick="openDeleteModal('{{ $page->title }}', '{{ $page->id ?? '' }}')"
                             class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
 
                             削除
@@ -169,6 +170,50 @@
     </div>
 
 </div>
+<!-- 削除モーダル -->
+<div
+    id="deleteModal"
+    onclick="closeDeleteModal()"
+    class="hidden fixed inset-0 bg-black/50 items-center justify-center z-50">
+
+    <div
+        onclick="event.stopPropagation()"
+        class="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
+
+        <h2 class="text-xl font-bold text-red-600 mb-3">
+            ページ削除
+        </h2>
+
+        <p class="text-gray-600 mb-4">
+            このページを削除してもよろしいですか？
+        </p>
+
+        <p class="text-sm text-gray-400 mb-6">
+            対象: <span id="deleteTargetTitle"></span>
+        </p>
+
+        <div class="flex justify-end gap-2">
+
+            <button
+                type="button"
+                onclick="closeDeleteModal()"
+                class="bg-gray-300 px-4 py-2 rounded">
+
+                キャンセル
+            </button>
+
+            <button
+                type="button"
+                onclick="confirmDelete()"
+                class="bg-red-600 text-white px-4 py-2 rounded">
+
+                削除
+            </button>
+
+        </div>
+
+    </div>
+</div>
 <div
     id="pageModal"
     onclick="closeModal()"
@@ -238,6 +283,40 @@
 </div>  
 {{-- TODO: JS肥大化時は resources/js/pages へ移動 --}}
 <script>
+    let deleteTarget = null;
+
+    function openDeleteModal(title, id) {
+
+        deleteTarget = id;
+
+        document.getElementById('deleteTargetTitle').innerText = title;
+
+        const modal = document.getElementById('deleteModal');
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function closeDeleteModal() {
+
+        const modal = document.getElementById('deleteModal');
+
+        modal.classList.remove('flex');
+        modal.classList.add('hidden');
+
+        deleteTarget = null;
+    }
+
+    function confirmDelete() {
+
+        if (!deleteTarget) return;
+
+        console.log('削除対象:', deleteTarget);
+
+        // TODO: Laravel削除処理
+
+        closeDeleteModal();
+    }
 
     function openModal() {
 
