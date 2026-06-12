@@ -172,7 +172,7 @@
 <div
     id="pageModal"
     onclick="closeModal()"
-    class="hidden fixed inset-0 bg-black/50 items-center justify-center z-50"
+    class="hidden fixed inset-0 bg-black/50 items-center justify-center z-50">
 
     <div
         onclick="event.stopPropagation()"
