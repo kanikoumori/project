@@ -58,6 +58,7 @@
 
                         {{-- TODO: editor.show 接続 --}}
                         <button
+                            onclick="openEditModal('{{ $page->title ?? '' }}', '{{ $page->slug ?? '' }}')"
                             class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
 
                             編集
@@ -97,10 +98,81 @@
     </div>
 
 <!-- 新規ページ作成モーダル -->
+
+<!-- 編集モーダル -->
+<div
+    id="editModal"
+    onclick="closeEditModal()"
+    class="hidden fixed inset-0 bg-black/50 items-center justify-center z-50">
+
+    <div
+        onclick="event.stopPropagation()"
+        class="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
+
+        <h2 class="text-2xl font-bold mb-4">
+            ページ編集
+        </h2>
+
+        <form>
+
+            {{-- TODO: pages.update 接続 --}}
+
+            <div class="mb-4">
+
+                <label class="block mb-1">
+                    ページ名
+                </label>
+
+                <input
+                    id="editTitle"
+                    type="text"
+                    class="w-full border rounded p-2">
+
+            </div>
+
+            <div class="mb-4">
+
+                <label class="block mb-1">
+                    slug
+                </label>
+
+                <input
+                    id="editSlug"
+                    type="text"
+                    class="w-full border rounded p-2">
+
+            </div>
+
+            <div class="flex justify-end gap-2">
+
+                <button
+                    type="button"
+                    onclick="closeEditModal()"
+                    class="bg-gray-300 px-4 py-2 rounded">
+
+                    キャンセル
+
+                </button>
+
+                <button
+                    type="submit"
+                    class="bg-indigo-600 text-white px-4 py-2 rounded">
+
+                    保存
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
 <div
     id="pageModal"
     onclick="closeModal()"
-    class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    class="hidden fixed inset-0 bg-black/50 items-center justify-center z-50">
 
     <div
         onclick="event.stopPropagation()"
@@ -168,15 +240,38 @@
 <script>
 
     function openModal() {
-        document
-            .getElementById('pageModal')
-            .classList.remove('hidden');
+
+        const modal = document.getElementById('pageModal');
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
     }
 
     function closeModal() {
-        document
-            .getElementById('pageModal')
-            .classList.add('hidden');
+
+        const modal = document.getElementById('pageModal');
+
+        modal.classList.remove('flex');
+        modal.classList.add('hidden');
+    }
+
+    function openEditModal(title, slug) {
+
+        document.getElementById('editTitle').value = title;
+        document.getElementById('editSlug').value = slug;
+
+        const modal = document.getElementById('editModal');
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function closeEditModal() {
+
+        const modal = document.getElementById('editModal');
+
+        modal.classList.remove('flex');
+        modal.classList.add('hidden');
     }
 
 </script>
