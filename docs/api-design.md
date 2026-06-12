@@ -39,6 +39,38 @@ Laravel Breezeで自動生成されたルートを使用する。
 | GET    | /profile  | プロフィール編集画面 | Breeze標準 |
 
 ---
+# 認可（Authorization）
+
+Laravel Policyを使用する。
+
+- SitePolicy
+- PagePolicy
+- BlockPolicy
+
+ユーザーは自分が所有するデータのみ操作可能とする。
+
+違反時は403を返却する。
+---
+
+# Dashboard Routes
+
+## GET /dashboard
+
+ダッシュボードトップ
+
+## GET /dashboard/sites
+
+サイト一覧画面
+
+## GET /dashboard/settings
+
+設定画面
+
+## GET /dashboard/analytics
+
+アクセス解析画面
+---
+
 
 # サイト関連API
 
@@ -402,7 +434,7 @@ HTMLページを返す。
 
 ## ブロック作成
 
-### POST /blocks
+### POST /pages/{page}/blocks
 
 ページ内にテキスト・画像・動画などのブロックを追加する。
 
@@ -416,12 +448,13 @@ HTMLページを返す。
 
 ```json
 {
-  "page_id": 1,
   "type": "text",
-  "content": "本文テキスト",
-  "style": {
-    "fontSize": "16px",
-    "color": "#000000"
+  "data": {
+    "content": "本文テキスト",
+    "style": {
+      "fontSize": "16px",
+      "color": "#000000"
+    }
   },
   "sort_order": 1
 }
@@ -434,8 +467,12 @@ HTMLページを返す。
   "id": 1,
   "page_id": 1,
   "type": "text",
-  "content": "本文テキスト",
-  "sort_order": 1
+  "data": {
+    "content": "本文テキスト"
+  },
+  "sort_order": 1,
+  "created_at": "...",
+  "updated_at": "..."
 }
 ```
 
@@ -503,6 +540,40 @@ orders 配列の中に、そのページに存在するすべてのブロック�
 ```json
 {
   "message": "Block deleted successfully"
+}
+```
+
+---
+
+## ブロック更新
+
+### PUT /blocks/{id}
+
+既存ブロックの内容を更新する。
+
+| 項目 | 内容 |
+|------|------|
+| 認証 | 必要 |
+| 使用テーブル | blocks |
+| 優先度 | 高 |
+
+### Request
+
+```json
+{
+  "data": {
+    "content": "更新後の本文"
+  }
+}
+```
+
+### Response
+
+```json
+{
+  "message": "Block updated successfully",
+  "id": 1,
+  "content": "更新後の本文"
 }
 ```
 
@@ -692,6 +763,21 @@ file → Laravelが自動判定
 
 ---
 
+# 開発環境構築
+
+## Seeder実行
+
+```bash
+php artisan db:seed --class=DemoCmsSeeder
+```
+
+または
+
+```bash
+php artisan migrate:fresh --seed
+```
+---
+
 # 実装優先度
 
 ## 優先度 高
@@ -701,11 +787,17 @@ file → Laravelが自動判定
 ```text
 POST /sites
 GET /sites
+
 POST /sites/{site}/pages
 GET /sites/{site}/pages
 GET /pages/{id}
-GET /pages/{id}?mode=preview
+
 GET /pages/{id}/blocks
+POST /pages/{page}/blocks
+PUT /blocks/{id}
+DELETE /blocks/{id}
+
+PUT /pages/{page}/blocks/reorder
 
 ```
 
@@ -714,11 +806,12 @@ GET /pages/{id}/blocks
 基本機能が完成してから実装する。
 
 ```text
-DELETE /sites/{site}/pages/{id}
-POST /sites/{site}/pages/{page}/blocks
-PUT /blocks/{id}
-DELETE /blocks/{id}
+POST /pages/{page}/autosave
+GET /pages/{page}/histories
+POST /histories/{history}/restore
+
 POST /media
+DELETE /pages/{id}
 ```
 
 ## 優先度 低
@@ -733,15 +826,6 @@ POST /feedbacks
 PUT /sites/{id}
 DELETE /sites/{id}
 ```
-
----
-
-### Phase2対応
-
-・Site所有者チェック
-・Page所有者チェック
-・Block所有者チェック
-
 ---
 
 # 注意事項
@@ -754,4 +838,3 @@ DELETE /sites/{id}
 * クレジットカード情報は保存しない
 * 決済機能は初期実装では対象外とする
 * API仕様を変更する場合はdocs/api-design.mdを更新する
-ああああああ

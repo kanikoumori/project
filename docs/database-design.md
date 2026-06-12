@@ -132,6 +132,7 @@ UNIQUE(user_id, slug)
 
 ```sql
 UNIQUE(site_id, slug)
+UNIQUE(site_id, sort_order)
 ```
 
 同一サイト内で slug の重複を禁止する。
@@ -153,7 +154,7 @@ UNIQUE(site_id, slug)
 
 ノーコードエディタの実体
 
-| カラム名          | 型                  |
+| カラム名        | 型                 |
 | ------------- | ------------------ |
 | id            | bigint             |
 | page_id       | bigint FK          |
@@ -164,32 +165,88 @@ UNIQUE(site_id, slug)
 | created_at    | timestamp          |
 | updated_at    | timestamp          |
 
+### 制約
+```sql
+UNIQUE(page_id, sort_order)
+```
+
+
 ### type
 
-* text
-* image
-* button
-* video
-* table
-* link
+- text
+- heading
+- image
+- video
+- button
+- divider
 
+### data
+
+ブロックごとの内容をJSONで保持する。
+
+例:
+
+text
+
+{
+  "content": "こんにちは"
+}
+
+heading
+
+{
+  "content": "見出し"
+}
+
+image
+
+{
+  "url": "/storage/sample.jpg",
+  "alt": "サンプル画像"
+}
+
+button
+
+{
+  "label": "お問い合わせ",
+  "url": "/contact"
+}
 ---
 
 ## page_histories
 
 更新履歴
 
-| カラム名           | 型         |
+| カラム名　　　　　| 型　　　　　|
 | -------------- | --------- |
 | id             | bigint    |
 | page_id        | bigint FK |
 | version_number | integer   |
-| page_data      | json      |
+| snapshot(json) | json      |
 | created_at     | timestamp |
+
+snapshot構造
+JSON
+{
+  "page": {
+    "title": "トップ"
+  },
+  "blocks": [
+    {
+      "type": "text"
+    }
+  ]
+}
 
 ### 備考
 
 保存のたびに履歴を残す。
+
+snapshotは
+Page + Blocks全体を保存する
+
+blocksは保存時に
+sort_order昇順で固定ソートする
 
 ---
 
@@ -297,11 +354,11 @@ UNIQUE(site_id)
 ## blocks.type
 
 * text
+* heading
 * image
-* button
 * video
-* table
-* link
+* button
+* divider
 
 ## media_files.file_type
 
