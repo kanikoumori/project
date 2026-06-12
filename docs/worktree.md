@@ -248,6 +248,19 @@ C:.
 |       requirements.md
 |       worktree.md
 |       
++---lang
+|   +---en
+|   |       auth.php
+|   |       pagination.php
+|   |       passwords.php
+|   |       validation.php
+|   |
+|   \---ja
+|           auth.php
+|           pagination.php
+|           passwords.php
+|           validation.php
+|
 +---node_modules ※Git管理外・中身は記載しない
 |                   
 +---public
@@ -368,6 +381,9 @@ C:.
 |       |       app.blade.php
 |       |       guest.blade.php
 |       |       navigation.blade.php
+|       |
+|       +---pages
+|       |       index.blade.php
 |       |       
 |       +---preview
 |       |       desktop.blade.php
