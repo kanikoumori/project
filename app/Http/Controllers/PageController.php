@@ -83,4 +83,15 @@ class PageController extends Controller
             'message' => 'Page deleted successfully'
         ]);
     }
+
+    public function manage(Site $site)
+    {
+        $this->authorize('view', $site);
+
+        $pages = $site->pages()
+            ->orderBy('sort_order')
+            ->get();
+
+        return view('pages.index', compact('site', 'pages'));
+    }
 }
