@@ -58,7 +58,10 @@
 
                         {{-- TODO: editor.show 接続 --}}
                         <button
-                            onclick="openEditModal('{{ $page->title ?? '' }}', '{{ $page->slug ?? '' }}')"
+                            onclick="openEditModal(@js([
+                                'title' => $page->title ?? '',
+                                'slug' => $page->slug ?? '',
+                            ]))"
                             class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
 
                             編集
@@ -67,7 +70,7 @@
 
                         {{-- TODO: pages.destroy 接続 --}}
                         <button
-                            onclick="openDeleteModal('{{ $page->title }}', '{{ $page->id ?? '' }}')"
+                            onclick="openDeleteModal(@js(['id' => $page->id,'title' => $page->title ?? '未設定']))"
                             class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
 
                             削除
@@ -285,11 +288,11 @@
 <script>
     let deleteTarget = null;
 
-    function openDeleteModal(title, id) {
+    function openDeleteModal(page) {
 
-        deleteTarget = id;
+        deleteTarget = page.id;
 
-        document.getElementById('deleteTargetTitle').innerText = title;
+        document.getElementById('deleteTargetTitle').innerText = page.title;
 
         const modal = document.getElementById('deleteModal');
 
@@ -334,10 +337,10 @@
         modal.classList.add('hidden');
     }
 
-    function openEditModal(title, slug) {
+    function openEditModal(page) {
 
-        document.getElementById('editTitle').value = title;
-        document.getElementById('editSlug').value = slug;
+        document.getElementById('editTitle').value = page.title;
+        document.getElementById('editSlug').value = page.slug;
 
         const modal = document.getElementById('editModal');
 
