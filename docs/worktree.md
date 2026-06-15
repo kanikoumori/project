@@ -324,6 +324,7 @@ C:.
 |   |   |       drag-drop.js
 |   |   |       editor.js
 |   |   |       history-manager.js
+|   |   |       property-manager.js
 |   |   |       resize.js
 |   |   |       
 |   |   +---preview
