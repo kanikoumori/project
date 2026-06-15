@@ -58,7 +58,10 @@
 
                         {{-- TODO: editor.show 接続 --}}
                         <button
-                            onclick="openEditModal('{{ $page->title ?? '' }}', '{{ $page->slug ?? '' }}')"
+                            onclick="openEditModal(
+                                @js($page->title ?? ''),
+                                @js($page->slug ?? '')
+                            )"
                             class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
 
                             編集
@@ -67,7 +70,10 @@
 
                         {{-- TODO: pages.destroy 接続 --}}
                         <button
-                            onclick="openDeleteModal('{{ $page->title }}', '{{ $page->id ?? '' }}')"
+                            onclick="openDeleteModal(
+                                @js($page->title ?? '未設定'),
+                                @js($page->id)
+                            )"
                             class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
 
                             削除
@@ -228,6 +234,10 @@
         </h2>
 
         <form>
+
+            {{-- TODO: POST /sites/{site}/pages --}}
+            {{-- TODO: 作成成功後 /editor/{page} へ遷移 --}}
+            {{-- TODO: レスポンスJSONから page.id を取得 --}}
 
             <div class="mb-4">
 
