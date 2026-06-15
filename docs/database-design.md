@@ -359,6 +359,8 @@ UNIQUE(site_id)
 * video
 * button
 * divider
+* list
+* form
 
 ## media_files.file_type
 

@@ -397,6 +397,23 @@ HTMLページを返す。
 ---
 
 # ブロック関連API
+## 対応ブロックタイプ
+
+blocks.type は以下をサポートする。
+
+```text
+text
+heading
+image
+video
+button
+divider
+list
+form
+```
+
+※ video / divider は今後実装予定
+
 
 ## ブロック一覧取得
 
@@ -413,21 +430,73 @@ HTMLページを返す。
 ### Response
 
 ```json
-[
-  {
-    "id": 1,
-    "page_id": 1,
-    "type": "text",
-    "data": {
-      "content": "本文テキスト",
-      "style": {
-        "fontSize": "16px",
-        "color": "#000000"
-      }
-    },
-    "sort_order": 1
+text
+{
+  "type": "text",
+  "data": {
+    "content": "テキストを入力",
+    "color": "#000000",
+    "fontSize": 16,
+    "fontWeight": 400,
+    "align": "left",
+    "italic": false,
+    "underline": false,
+    "strike": false
+  },
+  "sort_order": 1
+}
+heading
+{
+  "type": "heading",
+  "data": {
+    "text": "見出しを入力",
+    "tag": "h1",
+    "color": "#000000",
+    "align": "left",
+    "italic": false,
+    "underline": false,
+    "strike": false
   }
-]
+}
+list
+{
+  "type": "list",
+  "data": {
+    "items": [
+      "リスト項目",
+      "リスト項目",
+      "リスト項目"
+    ],
+    "listStyle": "disc"
+  }
+}
+button
+{
+  "type": "button",
+  "data": {
+    "text": "ボタン",
+    "backgroundColor": "#5B9DFF",
+    "textColor": "#ffffff",
+    "borderRadius": 12
+  }
+}
+image
+{
+  "type": "image",
+  "data": {
+    "src": "/images/sample.jpg",
+    "alt": "",
+    "width": 100
+  }
+}
+form
+{
+  "type": "form",
+  "data": {
+    "placeholder": "入力してください"
+  }
+}
+
 ```
 
 ---
