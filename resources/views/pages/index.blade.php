@@ -233,7 +233,7 @@
             新規ページ作成
         </h2>
 
-        <form>
+        <form id="createPageForm">
 
             {{-- TODO: POST /sites/{site}/pages --}}
             {{-- TODO: 作成成功後 /editor/{page} へ遷移 --}}
@@ -246,6 +246,8 @@
                 </label>
 
                 <input
+                    id="pageTitle"
+                    name="title"
                     type="text"
                     class="w-full border rounded p-2"
                     placeholder="TOPページ">
@@ -259,6 +261,8 @@
                 </label>
 
                 <input
+                    id="pageSlug"
+                    name="slug"
                     type="text"
                     class="w-full border rounded p-2"
                     placeholder="home">
@@ -293,6 +297,9 @@
 </div>  
 {{-- TODO: JS肥大化時は resources/js/pages へ移動 --}}
 <script>
+
+    console.log('pages index loaded');
+
     let deleteTarget = null;
 
     function openDeleteModal(title, id) {
@@ -362,6 +369,70 @@
         modal.classList.remove('flex');
         modal.classList.add('hidden');
     }
+
+    document
+    .getElementById('createPageForm')
+    .addEventListener('submit', async function (e) {
+
+        console.log('submit detected');
+
+        e.preventDefault();
+
+        const title =
+            document.getElementById('pageTitle').value.trim();
+
+        const slug =
+            document.getElementById('pageSlug').value.trim();
+
+        // ここに追加
+        if (!title || !slug) {
+            alert('ページ名とslugを入力してください');
+            return;
+        }
+
+        const siteId = @json($site->id);
+
+        try {
+
+            const response = await fetch(
+                `/sites/${siteId}/pages`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN':
+                            document.querySelector(
+                                'meta[name="csrf-token"]'
+                            ).content
+                    },
+                    body: JSON.stringify({
+                        title,
+                        slug
+                    })
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error('ページ作成に失敗しました');
+            }
+
+            const page = await response.json();
+
+            if (!page.id) {
+                throw new Error('ページIDの取得に失敗しました');
+            }
+
+            window.location.href = `/editor/${page.id}`;
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert('ページ作成に失敗しました');
+
+        }
+
+    });
 
 </script>
 </x-app-layout>

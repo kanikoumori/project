@@ -20,7 +20,33 @@
         {{-- サイト一覧 --}}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-         {{-- TODO: Backend連携後に@foreach($sites)へ変更 --}}   
+            @forelse ($sites as $site)
+
+                <a
+                    href="{{ route('pages.manage', $site) }}"
+                    class="block bg-white rounded-lg shadow p-6 hover:shadow-lg transition">
+
+                    <h2 class="text-xl font-bold">
+                        {{ $site->title }}
+                    </h2>
+
+                    <p class="text-gray-500 mt-2">
+                        {{ $site->description }}
+                    </p>
+
+                    <p class="text-sm text-gray-400 mt-2">
+                        更新日：{{ $site->updated_at }}
+                    </p>
+
+                </a>
+
+            @empty
+
+                <div class="col-span-full text-center text-gray-500">
+                    サイトがありません
+                </div>
+
+            @endforelse
 
         </div>
 
