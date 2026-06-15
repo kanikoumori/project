@@ -33,6 +33,29 @@
 }
 
 /* 見出し */
+#canvas h1.editor-heading {
+    font-size: 2.5rem;
+}
+
+#canvas h2.editor-heading {
+    font-size: 2rem;
+}
+
+#canvas h3.editor-heading {
+    font-size: 1.75rem;
+}
+
+#canvas h4.editor-heading {
+    font-size: 1.5rem;
+}
+
+#canvas h5.editor-heading {
+    font-size: 1.25rem;
+}
+
+#canvas h6.editor-heading {
+    font-size: 1rem;
+}
 .editor-heading {
     font-size: 2.25rem;   /* h1 */
     font-weight: 700;
@@ -124,8 +147,51 @@
 /* 画像 */
 .editor-image {
     max-width: 100%;
+    display: block;
+    height: auto;
+    border-radius: 12px;
+}
 
+.editor-image-placeholder {
+    padding: 40px;
+    text-align: center;
+    color: #6b7280;
+    border: 2px dashed #d1d5db;
+    border-radius: 12px;
+}
+
+.image-upload-button {
+    display: inline-block;
+    text-align: center;
+}
+
+.editor-button,
+.image-upload-button {
+    padding: 10px 20px;
+
+    background: #5B9DFF;
+    color: #ffffff;
+
+    border: none;
     border-radius: 12px;
 
-    display: block;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s,
+        transform 0.2s,
+        box-shadow 0.2s;
+}
+
+.editor-button:hover,
+.image-upload-button:hover {
+    background: #4a8cf0;
+    box-shadow: 0 6px 16px rgba(91, 157, 255, 0.25);
+}
+
+.editor-button:active,
+.image-upload-button:active {
+    transform: scale(0.98);
 }

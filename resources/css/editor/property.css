@@ -1,6 +1,8 @@
 .property {
     width: 320px;
 
+    box-sizing: border-box;
+
     background: rgba(255, 255, 255, 0.85);
 
     backdrop-filter: blur(12px);
@@ -15,6 +17,18 @@
     overflow-x: hidden;
 
     box-shadow: -2px 0 12px rgba(0, 0, 0, 0.03);
+}
+
+.property-section {
+    background: rgba(255,255,255,0.75);
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 16px;
+
+    padding: 16px;
+
+    margin-bottom: 20px;
 }
 
 /* タイトル */
@@ -114,6 +128,54 @@
     cursor: pointer;
 
     border-radius: 8px;
+}
+
+.property-toggle {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.property-toggle-group {
+    display: flex;
+    width: 100%;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.property .property-toggle {
+    padding: 10px;
+
+    box-sizing: border-box;
+}
+
+.property-toggle.active {
+    background: linear-gradient(
+        135deg,
+        #6FAEFF,
+        #5B9DFF
+    );
+
+    color: #ffffff;
+
+    border-color: #5B9DFF;
+
+    box-shadow:
+        0 8px 20px rgba(91,157,255,0.25);
+}
+
+.property-toggle.active:hover {
+    background: linear-gradient(
+        135deg,
+        #6FAEFF,
+        #5B9DFF
+    );
+}
+
+.editor-list{
+    list-style-type: disc;
 }
 
 /* セレクトボックス */
