@@ -427,8 +427,8 @@ form
 | 使用テーブル | blocks |
 | 優先度 | 高 |
 
-### Response
-
+### 
+各ブロックの data 構造は「ブロック作成」の Request 例を参照
 ```json
 text
 {
@@ -516,32 +516,25 @@ form
 ### Request
 
 ```json
-{
-  "type": "text",
-  "data": {
-    "content": "本文テキスト",
-    "style": {
-      "fontSize": "16px",
-      "color": "#000000"
-    }
-  },
-  "sort_order": 1
-}
+V
 ```
 
 ### Response
 
 ```json
 {
-  "id": 1,
-  "page_id": 1,
   "type": "text",
   "data": {
-    "content": "本文テキスト"
+    "content": "テキストを入力",
+    "color": "#000000",
+    "fontSize": 16,
+    "fontWeight": 400,
+    "align": "left",
+    "italic": false,
+    "underline": false,
+    "strike": false
   },
-  "sort_order": 1,
-  "created_at": "...",
-  "updated_at": "..."
+  "sort_order": 1
 }
 ```
 
