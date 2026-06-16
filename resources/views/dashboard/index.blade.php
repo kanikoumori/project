@@ -9,7 +9,7 @@
 
                 <li>
                     <a href="{{ route('dashboard.sites') }}">
-                        作成
+                        サイト管理
                     </a>
                 </li>
 
@@ -71,8 +71,7 @@
 
                     <div class="space-y-4">
 
-                        {{-- TODO: SiteController または DashboardController から $sites を受け取る予定 --}}
-                        @forelse ($sites ?? [] as $site)
+                        @forelse ($sites as $site)
 
                             <div class="bg-white border rounded-lg shadow p-5 hover:shadow-lg transition">
 
@@ -93,6 +92,16 @@
                                         {{ $site->status }}
                                     </span>
 
+                                </div>
+
+                                <div class="mt-4">
+                                    <a
+                                        href="{{ route('pages.manage', $site) }}"
+                                        class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+
+                                        ページ管理
+
+                                    </a>
                                 </div>
 
                             </div>

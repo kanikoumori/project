@@ -23,7 +23,7 @@
         <div class="space-y-6">
 
             {{-- TODO: PageController接続後に$pagesを受け取る --}}
-            @forelse($pages ?? [] as $page)
+            @forelse($pages as $page)
 
                 <div class="bg-white rounded-lg shadow p-6">
 
@@ -298,8 +298,6 @@
 {{-- TODO: JS肥大化時は resources/js/pages へ移動 --}}
 <script>
 
-    console.log('pages index loaded');
-
     let deleteTarget = null;
 
     function openDeleteModal(title, id) {
@@ -327,8 +325,6 @@
     function confirmDelete() {
 
         if (!deleteTarget) return;
-
-        console.log('削除対象:', deleteTarget);
 
         // TODO: Laravel削除処理
 
@@ -374,8 +370,6 @@
     .getElementById('createPageForm')
     .addEventListener('submit', async function (e) {
 
-        console.log('submit detected');
-
         e.preventDefault();
 
         const title =
@@ -390,7 +384,7 @@
             return;
         }
 
-        const siteId = @json($site->id);
+        const siteId = @js($site->id);
 
         try {
 
@@ -413,7 +407,23 @@
             );
 
             if (!response.ok) {
-                throw new Error('ページ作成に失敗しました');
+
+                let message = '通信に失敗しました';
+
+                try {
+                    const errorData = await response.json();
+
+                    message = errorData.errors
+                        ? Object.values(errorData.errors)
+                            .flat()
+                            .join('\n')
+                        : errorData.message ?? message;
+
+                } catch {
+                    // JSONでないレスポンスの場合
+                }
+
+                throw new Error(message);
             }
 
             const page = await response.json();
@@ -422,13 +432,15 @@
                 throw new Error('ページIDの取得に失敗しました');
             }
 
-            window.location.href = `/editor/${page.id}`;
+            const editorBase = @js(url('/editor'));
+
+            window.location.href = `${editorBase}/${page.id}`;
 
         } catch (error) {
 
             console.error(error);
 
-            alert('ページ作成に失敗しました');
+            alert(error.message);
 
         }
 
