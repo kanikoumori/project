@@ -23,7 +23,7 @@
         <div class="space-y-6">
 
             {{-- TODO: PageController接続後に$pagesを受け取る --}}
-            @forelse($pages ?? [] as $page)
+            @forelse($pages as $page)
 
                 <div class="bg-white rounded-lg shadow p-6">
 
@@ -58,10 +58,10 @@
 
                         {{-- TODO: editor.show 接続 --}}
                         <button
-                            onclick="openEditModal(@js([
-                                'title' => $page->title ?? '',
-                                'slug' => $page->slug ?? '',
-                            ]))"
+                            onclick="openEditModal(
+                                @js($page->title ?? ''),
+                                @js($page->slug ?? '')
+                            )"
                             class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
 
                             編集
@@ -70,7 +70,10 @@
 
                         {{-- TODO: pages.destroy 接続 --}}
                         <button
-                            onclick="openDeleteModal(@js(['id' => $page->id,'title' => $page->title ?? '未設定']))"
+                            onclick="openDeleteModal(
+                                @js($page->title ?? '未設定'),
+                                @js($page->id)
+                            )"
                             class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
 
                             削除
@@ -230,7 +233,11 @@
             新規ページ作成
         </h2>
 
-        <form>
+        <form id="createPageForm">
+
+            {{-- TODO: POST /sites/{site}/pages --}}
+            {{-- TODO: 作成成功後 /editor/{page} へ遷移 --}}
+            {{-- TODO: レスポンスJSONから page.id を取得 --}}
 
             <div class="mb-4">
 
@@ -239,6 +246,8 @@
                 </label>
 
                 <input
+                    id="pageTitle"
+                    name="title"
                     type="text"
                     class="w-full border rounded p-2"
                     placeholder="TOPページ">
@@ -252,6 +261,8 @@
                 </label>
 
                 <input
+                    id="pageSlug"
+                    name="slug"
                     type="text"
                     class="w-full border rounded p-2"
                     placeholder="home">
@@ -286,6 +297,7 @@
 </div>  
 {{-- TODO: JS肥大化時は resources/js/pages へ移動 --}}
 <script>
+
     let deleteTarget = null;
 
     function openDeleteModal(page) {
@@ -313,8 +325,6 @@
     function confirmDelete() {
 
         if (!deleteTarget) return;
-
-        console.log('削除対象:', deleteTarget);
 
         // TODO: Laravel削除処理
 
@@ -355,6 +365,86 @@
         modal.classList.remove('flex');
         modal.classList.add('hidden');
     }
+
+    document
+    .getElementById('createPageForm')
+    .addEventListener('submit', async function (e) {
+
+        e.preventDefault();
+
+        const title =
+            document.getElementById('pageTitle').value.trim();
+
+        const slug =
+            document.getElementById('pageSlug').value.trim();
+
+        // ここに追加
+        if (!title || !slug) {
+            alert('ページ名とslugを入力してください');
+            return;
+        }
+
+        const siteId = @js($site->id);
+
+        try {
+
+            const response = await fetch(
+                `/sites/${siteId}/pages`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN':
+                            document.querySelector(
+                                'meta[name="csrf-token"]'
+                            ).content
+                    },
+                    body: JSON.stringify({
+                        title,
+                        slug
+                    })
+                }
+            );
+
+            if (!response.ok) {
+
+                let message = '通信に失敗しました';
+
+                try {
+                    const errorData = await response.json();
+
+                    message = errorData.errors
+                        ? Object.values(errorData.errors)
+                            .flat()
+                            .join('\n')
+                        : errorData.message ?? message;
+
+                } catch {
+                    // JSONでないレスポンスの場合
+                }
+
+                throw new Error(message);
+            }
+
+            const page = await response.json();
+
+            if (!page.id) {
+                throw new Error('ページIDの取得に失敗しました');
+            }
+
+            const editorBase = @js(url('/editor'));
+
+            window.location.href = `${editorBase}/${page.id}`;
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(error.message);
+
+        }
+
+    });
 
 </script>
 </x-app-layout>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Page;
 use App\Models\Site;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class PageController extends Controller
 {
@@ -28,7 +29,7 @@ class PageController extends Controller
         $this->authorize('update', $site);
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
-            'slug' => ['required', 'string', 'max:255'],
+            'slug' => ['required','string','max:255','unique:pages,slug'],
         ]);
 
         $page = Page::create([
@@ -60,7 +61,7 @@ class PageController extends Controller
         $this->authorize('update', $page);
         $validated = $request->validate([
             'title' => ['sometimes', 'string', 'max:255'],
-            'slug' => ['sometimes', 'string', 'max:255'],
+            'slug' => ['sometimes', 'string', 'max:255',Rule::unique('pages', 'slug')->ignore($page->id),],
             'sort_order' => ['sometimes', 'integer'],
             'is_home' => ['sometimes', 'boolean'],
             'status' => ['sometimes', 'string', 'max:50'],

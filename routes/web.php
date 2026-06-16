@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BlockController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProfileController;
@@ -15,7 +16,7 @@ Route::get('/', function () {
 Route::middleware('auth')->group(function () {
 
     // Dashboard
-    Route::get('/dashboard', fn () => view('dashboard.index'))
+    Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
 
     Route::get('/dashboard/sites', [SiteController::class, 'index'])
