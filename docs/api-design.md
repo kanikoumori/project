@@ -417,7 +417,7 @@ form
 
 ## ブロック一覧取得
 
-### GET /pages/{id}/blocks
+### GET /pages/{page}/blocks
 
 指定したページに含まれるブロック一覧を取得する。
 
@@ -503,7 +503,7 @@ form
 
 ## ブロック作成
 
-### POST /pages/{page}/blocks
+### POST /blocks
 
 ページ内にテキスト・画像・動画などのブロックを追加する。
 
@@ -516,25 +516,28 @@ form
 ### Request
 
 ```json
-V
+{ 
+  "page_id": 1, 
+  "type": "text", 
+  "data": { 
+    "content": "こんにちは" 
+  }, 
+  "sort_order": 1 
+}
 ```
 
 ### Response
 
 ```json
 {
-  "type": "text",
-  "data": {
-    "content": "テキストを入力",
-    "color": "#000000",
-    "fontSize": 16,
-    "fontWeight": 400,
-    "align": "left",
-    "italic": false,
-    "underline": false,
-    "strike": false
-  },
-  "sort_order": 1
+  "id": 1, 
+  "page_id": 1, 
+  "type": "text", 
+  "data": { 
+    "content": "こんにちは" 
+  }, 
+  "sort_order": 1, 
+  "created_at": "2026-06-08T10:00:00Z", "updated_at": "2026-06-08T10:00:00Z"
 }
 ```
 
@@ -542,7 +545,7 @@ V
 
 ## ブロック並び替え（一括更新）
 
-### PUT /pages/{page_id}/blocks/reorder
+### PUT/pages/{page}/blocks/reorder
 
 ページ内の全ブロックの並び順を一括で更新する。ドラッグ＆ドロップ完了時にフロントから送信される。
 
@@ -558,18 +561,18 @@ orders 配列の中に、そのページに存在するすべてのブロック�
 
 ```json
 {
-  "orders": [
+  "blocks": [
     {
-      "id": 102,
+      "id": 3,
+      "sort_order": 0
+    },
+    {
+      "id": 1,
       "sort_order": 1
     },
     {
-      "id": 103,
+      "id": 2,
       "sort_order": 2
-    },
-    {
-      "id": 101,
-      "sort_order": 3
     }
   ]
 }
@@ -579,7 +582,7 @@ orders 配列の中に、そのページに存在するすべてのブロック�
 
 ```json
 {
-  "message": "Block order updated successfully"
+  "message": "Blocks reordered successfully"
 }
 ```
 
@@ -609,7 +612,7 @@ orders 配列の中に、そのページに存在するすべてのブロック�
 
 ## ブロック更新
 
-### PUT /blocks/{id}
+### PUT /blocks/{block}
 
 既存ブロックの内容を更新する。
 
@@ -624,7 +627,7 @@ orders 配列の中に、そのページに存在するすべてのブロック�
 ```json
 {
   "data": {
-    "content": "更新後の本文"
+    "content": "更新後テキスト"
   }
 }
 ```
@@ -633,12 +636,30 @@ orders 配列の中に、そのページに存在するすべてのブロック�
 
 ```json
 {
-  "message": "Block updated successfully",
   "id": 1,
-  "content": "更新後の本文"
+  "page_id": 1,
+  "type": "text",
+  "data": {
+    "content": "更新後テキスト"
+  },
+  "sort_order": 1,
+  "created_at": "2026-06-08T10:00:00Z",
+  "updated_at": "2026-06-08T10:05:00Z"
 }
 ```
-
+## 利用可能ブロックタイプ
+### 現在実装済み
+heading
+text
+list
+button
+image
+form
+今後実装予定
+video
+divider
+Blockデータは data(JSON) カラムへ保存する。
+ブロック種別ごとに data の構造は異なる。
 ---
 
 # メディア関連API
