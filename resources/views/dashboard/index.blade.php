@@ -138,7 +138,7 @@
 
                         <a href="#"
                             class="group flex items-center justify-between py-5">
-                            <div
+                            <div>
                                 <div class="flex items-center gap-3">
                                     @if ($completedSteps >= 2)
                                         <span class="text-green-600 font-bold">✓</span>
