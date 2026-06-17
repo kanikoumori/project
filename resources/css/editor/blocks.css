@@ -32,6 +32,27 @@
     background: rgba(255, 255, 255, 0.95);
 }
 
+/* ブロック削除 */
+.delete-button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+
+    display: none;
+
+    width: 24px;
+    height: 24px;
+
+    border: none;
+    border-radius: 50%;
+
+    cursor: pointer;
+}
+
+.block.selected .delete-button {
+    display: block;
+}
+
 /* 見出し */
 #canvas h1.editor-heading {
     font-size: 2.5rem;
