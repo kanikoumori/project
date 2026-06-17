@@ -1,4 +1,4 @@
-📘 Page / Block / History API 仕様書（整理版）
+📘 Page / Block / 使用テーブル: page_histories 仕様書（整理版）
 ■ Page API
 📄 ページ一覧取得
 GET /sites/{site}/pages
@@ -50,6 +50,27 @@ Response
 Page + Blocks を丸ごと保存
 sort_order 順で保存
 時系列で履歴蓄積
+📦 ブロック更新
+PUT /blocks/{block}
+
+Request
+{
+  "data": {
+    "content": "更新後テキスト"
+  }
+}
+Response
+{
+  "message": "Block updated successfully"
+}
+📦 ブロック削除
+DELETE /blocks/{block}
+
+Response
+{
+  "message": "Block deleted successfully"
+}
+
 📜 履歴一覧取得
 GET /pages/{page}/histories
 Response
@@ -82,12 +103,22 @@ Response
 最新順（desc）
 タイムラインUI向け
 typeは enum 管理前提
+利用可能type
+
+- text
+- heading
+- image
+- video
+- button
+- divider
 type追加時は後方互換を維持する
 🔁 履歴復元
 POST /histories/{history}/restore
 説明
 指定履歴の snapshot で Page + Blocks を完全復元
 restore後の状態（復元結果）も autosave と同等のsnapshotとして保存する
+restore実行後、
+復元結果を新しいHistoryとして保存する
 Response
 {
   "message": "History restored successfully"
@@ -109,6 +140,8 @@ autosave → PagePolicy@update
 histories → PagePolicy@view
 restore → PageHistoryPolicy@restore
 ⚠️ 共通ルール
+Blockデータは data(JSON) カラムに保存する
+ブロック種別ごとに data の構造は異なる
 page_id は必ずログインユーザーのSite配下のみ
 全レスポンスに created_at / updated_at
 認可エラー：403 Forbidden
@@ -116,7 +149,9 @@ page_id は必ずログインユーザーのSite配下のみ
 💡 設計ポイント（重要）
 Autosave
 編集中の「途中保存」
-フロントは一定間隔で叩く（例：10〜30秒）
+推奨頻度:
+30秒ごと
+または編集停止後3秒
 History
 編集履歴の可視化
 UIはタイムライン推奨

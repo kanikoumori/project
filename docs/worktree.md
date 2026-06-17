@@ -248,6 +248,19 @@ C:.
 |       requirements.md
 |       worktree.md
 |       
++---lang
+|   +---en
+|   |       auth.php
+|   |       pagination.php
+|   |       passwords.php
+|   |       validation.php
+|   |
+|   \---ja
+|           auth.php
+|           pagination.php
+|           passwords.php
+|           validation.php
+|
 +---node_modules ※Git管理外・中身は記載しない
 |                   
 +---public
@@ -283,6 +296,7 @@ C:.
 |   |   |       blocks.css
 |   |   |       canvas.css
 |   |   |       editor.css
+|   |   |       property.css
 |   |   |       sidebar.css
 |   |   |       toolbar.css
 |   |   |       
@@ -307,12 +321,25 @@ C:.
 |   |   |       version-control.js
 |   |   |       
 |   |   +---editor
-|   |   |       block-manager.js
-|   |   |       drag-drop.js
-|   |   |       editor.js
-|   |   |       history-manager.js
-|   |   |       resize.js
-|   |   |       
+|   |   |   |   drag-drop.js
+|   |   |   |   editor.js
+|   |   |   |   property-manager.js
+|   |   |   |   resize.js
+|   |   |   |
+|   |   |   +---blocks
+|   |   |   |       ButtonBlock.js
+|   |   |   |       FormBlock.js
+|   |   |   |       HeadingBlock.js
+|   |   |   |       ImageBlock.js
+|   |   |   |       ListBlock.js
+|   |   |   |       TextBlock.js
+|   |   |   |
+|   |   |   \---managers
+|   |   |           BlockManager.js
+|   |   |           HistoryManager.js
+|   |   |           PropertyManager.js
+|   |   |           SelectionManager.js
+|   |   |
 |   |   +---preview
 |   |   |       preview.js
 |   |   |       responsive.js
@@ -361,13 +388,17 @@ C:.
 |       |       canvas.blade.php
 |       |       history.blade.php
 |       |       index.blade.php
+|       |       property.blade.php
 |       |       sidebar.blade.php
 |       |       toolbar.blade.php
-|       |       
+|       |   
 |       +---layouts
 |       |       app.blade.php
 |       |       guest.blade.php
 |       |       navigation.blade.php
+|       |
+|       +---pages
+|       |       index.blade.php
 |       |       
 |       +---preview
 |       |       desktop.blade.php

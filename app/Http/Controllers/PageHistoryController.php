@@ -25,14 +25,21 @@ class PageHistoryController extends Controller
                 ->toArray(),
         ];
 
+        $latestVersion = PageHistory::where('page_id', $page->id)
+            ->max('version_number');
+
+        $nextVersion = ($latestVersion ?? 0) + 1;
+
         $history = PageHistory::create([
             'page_id' => $page->id,
+            'version_number' => $nextVersion,
             'snapshot' => $snapshot,
         ]);
 
         return response()->json([
             'message' => 'Autosaved successfully',
             'history_id' => $history->id,
+            'version_number' => $history->version_number,
         ]);
     }
     /**
@@ -86,7 +93,28 @@ class PageHistoryController extends Controller
                     'sort_order' => $blockData['sort_order'],
                 ]);
             }
-        });
+            $latestVersion = PageHistory::where('page_id', $page->id)
+                ->max('version_number');
+
+            $newVersion = ($latestVersion ?? 0) + 1;
+
+            $page = $page->fresh();
+
+            $newSnapshot = [
+                'page' => $page->toArray(),
+
+                'blocks' => $page->blocks()
+                    ->orderBy('sort_order')
+                    ->get()
+                    ->toArray(),
+            ];
+
+            PageHistory::create([
+                'page_id' => $page->id,
+                'version_number' => $newVersion,
+                'snapshot' => $newSnapshot,
+            ]);
+                    });
 
         return response()->json([
             'message' => 'History restored successfully'

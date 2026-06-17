@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BlockController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProfileController;
@@ -15,7 +16,7 @@ Route::get('/', function () {
 Route::middleware('auth')->group(function () {
 
     // Dashboard
-    Route::get('/dashboard', fn () => view('dashboard.index'))
+    Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
 
     Route::get('/dashboard/sites', [SiteController::class, 'index'])
@@ -27,18 +28,31 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/settings', fn () => view('dashboard.settings'))
         ->name('dashboard.settings');
 
+    Route::get(
+        '/dashboard/sites/{site}/pages',
+        [PageController::class, 'manage']
+    )->name('pages.manage');
+
     // Sites
     Route::get('/sites', [SiteController::class, 'index'])->name('sites.index');
     Route::post('/sites', [SiteController::class, 'store'])->name('sites.store');
 
     // Pages
-    Route::get('/sites/{site}/pages', [PageController::class, 'index'])->name('pages.index');
-    Route::get('/pages/{page}', [PageController::class, 'show'])->name('pages.show');   
-    Route::post('/sites/{site}/pages', [PageController::class, 'store'])->name('pages.store');
-    // TODO: PageController実装時に置換
-    Route::view('/pages', 'pages.index')
-        ->name('pages.index.temp');
-    
+    Route::get('/sites/{site}/pages', [PageController::class, 'index'])
+        ->name('pages.index');
+
+    Route::post('/sites/{site}/pages', [PageController::class, 'store'])
+        ->name('pages.store');
+
+    Route::get('/pages/{page}', [PageController::class, 'show'])
+        ->name('pages.show');
+
+    Route::put('/pages/{page}', [PageController::class, 'update'])
+        ->name('pages.update');
+
+    Route::delete('/pages/{page}', [PageController::class, 'destroy'])
+        ->name('pages.destroy');
+        
     // Editor
     Route::get('/editor/{page}', [EditorController::class, 'show'])
         ->name('editor.show');

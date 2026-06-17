@@ -1,6 +1,6 @@
 <x-app-layout>
 
-    <div class="flex h-[calc(100vh-64px)]">
+    <div class="flex min-h-[calc(100vh-64px)]">
 
         {{-- サイドメニュー --}}
         <div class="w-64 bg-white border-r">
@@ -9,7 +9,7 @@
 
                 <li>
                     <a href="{{ route('dashboard.sites') }}">
-                        作成
+                        サイト管理
                     </a>
                 </li>
 
@@ -36,14 +36,15 @@
         </div>
 
         {{-- メイン画面 --}}
-        <main class="flex-1 p-8 overflow-y-auto">
+        <main class="flex-1 p-8">
 
             <h1 class="text-3xl font-bold mb-6">
-                サイトを作成する
+                <p>ホーム</p>
+                <p class="text-lg font-bold md-2">新規サイト作成、サイト公開までのステップ</p>
             </h1>
 
             <div class="mb-10">
-                {{-- TODO: モーダル表示に変更予定 --}}
+
                 <a href="#"
                     class="block max-w-md p-6 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">   
                     
@@ -62,6 +63,113 @@
                 </a>
 
             </div>
+            {{-- サイト公開までのステップ --}}
+            <section class="mb-12 max-w-3xl">
+                <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+
+                    <div class="flex items-start justify-between mb-6">
+
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-900">
+                                サイト公開までのステップ
+                            </h2>
+
+                            <p class="text-sm text-gray-500 mt-2">
+                                順番に進めることで、サイト公開までスムーズに準備できます。
+                            </p>
+                        </div>
+
+                        {{-- 進捗バー --}}
+                        <div class="relative w-20 h-20 shrink-0">
+                            <div class="absolute inset-0 rounded-full border-[7px] border-gray-200"></div>
+
+                            <div
+                                class="absolute inset-0 rounded-full border-[7px] border-blue-600 border-l-gray-200 border-b-gray-200 border-r-gray-200 rotate-45">
+                            </div>
+
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <span class="text-lg font-bold text-gray-700">
+                                    1/4
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="divide-y divide-gray-200">
+
+                        <a href="{{ route('dashboard.sites') }}"
+                            class="group flex items-center justify-between py-5">
+
+                            <div>
+                                <h3 class="text-lg font-bold text-gray-900">
+                                    サイトを作成
+                                </h3>
+                                <p class="text-sm text-gray-500 mt-1">
+                                    サイト名やslugを設定して、新しいサイトを作成します。
+                                </p>
+                            </div>
+
+                            <span class="text-3xl text-gray-800 group-hover:translate-x-1 transition">
+                                ›
+                            </span>
+                        </a>
+
+                        <a href="#"
+                            class="group flex items-center justify-between py-5">
+
+                            <div>
+                                <h3 class="text-lg font-bold text-gray-900">
+                                    ページを追加
+                                </h3>
+                                <p class="text-sm text-gray-500 mt-1">
+                                    TOPページや紹介ページなど、必要なページを追加します。
+                                </p>
+                            </div>
+
+                            <span class="text-3xl text-gray-800 group-hover:translate-x-1 transition">
+                                ›
+                            </span>
+                        </a>
+
+                        <a href="#"
+                            class="group flex items-center justify-between py-5">
+
+                            <div>
+                                <h3 class="text-lg font-bold text-gray-900">
+                                    デザインを編集
+                                </h3>
+                                <p class="text-sm text-gray-500 mt-1">
+                                    エディターで見出し・文章・画像・ボタンなどを配置します。
+                                </p>
+                            </div>
+
+                            <span class="text-3xl text-gray-800 group-hover:translate-x-1 transition">
+                                ›
+                            </span>
+                        </a>
+
+                        <a href="#"
+                            class="group flex items-center justify-between py-5">
+
+                            <div>
+                                <h3 class="text-lg font-bold text-gray-900">
+                                    公開する
+                                </h3>
+                                <p class="text-sm text-gray-500 mt-1">
+                                    内容を確認し、公開設定やドメイン設定を行います。
+                                </p>
+                            </div>
+
+                            <span class="text-3xl text-gray-800 group-hover:translate-x-1 transition">
+                                ›
+                            </span>
+                        </a>
+
+                    </div>
+
+                </div>
+            </section>
              {{-- 最近編集したサイト --}}
                 <div class="mt-12">
 
@@ -71,8 +179,7 @@
 
                     <div class="space-y-4">
 
-                        {{-- TODO: SiteController または DashboardController から $sites を受け取る予定 --}}
-                        @forelse ($sites ?? [] as $site)
+                        @forelse ($sites as $site)
 
                             <div class="bg-white border rounded-lg shadow p-5 hover:shadow-lg transition">
 
@@ -93,6 +200,16 @@
                                         {{ $site->status }}
                                     </span>
 
+                                </div>
+
+                                <div class="mt-4">
+                                    <a
+                                        href="{{ route('pages.manage', $site) }}"
+                                        class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+
+                                        ページ管理
+
+                                    </a>
                                 </div>
 
                             </div>

@@ -8,6 +8,7 @@ class PageHistory extends Model
 {
     protected $fillable = [
         'page_id',
+        'version_number',
         'snapshot',
     ];
 

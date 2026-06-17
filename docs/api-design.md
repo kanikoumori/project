@@ -39,6 +39,38 @@ Laravel Breezeで自動生成されたルートを使用する。
 | GET    | /profile  | プロフィール編集画面 | Breeze標準 |
 
 ---
+# 認可（Authorization）
+
+Laravel Policyを使用する。
+
+- SitePolicy
+- PagePolicy
+- BlockPolicy
+
+ユーザーは自分が所有するデータのみ操作可能とする。
+
+違反時は403を返却する。
+---
+
+# Dashboard Routes
+
+## GET /dashboard
+
+ダッシュボードトップ
+
+## GET /dashboard/sites
+
+サイト一覧画面
+
+## GET /dashboard/settings
+
+設定画面
+
+## GET /dashboard/analytics
+
+アクセス解析画面
+---
+
 
 # サイト関連API
 
@@ -365,10 +397,27 @@ HTMLページを返す。
 ---
 
 # ブロック関連API
+## 対応ブロックタイプ
+
+blocks.type は以下をサポートする。
+
+```text
+text
+heading
+image
+video
+button
+divider
+list
+form
+```
+
+※ video / divider は今後実装予定
+
 
 ## ブロック一覧取得
 
-### GET /pages/{id}/blocks
+### GET /pages/{page}/blocks
 
 指定したページに含まれるブロック一覧を取得する。
 
@@ -378,24 +427,76 @@ HTMLページを返す。
 | 使用テーブル | blocks |
 | 優先度 | 高 |
 
-### Response
-
+### 
+各ブロックの data 構造は「ブロック作成」の Request 例を参照
 ```json
-[
-  {
-    "id": 1,
-    "page_id": 1,
-    "type": "text",
-    "data": {
-      "content": "本文テキスト",
-      "style": {
-        "fontSize": "16px",
-        "color": "#000000"
-      }
-    },
-    "sort_order": 1
+text
+{
+  "type": "text",
+  "data": {
+    "content": "テキストを入力",
+    "color": "#000000",
+    "fontSize": 16,
+    "fontWeight": 400,
+    "align": "left",
+    "italic": false,
+    "underline": false,
+    "strike": false
+  },
+  "sort_order": 1
+}
+heading
+{
+  "type": "heading",
+  "data": {
+    "text": "見出しを入力",
+    "tag": "h1",
+    "color": "#000000",
+    "align": "left",
+    "italic": false,
+    "underline": false,
+    "strike": false
   }
-]
+}
+list
+{
+  "type": "list",
+  "data": {
+    "items": [
+      "リスト項目",
+      "リスト項目",
+      "リスト項目"
+    ],
+    "listStyle": "disc"
+  }
+}
+button
+{
+  "type": "button",
+  "data": {
+    "text": "ボタン",
+    "backgroundColor": "#5B9DFF",
+    "textColor": "#ffffff",
+    "borderRadius": 12
+  }
+}
+image
+{
+  "type": "image",
+  "data": {
+    "src": "/images/sample.jpg",
+    "alt": "",
+    "width": 100
+  }
+}
+form
+{
+  "type": "form",
+  "data": {
+    "placeholder": "入力してください"
+  }
+}
+
 ```
 
 ---
@@ -415,15 +516,13 @@ HTMLページを返す。
 ### Request
 
 ```json
-{
-  "page_id": 1,
-  "type": "text",
-  "content": "本文テキスト",
-  "style": {
-    "fontSize": "16px",
-    "color": "#000000"
-  },
-  "sort_order": 1
+{ 
+  "page_id": 1, 
+  "type": "text", 
+  "data": { 
+    "content": "こんにちは" 
+  }, 
+  "sort_order": 1 
 }
 ```
 
@@ -431,11 +530,14 @@ HTMLページを返す。
 
 ```json
 {
-  "id": 1,
-  "page_id": 1,
-  "type": "text",
-  "content": "本文テキスト",
-  "sort_order": 1
+  "id": 1, 
+  "page_id": 1, 
+  "type": "text", 
+  "data": { 
+    "content": "こんにちは" 
+  }, 
+  "sort_order": 1, 
+  "created_at": "2026-06-08T10:00:00Z", "updated_at": "2026-06-08T10:00:00Z"
 }
 ```
 
@@ -443,7 +545,7 @@ HTMLページを返す。
 
 ## ブロック並び替え（一括更新）
 
-### PUT /pages/{page_id}/blocks/reorder
+### PUT/pages/{page}/blocks/reorder
 
 ページ内の全ブロックの並び順を一括で更新する。ドラッグ＆ドロップ完了時にフロントから送信される。
 
@@ -459,18 +561,18 @@ orders 配列の中に、そのページに存在するすべてのブロック�
 
 ```json
 {
-  "orders": [
+  "blocks": [
     {
-      "id": 102,
+      "id": 3,
+      "sort_order": 0
+    },
+    {
+      "id": 1,
       "sort_order": 1
     },
     {
-      "id": 103,
+      "id": 2,
       "sort_order": 2
-    },
-    {
-      "id": 101,
-      "sort_order": 3
     }
   ]
 }
@@ -480,7 +582,7 @@ orders 配列の中に、そのページに存在するすべてのブロック�
 
 ```json
 {
-  "message": "Block order updated successfully"
+  "message": "Blocks reordered successfully"
 }
 ```
 
@@ -506,6 +608,58 @@ orders 配列の中に、そのページに存在するすべてのブロック�
 }
 ```
 
+---
+
+## ブロック更新
+
+### PUT /blocks/{block}
+
+既存ブロックの内容を更新する。
+
+| 項目 | 内容 |
+|------|------|
+| 認証 | 必要 |
+| 使用テーブル | blocks |
+| 優先度 | 高 |
+
+### Request
+
+```json
+{
+  "data": {
+    "content": "更新後テキスト"
+  }
+}
+```
+
+### Response
+
+```json
+{
+  "id": 1,
+  "page_id": 1,
+  "type": "text",
+  "data": {
+    "content": "更新後テキスト"
+  },
+  "sort_order": 1,
+  "created_at": "2026-06-08T10:00:00Z",
+  "updated_at": "2026-06-08T10:05:00Z"
+}
+```
+## 利用可能ブロックタイプ
+### 現在実装済み
+heading
+text
+list
+button
+image
+form
+今後実装予定
+video
+divider
+Blockデータは data(JSON) カラムへ保存する。
+ブロック種別ごとに data の構造は異なる。
 ---
 
 # メディア関連API
@@ -692,6 +846,21 @@ file → Laravelが自動判定
 
 ---
 
+# 開発環境構築
+
+## Seeder実行
+
+```bash
+php artisan db:seed --class=DemoCmsSeeder
+```
+
+または
+
+```bash
+php artisan migrate:fresh --seed
+```
+---
+
 # 実装優先度
 
 ## 優先度 高
@@ -701,11 +870,17 @@ file → Laravelが自動判定
 ```text
 POST /sites
 GET /sites
+
 POST /sites/{site}/pages
 GET /sites/{site}/pages
 GET /pages/{id}
-GET /pages/{id}?mode=preview
+
 GET /pages/{id}/blocks
+POST /pages/{page}/blocks
+PUT /blocks/{id}
+DELETE /blocks/{id}
+
+PUT /pages/{page}/blocks/reorder
 
 ```
 
@@ -714,11 +889,12 @@ GET /pages/{id}/blocks
 基本機能が完成してから実装する。
 
 ```text
-DELETE /sites/{site}/pages/{id}
-POST /sites/{site}/pages/{page}/blocks
-PUT /blocks/{id}
-DELETE /blocks/{id}
+POST /pages/{page}/autosave
+GET /pages/{page}/histories
+POST /histories/{history}/restore
+
 POST /media
+DELETE /pages/{id}
 ```
 
 ## 優先度 低
@@ -733,15 +909,6 @@ POST /feedbacks
 PUT /sites/{id}
 DELETE /sites/{id}
 ```
-
----
-
-### Phase2対応
-
-・Site所有者チェック
-・Page所有者チェック
-・Block所有者チェック
-
 ---
 
 # 注意事項
@@ -754,4 +921,3 @@ DELETE /sites/{id}
 * クレジットカード情報は保存しない
 * 決済機能は初期実装では対象外とする
 * API仕様を変更する場合はdocs/api-design.mdを更新する
-ああああああ

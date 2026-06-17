@@ -1,10 +1,10 @@
 <div class="toolbar">
 
-    <button class="toolbar-button">
+    <button id="undo-button" class="toolbar-button">
         ←
     </button>
 
-    <button class="toolbar-button">
+    <button id="redo-button" class="toolbar-button">
         →
     </button>
 
