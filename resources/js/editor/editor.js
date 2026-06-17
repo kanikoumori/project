@@ -1,21 +1,40 @@
-import { BlockManager } from './block-manager.js';
+import { BlockManager } from './managers/BlockManager.js';
+import { HistoryManager } from './managers/HistoryManager.js';
+import { PropertyManager } from './managers/PropertyManager.js';
+import { SelectionManager } from './managers/SelectionManager.js';
+
 import { DragDrop } from './drag-drop.js';
-import { HistoryManager } from './history-manager.js';
 import { Resize } from './resize.js';
-import { PropertyManager } from './property-manager.js';
 
 export class Editor {
     constructor() {
-        this.propertyManager = new PropertyManager();
-        this.blockManager = new BlockManager(
-            this.propertyManager
-        );
-        this.dragDrop = new DragDrop();
         this.historyManager = new HistoryManager();
+        this.propertyManager = new PropertyManager(this.historyManager);
+        this.selectionManager = new SelectionManager();
+
+        this.blockManager = new BlockManager(
+            this.propertyManager,
+            this.historyManager,
+            this.selectionManager
+        );
+
+        this.historyManager.blockManager = this.blockManager;
+        this.dragDrop = new DragDrop();
         this.resize = new Resize();
     }
 
     initialize() {
+        this.historyManager.initialize();
         this.blockManager.initialize();
+
+        document.getElementById('undo-button')
+            ?.addEventListener('click', () => {
+                this.historyManager.undo();
+            });
+
+        document.getElementById('redo-button')
+            ?.addEventListener('click', () => {
+                this.historyManager.redo();
+            });
     }
 }
