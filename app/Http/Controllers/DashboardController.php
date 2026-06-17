@@ -8,35 +8,38 @@ use Illuminate\Http\Request;
 class DashboardController extends Controller
 {
     public function index()
-    {
-        $sites = Site::where('user_id', auth()->id())
-            ->latest()
-            ->get();
+{
+    $sites = Site::where('user_id', auth()->id())
+        ->latest()
+        ->get();
 
-        $hasSite = $sites->isNotEmpty();
+    $recentSites = $sites->take(3);
 
-        $hasPage = $sites
-            ->load('pages')
-            ->pluck('pages')
-            ->flatten()
-            ->isNotEmpty();
+    $hasSite = $sites->isNotEmpty();
 
-        $completedSteps = 0;
+    $hasPage = $sites
+        ->load('pages')
+        ->pluck('pages')
+        ->flatten()
+        ->isNotEmpty();
 
-        if ($hasSite) {
-            $completedSteps++;
-        }
+    $completedSteps = 0;
 
-        if ($hasPage) {
-            $completedSteps++;
-        }
-
-        $totalSteps = 4;
-
-        return view('dashboard.index', compact(
-            'sites',
-            'completedSteps',
-            'totalSteps'
-        ));
+    if ($hasSite) {
+        $completedSteps++;
     }
+
+    if ($hasPage) {
+        $completedSteps++;
+    }
+
+    $totalSteps = 4;
+
+    return view('dashboard.index', compact(
+        'sites',
+        'recentSites',
+        'completedSteps',
+        'totalSteps'
+    ));
+}
 }

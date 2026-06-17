@@ -204,7 +204,7 @@
 
                     <div class="space-y-4">
 
-                        @forelse ($sites as $site)
+                        @forelse ($recentSites as $site)
 
                             <div class="bg-white border rounded-lg shadow p-5 hover:shadow-lg transition">
 
@@ -250,76 +250,6 @@
                     </div>
 
                 </div>
-            <div class="mt-10">
-
-                <h2 class="text-xl font-semibold mb-4">
-                    テンプレート一覧
-                </h2>
-               
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
-
-                    <div class="border rounded-lg p-4 shadow bg-white">
-                        <img
-                            src="https://placehold.co/300x180"
-                            alt="Blog Template"
-                            class="rounded mb-3 w-full">
-
-                        <h3 class="font-bold">
-                            Blog
-                        </h3>
-
-                        <p class="text-sm text-gray-600">
-                            ブログ向けテンプレート
-                        </p>
-                    </div>
-
-                    <div class="border rounded-lg p-4 shadow bg-white">
-                        <img
-                            src="https://placehold.co/300x180"
-                            alt="Landing Template"
-                            class="rounded mb-3 w-full">
-
-                        <h3 class="font-bold">
-                            Landing
-                        </h3>
-
-                        <p class="text-sm text-gray-600">
-                            商品紹介向け
-                        </p>
-                    </div>
-
-                    <div class="border rounded-lg p-4 shadow bg-white">
-                        <img
-                            src="https://placehold.co/300x180"
-                            alt="Portfolio Template"
-                            class="rounded mb-3 w-full">
-
-                        <h3 class="font-bold">
-                            Portfolio
-                        </h3>
-
-                        <p class="text-sm text-gray-600">
-                            作品紹介向け
-                        </p>
-                    </div>
-
-                    <div class="border rounded-lg p-4 shadow bg-white">
-                        <img
-                            src="https://placehold.co/300x180"
-                            alt="Default Template"
-                            class="rounded mb-3 w-full">
-
-                        <h3 class="font-bold">
-                            Default
-                        </h3>
-
-                        <p class="text-sm text-gray-600">
-                            標準テンプレート
-                        </p>
-                    </div>
-
-                </div>
-            </div>
 
         </main>
 
