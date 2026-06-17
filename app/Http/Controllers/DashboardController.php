@@ -13,6 +13,30 @@ class DashboardController extends Controller
             ->latest()
             ->get();
 
-        return view('dashboard.index', compact('sites'));
+        $hasSite = $sites->isNotEmpty();
+
+        $hasPage = $sites
+            ->load('pages')
+            ->pluck('pages')
+            ->flatten()
+            ->isNotEmpty();
+
+        $completedSteps = 0;
+
+        if ($hasSite) {
+            $completedSteps++;
+        }
+
+        if ($hasPage) {
+            $completedSteps++;
+        }
+
+        $totalSteps = 4;
+
+        return view('dashboard.index', compact(
+            'sites',
+            'completedSteps',
+            'totalSteps'
+        ));
     }
 }
