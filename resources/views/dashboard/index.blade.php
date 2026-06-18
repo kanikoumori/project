@@ -40,7 +40,7 @@
 
             <h1 class="text-3xl font-bold mb-6">
                 <p>ホーム</p>
-                <p class="text-lg font-bold md-2">新規サイト作成、サイト公開までのステップ</p>
+                <p class="text-lg font-bold mt-2">新規サイト作成、サイト公開までのステップ</p>
             </h1>
 
             <div class="mb-10">
@@ -52,7 +52,8 @@
                         ＋ 新規サイト作成
                     </h2>
                     <div class="mt-4 text-sm opacity-80">
-                        現在作成中のサイト：0件
+                        現在作成中のサイト：
+                        {{ $sites->count() }}件
                     </div>
                     
 
@@ -78,22 +79,35 @@
                                 順番に進めることで、サイト公開までスムーズに準備できます。
                             </p>
                         </div>
+                        <div class="w-40">
+                            {{-- 進捗バー --}}
+                            <div class="relative w-20 h-20 mx-auto shrink-0">
+                                <div class="absolute inset-0 rounded-full border-[7px] border-gray-200"></div>
 
-                        {{-- 進捗バー --}}
-                        <div class="relative w-20 h-20 shrink-0">
-                            <div class="absolute inset-0 rounded-full border-[7px] border-gray-200"></div>
+                                <div
+                                    class="absolute inset-0 rounded-full border-[7px] border-blue-600 border-l-gray-200 border-b-gray-200 border-r-gray-200 rotate-45">
+                                </div>
 
-                            <div
-                                class="absolute inset-0 rounded-full border-[7px] border-blue-600 border-l-gray-200 border-b-gray-200 border-r-gray-200 rotate-45">
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <span class="text-lg font-bold text-gray-700">
+                                        {{ $completedSteps }}/{{ $totalSteps }}
+                                    </span>
+                                </div>
                             </div>
+                            <div class="mt-4">
+                                <div class="flex justify-between text-xs text-gray-500 mb-1">
+                                    <span>進捗</span>
+                                    <span>{{ $completedSteps }}/{{ $totalSteps }}</span>
+                                </div>
 
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                <span class="text-lg font-bold text-gray-700">
-                                    1/4
-                                </span>
+                                <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                                    <div
+                                        class="h-full bg-blue-600 rounded-full transition-all duration-300"
+                                        style="width: {{ ($completedSteps / $totalSteps) * 100 }}%;">
+                                    </div>
+                                </div>
                             </div>
                         </div>
-
                     </div>
 
                     <div class="divide-y divide-gray-200">
@@ -102,9 +116,16 @@
                             class="group flex items-center justify-between py-5">
 
                             <div>
-                                <h3 class="text-lg font-bold text-gray-900">
-                                    サイトを作成
-                                </h3>
+                                <div class="flex items-center gap-3">
+                                    @if ($completedSteps >= 1)
+                                        <span class="text-green-600 font-bold">✓</span>
+                                    @endif
+
+                                    <h3 class="text-lg font-bold text-gray-900">
+                                        サイトを作成
+                                    </h3>
+                                </div>
+
                                 <p class="text-sm text-gray-500 mt-1">
                                     サイト名やslugを設定して、新しいサイトを作成します。
                                 </p>
@@ -117,16 +138,20 @@
 
                         <a href="#"
                             class="group flex items-center justify-between py-5">
-
                             <div>
-                                <h3 class="text-lg font-bold text-gray-900">
-                                    ページを追加
-                                </h3>
+                                <div class="flex items-center gap-3">
+                                    @if ($completedSteps >= 2)
+                                        <span class="text-green-600 font-bold">✓</span>
+                                    @endif
+
+                                    <h3 class="text-lg font-bold text-gray-900">
+                                        ページを追加
+                                    </h3>
+                                </div>
                                 <p class="text-sm text-gray-500 mt-1">
-                                    TOPページや紹介ページなど、必要なページを追加します。
+                                    ページ名やslugを設定して、新しいページを作成します。
                                 </p>
                             </div>
-
                             <span class="text-3xl text-gray-800 group-hover:translate-x-1 transition">
                                 ›
                             </span>
@@ -179,7 +204,7 @@
 
                     <div class="space-y-4">
 
-                        @forelse ($sites as $site)
+                        @forelse ($recentSites as $site)
 
                             <div class="bg-white border rounded-lg shadow p-5 hover:shadow-lg transition">
 
@@ -225,76 +250,6 @@
                     </div>
 
                 </div>
-            <div class="mt-10">
-
-                <h2 class="text-xl font-semibold mb-4">
-                    テンプレート一覧
-                </h2>
-               
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
-
-                    <div class="border rounded-lg p-4 shadow bg-white">
-                        <img
-                            src="https://placehold.co/300x180"
-                            alt="Blog Template"
-                            class="rounded mb-3 w-full">
-
-                        <h3 class="font-bold">
-                            Blog
-                        </h3>
-
-                        <p class="text-sm text-gray-600">
-                            ブログ向けテンプレート
-                        </p>
-                    </div>
-
-                    <div class="border rounded-lg p-4 shadow bg-white">
-                        <img
-                            src="https://placehold.co/300x180"
-                            alt="Landing Template"
-                            class="rounded mb-3 w-full">
-
-                        <h3 class="font-bold">
-                            Landing
-                        </h3>
-
-                        <p class="text-sm text-gray-600">
-                            商品紹介向け
-                        </p>
-                    </div>
-
-                    <div class="border rounded-lg p-4 shadow bg-white">
-                        <img
-                            src="https://placehold.co/300x180"
-                            alt="Portfolio Template"
-                            class="rounded mb-3 w-full">
-
-                        <h3 class="font-bold">
-                            Portfolio
-                        </h3>
-
-                        <p class="text-sm text-gray-600">
-                            作品紹介向け
-                        </p>
-                    </div>
-
-                    <div class="border rounded-lg p-4 shadow bg-white">
-                        <img
-                            src="https://placehold.co/300x180"
-                            alt="Default Template"
-                            class="rounded mb-3 w-full">
-
-                        <h3 class="font-bold">
-                            Default
-                        </h3>
-
-                        <p class="text-sm text-gray-600">
-                            標準テンプレート
-                        </p>
-                    </div>
-
-                </div>
-            </div>
 
         </main>
 
