@@ -2,7 +2,6 @@ console.log("script読み込みOK");
 
 document.addEventListener('DOMContentLoaded', function () {
 
-    console.log("DOM準備完了");
 
     // ブラウザの戻る時にフォームを初期化
     window.addEventListener('pageshow', function () {
@@ -11,14 +10,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (form) {
             form.reset();
-            console.log("pageshow: フォームをリセットしました");
+            
         }
 
     });
 
     //-----モーダル制御関数を追加-----//
     window.openModal = function () {
-        console.log("openModal 発火");
 
         const modal = document.getElementById('siteModal');
 
@@ -27,7 +25,6 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     window.closeModal = function () {
-        console.log("closeModal 発火");
 
         const modal = document.getElementById('siteModal');
         const form = document.getElementById('siteForm');
@@ -42,7 +39,6 @@ document.addEventListener('DOMContentLoaded', function () {
         errorMessage.classList.add('hidden');
         errorMessage.textContent = '';
 
-        console.log("エラーメッセージをリセットしました");
     };
     const form = document.getElementById('siteForm');
 
@@ -50,12 +46,19 @@ document.addEventListener('DOMContentLoaded', function () {
         console.error("siteFormが見つかりません");
         return;
     }
+    const slugInput = document.getElementById('slug');
+    const errorMessage = document.getElementById('errorMessage');
 
-    console.log("siteForm取得成功");
+    if (slugInput && errorMessage) {
+        slugInput.addEventListener('input', function () {
+            errorMessage.classList.add('hidden');
+            errorMessage.textContent = '';
+        });
+    }
+
 
     form.addEventListener('submit', async function(event) {
 
-        console.log("submit発火");
 
         event.preventDefault();
 
@@ -82,7 +85,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const errorData = await response.json();
 
-            console.log(errorData);
 
             let message = 'サイトの作成に失敗しました';
 
@@ -101,10 +103,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         const site = await response.json();
-
-        console.log("作成されたSite:", site);
-
-        console.log("移動先URL", `/dashboard/sites/${site.id}/pages`);
 
         window.location.href = `/dashboard/sites/${site.id}/pages`;         
     });
