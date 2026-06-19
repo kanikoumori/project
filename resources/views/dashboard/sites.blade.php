@@ -116,6 +116,11 @@
                     class="w-full border rounded p-2"
                     placeholder="my-site"
                     required>
+
+                <div 
+                    id="errorMessage"
+                    class="hidden text-red-600 text-sm mt-2">
+                </div>
             </div>
 
             <div class="flex justify-end gap-2">

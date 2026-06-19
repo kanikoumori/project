@@ -4,6 +4,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
     console.log("DOM準備完了");
 
+    // ブラウザの戻る時にフォームを初期化
+    window.addEventListener('pageshow', function () {
+
+        const form = document.getElementById('siteForm');
+
+        if (form) {
+            form.reset();
+            console.log("pageshow: フォームをリセットしました");
+        }
+
+    });
+
     //-----モーダル制御関数を追加-----//
     window.openModal = function () {
         console.log("openModal 発火");
@@ -18,9 +30,19 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log("closeModal 発火");
 
         const modal = document.getElementById('siteModal');
+        const form = document.getElementById('siteForm');
+        const errorMessage = document.getElementById('errorMessage');
 
         modal.classList.remove('flex');
         modal.classList.add('hidden');
+
+        form.reset();
+        console.log("フォームをリセットしました");
+
+        errorMessage.classList.add('hidden');
+        errorMessage.textContent = '';
+
+        console.log("エラーメッセージをリセットしました");
     };
     const form = document.getElementById('siteForm');
 
@@ -57,7 +79,24 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         if (!response.ok) {
-            alert('サイトの作成に失敗しました');
+
+            const errorData = await response.json();
+
+            console.log(errorData);
+
+            let message = 'サイトの作成に失敗しました';
+
+            if (errorData.errors) {
+                message = Object.values(errorData.errors)
+                    .flat()
+                    .join('\n');
+            }
+
+            const errorMessage = document.getElementById('errorMessage');
+
+            errorMessage.textContent = `✖ ${message}`;
+            errorMessage.classList.remove('hidden');
+
             return;
         }
 
