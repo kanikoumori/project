@@ -10,7 +10,7 @@ class DashboardController extends Controller
     public function index()
 {
     $sites = Site::where('user_id', auth()->id())
-        ->latest()
+        ->latest('updated_at')
         ->get();
 
     $recentSites = $sites->take(3);

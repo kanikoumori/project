@@ -3,9 +3,20 @@
     <div class="flex min-h-[calc(100vh-64px)]">
 
         {{-- サイドメニュー --}}
-        <div class="w-64 bg-white border-r">
+        <div
+            id="dashboardSidebar"
+            class="relative bg-white border-r shrink-0"
+            style="width: 256px; min-width: 160px; max-width: 360px;">
 
-            <ul class="p-4 space-y-3">
+            {{-- 折りたたみボタン --}}
+            <button
+                type="button"
+                onclick="toggleSidebar()"
+                class="absolute top-4 right-3 z-10 text-gray-500 hover:text-gray-800">
+                ≪
+            </button>
+
+            <ul id="sidebarMenu" class="p-4 pt-12 space-y-3">
 
                 <li>
                     <a href="{{ route('dashboard.sites') }}">
@@ -32,6 +43,12 @@
                 </li>
 
             </ul>
+
+            {{-- ドラッグ用ハンドル --}}
+            <div
+                id="sidebarResizer"
+                class="absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-blue-400">
+            </div>
 
         </div>
 
@@ -478,6 +495,52 @@
         }
 
         window.location.href = url;
+    }
+</script>
+<script>
+    const sidebar = document.getElementById('dashboardSidebar');
+    const resizer = document.getElementById('sidebarResizer');
+    const menu = document.getElementById('sidebarMenu');
+
+    let isResizing = false;
+    let isCollapsed = false;
+    let previousWidth = 256;
+
+    resizer.addEventListener('mousedown', function () {
+        if (isCollapsed) return;
+
+        isResizing = true;
+        document.body.classList.add('select-none');
+    });
+
+    document.addEventListener('mousemove', function (e) {
+        if (!isResizing) return;
+
+        const newWidth = e.clientX;
+
+        if (newWidth < 160 || newWidth > 360) return;
+
+        sidebar.style.width = `${newWidth}px`;
+        previousWidth = newWidth;
+    });
+
+    document.addEventListener('mouseup', function () {
+        isResizing = false;
+        document.body.classList.remove('select-none');
+    });
+
+    function toggleSidebar() {
+        isCollapsed = !isCollapsed;
+
+        if (isCollapsed) {
+            previousWidth = sidebar.offsetWidth;
+
+            sidebar.style.width = '64px';
+            menu.classList.add('hidden');
+        } else {
+            sidebar.style.width = `${previousWidth}px`;
+            menu.classList.remove('hidden');
+        }
     }
 </script>
 </x-app-layout>
