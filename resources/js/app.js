@@ -1,6 +1,7 @@
 import './bootstrap';
 
 import Alpine from 'alpinejs';
+import './dashboard/site-modal';
 
 window.Alpine = Alpine;
 
