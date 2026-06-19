@@ -56,7 +56,7 @@
 <div
     id="siteModal"
     onclick="closeModal()"
-    class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    class="hidden fixed inset-0 bg-black/50 items-center justify-center z-50">
 
     <div 
         onclick="event.stopPropagation()"
@@ -75,9 +75,7 @@
                 </ul>
             </div>
         @endif
-        <form
-            method="POST"
-            action="{{ route('sites.store') }}">   
+        <form id="siteForm">   
 
             @csrf
             <div class="mb-4">
@@ -86,6 +84,7 @@
                 </label>
 
                 <input
+                    id="title"
                     type="text"
                     name="title"
                     class="w-full border rounded p-2"
@@ -99,6 +98,7 @@
                 </label>
 
                 <textarea
+                    id="description"
                     name="description"
                     class="w-full border rounded p-2"
                     rows="3"></textarea>
@@ -110,11 +110,17 @@
                 </label>
 
                 <input
+                    id="slug"
                     type="text"
                     name="slug"
                     class="w-full border rounded p-2"
                     placeholder="my-site"
                     required>
+
+                <div 
+                    id="errorMessage"
+                    class="hidden text-red-600 text-sm mt-2">
+                </div>
             </div>
 
             <div class="flex justify-end gap-2">
@@ -139,19 +145,4 @@
     </div>
 
 </div>
-
-{{-- TODO: JS肥大化時は resources/js/dashboard へ移動 --}}
-<script>
-    function openModal() {
-        document
-            .getElementById('siteModal')
-            .classList.remove('hidden');
-    }
-
-    function closeModal() {
-        document
-            .getElementById('siteModal')
-            .classList.add('hidden');
-    }
-</script>
 </x-app-layout>
