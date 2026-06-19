@@ -43,7 +43,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('siteForm');
 
     if (!form) {
-        console.error("siteFormが見つかりません");
         return;
     }
     const slugInput = document.getElementById('slug');
