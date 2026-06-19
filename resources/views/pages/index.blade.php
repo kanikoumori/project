@@ -12,7 +12,7 @@
             {{-- TODO: モーダル表示に変更予定 --}}
 
             <button
-                onclick="openModal()"
+                onclick="openPageModal()"
                 class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
                 + 新規ページ作成
             </button>
@@ -203,7 +203,7 @@
 </div>
 <div
     id="pageModal"
-    onclick="closeModal()"
+    onclick="closePageModal()"
     class="hidden fixed inset-0 bg-black/50 items-center justify-center z-50">
 
     <div
@@ -254,7 +254,7 @@
 
                 <button
                     type="button"
-                    onclick="closeModal()"
+                    onclick="closePageModal()"
                     class="bg-gray-300 px-4 py-2 rounded">
 
                     キャンセル
@@ -312,7 +312,7 @@
         closeDeleteModal();
     }
 
-    function openModal() {
+    function openPageModal() {
 
         const modal = document.getElementById('pageModal');
 
@@ -320,7 +320,7 @@
         modal.classList.add('flex');
     }
 
-    function closeModal() {
+    function closePageModal() {
 
         const modal = document.getElementById('pageModal');
 
