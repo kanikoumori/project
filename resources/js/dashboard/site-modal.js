@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
         modal.classList.add('hidden');
 
         form.reset();
-
+        
         errorMessage.classList.add('hidden');
         errorMessage.textContent = '';
 
