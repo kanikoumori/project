@@ -16,30 +16,90 @@
                 ≪
             </button>
 
-            <ul id="sidebarMenu" class="p-4 pt-12 space-y-3">
+            <ul class="p-4 space-y-3">
 
                 <li>
-                    <a href="{{ route('dashboard.sites') }}">
-                        サイト管理
+
+                    <a
+                        href="{{ route('dashboard') }}"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition {{ request()->routeIs('dashboard') ? 'bg-gray-100 font-semibold text-gray-900' : 'text-gray-700' }}"
+                    >
+                        <img
+                            src="{{ asset('images/icons/home.png') }}"
+                            alt="ホーム"
+                            class="w-7 h-7 object-contain shrink-0"
+                        >
+
+                        <span>
+                            ホーム
+                        </span>
+                    </a>
+                    <a
+                        href="{{ route('dashboard.sites') }}"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition">
+
+                        <img
+                            src="{{ asset('images/icons/site.png') }}"
+                            alt="サイト管理"
+                            class="w-7 h-7 object-contain">
+
+                        <span>
+                            サイト管理
+                        </span>
+
                     </a>
                 </li>
 
                 <li>
-                    <a href="#">
-                        プレビュー
+                    <a
+                        href="#"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition">
+
+                        <img
+                            src="{{ asset('images/icons/preview.png') }}"
+                            alt="プレビュー"
+                            class="w-7 h-7 object-contain">
+
+                        <span>
+                            プレビュー
+                        </span>
+
                     </a>
                 </li>
 
                 <li>
-                    <a href="{{ route('dashboard.analytics') }}">
-                        サイト分析
+                    <a
+                        href="{{ route('dashboard.analytics') }}"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition">
+
+                        <img
+                            src="{{ asset('images/icons/analytics.png') }}"
+                            alt="サイト分析"
+                            class="w-7 h-7 object-contain">
+
+                        <span>
+                            サイト分析
+                        </span>
+
                     </a>
                 </li>
 
                 <li>
-                    <a href="{{ route('dashboard.settings') }}">
-                        設定
+                    <a
+                        href="{{ route('dashboard.settings') }}"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition">
+
+                        <img
+                            src="{{ asset('images/icons/settings.png') }}"
+                            alt="設定"
+                            class="w-7 h-7 object-contain">
+
+                        <span>
+                            設定
+                        </span>
+
                     </a>
+                    
                 </li>
 
             </ul>
