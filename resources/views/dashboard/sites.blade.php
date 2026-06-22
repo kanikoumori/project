@@ -106,7 +106,7 @@
 
             <div class="mb-4">
                 <label class="block mb-1">
-                    slug
+                    slug (URL識別子)
                 </label>
 
                 <input
