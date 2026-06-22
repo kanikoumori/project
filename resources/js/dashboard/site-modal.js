@@ -1,4 +1,3 @@
-console.log("script読み込みOK");
 
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -34,7 +33,6 @@ document.addEventListener('DOMContentLoaded', function () {
         modal.classList.add('hidden');
 
         form.reset();
-        console.log("フォームをリセットしました");
 
         errorMessage.classList.add('hidden');
         errorMessage.textContent = '';
