@@ -48,19 +48,25 @@ class BlockController extends Controller
     /**
      * ブロック更新
      */
-    public function update(Request $request, Block $block)
+    public function bulkSave(Request $request, Page $page)
     {
-        $this->authorize('update', $block);
+        DB::transaction(function () use ($request, $page) {
 
-        $validated = $request->validate([
-            'type' => ['sometimes', 'string', 'max:50'],
-            'data' => ['sometimes', 'array'],
-            'sort_order' => ['sometimes', 'integer'],
+            $page->blocks()->delete();
+
+            foreach ($request->blocks as $block) {
+
+                $page->blocks()->create([
+                    'type' => $block['type'],
+                    'data' => $block['data'],
+                    'sort_order' => $block['sortOrder']
+                ]);
+            }
+        });
+
+        return response()->json([
+            'success' => true
         ]);
-
-        $block->update($validated);
-
-        return response()->json($block);
     }
     /**
      * ブロック削除
@@ -102,6 +108,18 @@ class BlockController extends Controller
 
         return response()->json([
             'message' => 'Blocks reordered successfully'
+        ]);
+    }
+
+    // データ削除
+    public function clear(Page $page)
+    {
+        $this->authorize('update', $page);
+
+        $page->blocks()->delete();
+
+        return response()->json([
+            'message' => 'cleared'
         ]);
     }
 }

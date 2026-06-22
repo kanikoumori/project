@@ -1,17 +1,31 @@
-@vite(['resources/css/app.css', 'resources/js/app.js'])
+<!DOCTYPE html>
+<html>
+<head>
+    <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+    <meta charset="UTF-8">
 
-<div class="editor">
+    <meta name="csrf-token"
+          content="{{ csrf_token() }}">
 
-    @include('editor.toolbar')
+    @vite([
+        'resources/css/app.css',
+        'resources/js/app.js'
+    ])
+</head>
+<body>
+    <div class="editor">
 
-    <div class="editor-body">
+        @include('editor.toolbar')
 
-        @include('editor.sidebar')
+        <div class="editor-body">
 
-        @include('editor.canvas')
+            @include('editor.sidebar')
 
-        @include('editor.property')
+            @include('editor.canvas')
+
+            @include('editor.property')
+
+        </div>
 
     </div>
-
-</div>
+</body>
