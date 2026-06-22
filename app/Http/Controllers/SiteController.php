@@ -55,4 +55,50 @@ class SiteController extends Controller
 
         return response()->json($site, 201);
     }
+
+    /**
+     * サイト更新
+     */
+    public function update(Request $request, Site $site)
+    {
+        $this->authorize('update', $site);
+
+        $validated = $request->validate(
+            [
+                'title' => ['sometimes', 'string', 'max:255'],
+                'description' => ['sometimes', 'nullable', 'string'],
+                'slug' => [
+                    'sometimes',
+                    'string',
+                    'max:255',
+                    Rule::unique('sites', 'slug')
+                        ->where(fn ($query) =>
+                            $query->where('user_id', auth()->id())
+                        )
+                        ->ignore($site->id),
+                ],
+            ],
+            [
+                'slug.unique' => 'このURL(slug)は既に使用されています。',
+            ]
+        );
+
+        $site->update($validated);
+
+        return response()->json($site);
+    }
+
+    /**
+     * サイト削除
+     */
+    public function destroy(Site $site)
+    {
+        $this->authorize('delete', $site);
+
+        $site->delete();
+
+        return response()->json([
+            'message' => 'Site deleted successfully',
+        ]);
+    }
 }
