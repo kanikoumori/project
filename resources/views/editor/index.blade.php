@@ -1,7 +1,6 @@
 <!DOCTYPE html>
-<html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-    <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <meta charset="UTF-8">
 
     <meta name="csrf-token"
@@ -12,20 +11,28 @@
         'resources/js/app.js'
     ])
 </head>
+
 <body>
-    <div class="editor">
 
-        @include('editor.toolbar')
+    <div id="editor-app">
 
-        <div class="editor-body">
+        <div class="editor">
 
-            @include('editor.sidebar')
+            @include('editor.toolbar')
 
-            @include('editor.canvas')
+            <div class="editor-body">
 
-            @include('editor.property')
+                @include('editor.sidebar')
+
+                @include('editor.canvas')
+
+                @include('editor.property')
+
+            </div>
 
         </div>
 
     </div>
+
 </body>
+</html>
