@@ -14,11 +14,9 @@ class BlockController extends Controller
      */
     public function index(Page $page)
     {
-        $this->authorize('view', $page);
-
-        return $page->blocks()
-            ->orderBy('sort_order')
-            ->get();
+        return response()->json(
+        $page->blocks()->orderBy('sort_order')->get()
+    );
     }
     /**
      * ブロック作成
@@ -50,12 +48,22 @@ class BlockController extends Controller
      */
     public function bulkSave(Request $request, Page $page)
     {
-        DB::transaction(function () use ($request, $page) {
+        $this->authorize('update', $page);
+
+        $validated = $request->validate([
+            'blocks' => ['present', 'array'],
+            'blocks.*.type' => 'required|string',
+            'blocks.*.data' => 'required|array',
+            'blocks.*.sortOrder' => 'required|integer',
+        ]);
+
+        $blocks = $validated['blocks'];
+
+        DB::transaction(function () use ($blocks, $page) {
 
             $page->blocks()->delete();
 
-            foreach ($request->blocks as $block) {
-
+            foreach ($blocks as $block) {
                 $page->blocks()->create([
                     'type' => $block['type'],
                     'data' => $block['data'],

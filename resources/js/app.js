@@ -9,6 +9,8 @@ Alpine.start();
 import { Editor } from './editor/editor.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    const editor = new Editor();
-    editor.initialize();
+    if (document.getElementById('editor-app')) {
+        const editor = new Editor();
+        editor.initialize();
+    }
 });

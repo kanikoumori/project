@@ -56,8 +56,6 @@ export class Editor {
         const res = await fetch(`/pages/${pageId}/blocks`);
         const blocks = await res.json();
 
-        console.log(blocks);
-
         this.restoreBlocks(blocks);
         this.historyManager.save();
     }
@@ -88,11 +86,11 @@ export class Editor {
             saveButton.disabled = true;
         }
 
-        try{
+        try {
 
             const csrfToken = document
-            .querySelector('meta[name="csrf-token"]')
-            .getAttribute('content');
+                .querySelector('meta[name="csrf-token"]')
+                .getAttribute('content');
 
             const pageId = document
                 .getElementById('canvas')
@@ -100,13 +98,14 @@ export class Editor {
 
             const serializer = new BlockSerializer();
             const blocksData = serializer.serialize();
-            
-            await fetch(
+
+            const response = await fetch(
                 `/pages/${pageId}/blocks/bulk`,
                 {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Accept': 'application/json',
                         'X-CSRF-TOKEN': csrfToken
                     },
                     body: JSON.stringify({
@@ -114,6 +113,10 @@ export class Editor {
                     })
                 }
             );
+
+            if (!response.ok) {
+                throw new Error('保存失敗');
+            }
 
         } finally {
 
