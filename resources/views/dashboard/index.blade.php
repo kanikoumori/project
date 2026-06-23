@@ -2,38 +2,7 @@
 
     <div class="flex min-h-[calc(100vh-64px)]">
 
-        {{-- サイドメニュー --}}
-        <div class="w-64 bg-white border-r">
-
-            <ul class="p-4 space-y-3">
-
-                <li>
-                    <a href="{{ route('dashboard.sites') }}">
-                        サイト管理
-                    </a>
-                </li>
-
-                <li>
-                    <a href="#">
-                        プレビュー
-                    </a>
-                </li>
-
-                <li>
-                    <a href="{{ route('dashboard.analytics') }}">
-                        サイト分析
-                    </a>
-                </li>
-
-                <li>
-                    <a href="{{ route('dashboard.settings') }}">
-                        設定
-                    </a>
-                </li>
-
-            </ul>
-
-        </div>
+        @include('dashboard.sidebar')
 
         {{-- メイン画面 --}}
         <main class="flex-1 p-8">

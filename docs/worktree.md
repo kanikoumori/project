@@ -379,6 +379,7 @@ C:.
 |       |       
 |       +---dashboard
 |       |       analytics.blade.php
+|       |       demo-sites.blade.php
 |       |       index.blade.php
 |       |       settings.blade.php
 |       |       sites.blade.php
