@@ -127,19 +127,20 @@
             </a>
 
             {{-- 作成例・デモサイト --}}
-            <div
-                class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg text-gray-400 cursor-not-allowed"
+            <a
+                href="{{ route('dashboard.demo-sites') }}"
+                class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition {{ request()->routeIs('dashboard.demo-sites') ? 'bg-gray-100 font-semibold text-gray-900' : 'text-gray-700' }}"
             >
                 <img
                     src="{{ asset('images/icons/demo-site.png') }}"
                     alt="作成例・デモサイト"
-                    class="w-7 h-7 object-contain shrink-0 opacity-70"
+                    class="w-7 h-7 object-contain shrink-0"
                 >
 
                 <span class="sidebar-label">
                     作成例・デモサイト
                 </span>
-            </div>
+            </a>
 
         </nav>
 

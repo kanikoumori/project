@@ -27,6 +27,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard/settings', fn () => view('dashboard.settings'))
         ->name('dashboard.settings');
+        
+    Route::get('/dashboard/demo-sites', fn () => view('dashboard.demo-sites'))
+        ->name('dashboard.demo-sites');
 
     Route::get(
         '/dashboard/sites/{site}/pages',
