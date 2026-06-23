@@ -5,7 +5,7 @@
         @include('dashboard.sidebar')
 
         {{-- メイン画面 --}}
-        <main class="flex-1 p-8">
+<main class="flex-1 min-w-0 p-8 transition-all duration-300">
 
             <h1 class="text-3xl font-bold mb-6">
                 <p>ホーム</p>
@@ -15,7 +15,7 @@
             <div class="mb-10">
 
                 <a href="#"
-                    class="block max-w-md p-6 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">   
+                    class="block w-full p-6 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">   
                     
                     <h2 class="text-2xl font-bold mb-2">
                         ＋ 新規サイト作成
@@ -34,7 +34,7 @@
 
             </div>
             {{-- サイト公開までのステップ --}}
-            <section class="mb-12 max-w-3xl">
+            <section class="mb-12 w-full">
                 <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
 
                     <div class="flex items-start justify-between mb-6">

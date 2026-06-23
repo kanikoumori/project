@@ -1,3 +1,24 @@
+<script>
+    if (localStorage.getItem('dashboardSidebarCollapsed') === 'true') {
+        document.documentElement.dataset.dashboardSidebarCollapsed = 'true';
+    }
+</script>
+
+<style>
+    html[data-dashboard-sidebar-collapsed="true"] #dashboardSidebar {
+        width: 5rem;
+    }
+
+    html[data-dashboard-sidebar-collapsed="true"] #dashboardSidebar .sidebar-label,
+    html[data-dashboard-sidebar-collapsed="true"] #sidebarTitle {
+        display: none;
+    }
+
+    html[data-dashboard-sidebar-collapsed="true"] #dashboardSidebar .sidebar-link {
+        justify-content: center;
+        gap: 0;
+    }
+</style>
 <aside
     id="dashboardSidebar"
     class="w-64 bg-white border-r shrink-0 transition-all duration-300"
@@ -127,31 +148,17 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const sidebar = document.getElementById('dashboardSidebar');
         const toggleButton = document.getElementById('sidebarToggle');
-        const sidebarTitle = document.getElementById('sidebarTitle');
-        const labels = document.querySelectorAll('.sidebar-label');
-        const links = document.querySelectorAll('.sidebar-link');
 
-        if (!sidebar || !toggleButton) {
+        if (!toggleButton) {
             return;
         }
 
         function setCollapsed(isCollapsed) {
-            sidebar.classList.toggle('w-64', !isCollapsed);
-            sidebar.classList.toggle('w-20', isCollapsed);
-
-            labels.forEach(label => {
-                label.classList.toggle('hidden', isCollapsed);
-            });
-
-            links.forEach(link => {
-                link.classList.toggle('justify-center', isCollapsed);
-                link.classList.toggle('gap-3', !isCollapsed);
-            });
-
-            if (sidebarTitle) {
-                sidebarTitle.classList.toggle('hidden', isCollapsed);
+            if (isCollapsed) {
+                document.documentElement.dataset.dashboardSidebarCollapsed = 'true';
+            } else {
+                delete document.documentElement.dataset.dashboardSidebarCollapsed;
             }
 
             toggleButton.textContent = isCollapsed ? '›' : '‹';
@@ -162,13 +169,16 @@
             );
         }
 
-        const savedState = localStorage.getItem('dashboardSidebarCollapsed');
-        setCollapsed(savedState === 'true');
+        const isCollapsed =
+            localStorage.getItem('dashboardSidebarCollapsed') === 'true';
+
+        toggleButton.textContent = isCollapsed ? '›' : '‹';
 
         toggleButton.addEventListener('click', function () {
-            const isCollapsed = sidebar.classList.contains('w-20');
+            const currentlyCollapsed =
+                document.documentElement.dataset.dashboardSidebarCollapsed === 'true';
 
-            setCollapsed(!isCollapsed);
+            setCollapsed(!currentlyCollapsed);
         });
     });
 </script>
