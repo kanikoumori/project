@@ -1,54 +1,119 @@
 <x-app-layout>
 
-    <div class="max-w-7xl mx-auto p-8">
+    <div class="flex min-h-[calc(100vh-64px)]">
 
-        {{-- タイトル --}}
-        <div class="flex justify-between items-center mb-8">
+        @include('dashboard.sidebar')
 
-            <h1 class="text-3xl font-bold">
-                サイト管理
-            </h1>
+        <main class="flex-1 p-8">
 
-            <button
-                onclick="openModal()"
-                class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                + 新規サイト作成
-            </button>
+            <div class="max-w-7xl mx-auto">
 
-        </div>
+                {{-- タイトル --}}
+                <div class="flex justify-between items-center mb-8">
 
-        {{-- サイト一覧 --}}
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <h1 class="text-3xl font-bold">
+                        サイト管理
+                    </h1>
 
-            @forelse ($sites as $site)
+                    <button
+                        onclick="openModal()"
+                        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                        + 新規サイト作成
+                    </button>
 
-                <a
-                    href="{{ route('pages.manage', $site) }}"
-                    class="block bg-white rounded-lg shadow p-6 hover:shadow-lg transition">
-
-                    <h2 class="text-xl font-bold">
-                        {{ $site->title }}
-                    </h2>
-
-                    <p class="text-gray-500 mt-2">
-                        {{ $site->description }}
-                    </p>
-
-                    <p class="text-sm text-gray-400 mt-2">
-                        更新日：{{ $site->updated_at }}
-                    </p>
-
-                </a>
-
-            @empty
-
-                <div class="col-span-full text-center text-gray-500">
-                    サイトがありません
                 </div>
 
-            @endforelse
+                {{-- サイト一覧 --}}
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-        </div>
+                    @forelse ($sites as $site)
+
+                        <div
+                            class="relative bg-white rounded-lg shadow hover:shadow-lg transition group p-4">
+
+                            <a
+                                href="{{ route('pages.manage', $site) }}"
+                                class="inline-block p-1 rounded-sm">
+
+                                <div class="space-y-3">
+
+                                    <div>
+                                        <p class="text-sm text-gray-500">
+                                            サイト名
+                                        </p>
+
+                                        <h2 class="text-xl font-bold">
+                                            {{ $site->title }}
+                                        </h2>
+                                    </div>
+
+                                    <div>
+                                        <p class="text-sm text-gray-500">
+                                            サイト説明
+                                        </p>
+
+                                        <p class="text-gray-700">
+                                            {{ $site->description }}
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <p class="text-sm text-gray-500">
+                                            URL (slug)
+                                        </p>
+
+                                        <p class="text-gray-700">
+                                            {{ $site->slug }}
+                                        </p>
+                                    </div>
+
+                                    <p class="text-sm text-gray-400">
+                                        更新日：{{ $site->updated_at }}
+                                    </p>
+
+                                </div>
+
+                            </a>
+
+                            <div
+                                class="absolute top-2 right-2 z-10 flex gap-2
+                                    opacity-0 group-hover:opacity-100
+                                    transition">
+
+                                <button
+                                    type="button"
+                                    onclick="openEditModal(this)"
+                                    data-id="{{ $site->id }}"
+                                    data-title="{{ $site->title }}"
+                                    data-description="{{ $site->description }}"
+                                    data-slug="{{ $site->slug }}"
+                                    class="text-gray-500 hover:text-green-600 text-xl">
+                                    ⚙
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="text-gray-500 hover:text-red-600 text-xl">
+                                    ✕
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    @empty
+
+                        <div class="col-span-full text-center text-gray-500">
+                            サイトがありません
+                        </div>
+
+                    @endforelse
+
+                </div>
+
+            </div>
+
+        </main>
 
     </div>
 
@@ -87,7 +152,7 @@
                     id="title"
                     type="text"
                     name="title"
-                    class="w-full border rounded p-2"
+                    class="w-full p-2"
                     placeholder="My Site"
                     required>
             </div>
@@ -100,7 +165,7 @@
                 <textarea
                     id="description"
                     name="description"
-                    class="w-full border rounded p-2"
+                    class="w-full p-2"
                     rows="3"></textarea>
             </div>
 
@@ -113,7 +178,7 @@
                     id="slug"
                     type="text"
                     name="slug"
-                    class="w-full border rounded p-2"
+                    class="w-full p-2"
                     placeholder="my-site"
                     required>
 
@@ -136,6 +201,89 @@
                     type="submit"
                     class="bg-blue-600 text-white px-4 py-2 rounded">
                     作成
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+<!-- Site編集モーダル -->
+<div
+    id="editSiteModal"
+    onclick="closeEditModal()"
+    class="hidden fixed inset-0 bg-black/50 items-center justify-center z-50">
+
+    <div
+        onclick="event.stopPropagation()"
+        class="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
+
+        <h2 class="text-2xl font-bold mb-4">
+            サイト編集
+        </h2>
+
+        <form id="editSiteForm">
+
+            <input
+                type="hidden"
+                id="editSiteId">
+
+            <div class="mb-4">
+                <label class="block mb-1">
+                    サイト名
+                </label>
+
+                <input
+                    id="editTitle"
+                    type="text"
+                    class="w-full border rounded p-2"
+                    required>
+            </div>
+
+            <div class="mb-4">
+                <label class="block mb-1">
+                    サイト説明
+                </label>
+
+                <textarea
+                    id="editDescription"
+                    class="w-full border rounded p-2"
+                    rows="3">
+                </textarea>
+            </div>
+
+            <div class="mb-4">
+                <label class="block mb-1">
+                    slug (URL識別子)
+                </label>
+
+                <input
+                    id="editSlug"
+                    type="text"
+                    class="w-full border rounded p-2"
+                    required>
+
+                <div
+                    id="editErrorMessage"
+                    class="hidden text-red-600 text-sm mt-2">
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2">
+
+                <button
+                    type="button"
+                    onclick="closeEditModal()"
+                    class="bg-gray-300 px-4 py-2 rounded">
+                    キャンセル
+                </button>
+
+                <button
+                    type="submit"
+                    class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                    更新
                 </button>
 
             </div>
