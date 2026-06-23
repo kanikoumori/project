@@ -14,6 +14,8 @@ class BlockController extends Controller
      */
     public function index(Page $page)
     {
+
+        $this->authorize('view', $page);
         return response()->json(
         $page->blocks()->orderBy('sort_order')->get()
     );
