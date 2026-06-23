@@ -1,15 +1,10 @@
 <div class="property">
-
-    <h2 class="property-title">
-        プロパティ
-    </h2>
-
     <!-- サイト設定 -->
     <div class="property-section">
 
-        <div class="accordion-title" data-target="site-settings">
+        <h2 class="accordion-title" data-target="site-settings">
             ▼ サイト設定
-        </div>
+        </h2>
 
         <div id="site-settings" class="accordion-content open">
 
@@ -40,9 +35,9 @@
     <!-- ブロック共通設定 -->
     <div class="property-section">
 
-        <div class="accordion-title">
+        <h2 class="accordion-title">
             ▼ ブロック共通設定
-        </div>
+        </h2>
 
         <div class="accordion-content open" id="block-settings">
             ブロックを選択してください
@@ -51,11 +46,11 @@
     </div>
 
     <!-- 要素設定 -->
-    <div class="property-section">
+    <div class="property-section" id="element-settings">
 
-        <div class="accordion-title">
+        <h2 class="accordion-title">
             ▼ 要素設定
-        </div>
+        </h2>
 
         <div class="accordion-content open">
             要素を選択してください
