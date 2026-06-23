@@ -319,7 +319,10 @@ C:.
 |   |   |       autosave.js
 |   |   |       realtime-save.js
 |   |   |       version-control.js
-|   |   |       
+|   |   |
+|   |   +---dashboard
+|   |   |       site-modal.js
+|   |   |
 |   |   +---editor
 |   |   |   |   drag-drop.js
 |   |   |   |   editor.js

@@ -1,6 +1,6 @@
 @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-<div class="editor">
+<div id="editor-app">
 
     @include('editor.toolbar')
 
