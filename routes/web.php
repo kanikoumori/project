@@ -57,10 +57,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/editor/{page}', [EditorController::class, 'show'])
         ->name('editor.show');
 
+    Route::delete('/pages/{page}/blocks', [BlockController::class, 'clear']);
+
     // Blocks
     Route::get('/pages/{page}/blocks', [BlockController::class, 'index'])
         ->name('blocks.index');
     Route::post('/blocks', [BlockController::class, 'store'])->name('blocks.store');
+    Route::post(
+        '/pages/{page}/blocks/bulk',
+        [BlockController::class, 'bulkSave']
+    );
     Route::put('/blocks/{block}', [BlockController::class, 'update'])->name('blocks.update');
     Route::delete('/blocks/{block}', [BlockController::class, 'destroy'])->name('blocks.destroy');
     

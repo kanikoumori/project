@@ -14,11 +14,11 @@ class BlockController extends Controller
      */
     public function index(Page $page)
     {
-        $this->authorize('view', $page);
 
-        return $page->blocks()
-            ->orderBy('sort_order')
-            ->get();
+        $this->authorize('view', $page);
+        return response()->json(
+        $page->blocks()->orderBy('sort_order')->get()
+    );
     }
     /**
      * ブロック作成
@@ -48,19 +48,35 @@ class BlockController extends Controller
     /**
      * ブロック更新
      */
-    public function update(Request $request, Block $block)
+    public function bulkSave(Request $request, Page $page)
     {
-        $this->authorize('update', $block);
+        $this->authorize('update', $page);
 
         $validated = $request->validate([
-            'type' => ['sometimes', 'string', 'max:50'],
-            'data' => ['sometimes', 'array'],
-            'sort_order' => ['sometimes', 'integer'],
+            'blocks' => ['present', 'array'],
+            'blocks.*.type' => 'required|string',
+            'blocks.*.data' => 'required|array',
+            'blocks.*.sortOrder' => 'required|integer',
         ]);
 
-        $block->update($validated);
+        $blocks = $validated['blocks'];
 
-        return response()->json($block);
+        DB::transaction(function () use ($blocks, $page) {
+
+            $page->blocks()->delete();
+
+            foreach ($blocks as $block) {
+                $page->blocks()->create([
+                    'type' => $block['type'],
+                    'data' => $block['data'],
+                    'sort_order' => $block['sortOrder']
+                ]);
+            }
+        });
+
+        return response()->json([
+            'success' => true
+        ]);
     }
     /**
      * ブロック削除
@@ -102,6 +118,18 @@ class BlockController extends Controller
 
         return response()->json([
             'message' => 'Blocks reordered successfully'
+        ]);
+    }
+
+    // データ削除
+    public function clear(Page $page)
+    {
+        $this->authorize('update', $page);
+
+        $page->blocks()->delete();
+
+        return response()->json([
+            'message' => 'cleared'
         ]);
     }
 }

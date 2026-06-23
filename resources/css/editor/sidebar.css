@@ -1,5 +1,5 @@
 .sidebar {
-    width: 256px;
+    width: 280px;
 
     background: rgba(255, 255, 255, 0.85);
 
@@ -15,6 +15,20 @@
     overflow-x: hidden;
 
     box-shadow: 2px 0 12px rgba(0, 0, 0, 0.03);
+}
+
+.sidebar .property-section {
+    background: rgba(255,255,255,0.8);
+
+    border: 1px solid rgba(255,255,255,0.5);
+
+    border-radius: 16px;
+
+    backdrop-filter: blur(8px);
+
+    padding: 16px;
+
+    margin-bottom: 16px;
 }
 
 /* アコーディオンの見出し */
@@ -38,15 +52,15 @@
 }
 
 /* 開閉部分 */
-.accordion-content {
+.sidebar .accordion-content {
     display: none;
 
     margin-top: 12px;
-    margin-bottom: 24px;
+    margin-bottom: 0;
 }
 
 /* 開いている状態 */
-.accordion-content.open {
+.sidebar .accordion-content.open {
     display: flex;
     flex-direction: column;
 
@@ -54,7 +68,7 @@
 }
 
 /* 要素追加は2列表示 */
-.elements-grid.open {
+.sidebar .elements-grid.open {
     display: grid;
 
     grid-template-columns: repeat(2, 1fr);
