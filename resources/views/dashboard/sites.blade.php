@@ -29,7 +29,7 @@
                     @forelse ($sites as $site)
 
                         <div
-                            class="relative bg-white rounded-lg shadow hover:shadow-lg transition group p-4">
+                            class="relative bg-white rounded-lg shadow hover:shadow-lg hover:bg-gray-100 transition-all duration-200 group p-4">
 
                             <a
                                 href="{{ route('pages.manage', $site) }}"
@@ -76,9 +76,9 @@
                             </a>
 
                             <div
-                                class="absolute top-2 right-2 z-10 flex gap-2
+                                class="absolute top-2 right-2 z-20 flex gap-2
                                     opacity-0 group-hover:opacity-100
-                                    transition">
+                                    transition pointer-events-auto">
 
                                 <button
                                     type="button"
@@ -93,6 +93,7 @@
 
                                 <button
                                     type="button"
+                                    onclick="openDeleteModal({{ $site->id }})"
                                     class="text-gray-500 hover:text-red-600 text-xl">
                                     ✕
                                 </button>
@@ -287,19 +288,173 @@
     </div>
 
 </div>
+<!-- 削除確認モーダル -->
+<div
+    id="deleteModal"
+    onclick="closeDeleteModal()"
+    class="hidden fixed inset-0 bg-black/50 items-center justify-center z-50">
 
+    <div
+        onclick="event.stopPropagation()"
+        class="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
+
+        <h2 class="text-xl font-bold mb-4 text-red-600">
+            サイトを削除しますか？
+        </h2>
+
+        <p class="text-gray-600 mb-6">
+            この操作は取り消せません。
+        </p>
+
+        <input type="hidden" id="deleteSiteId">
+
+        <div class="flex justify-end gap-2">
+
+            <button
+                type="button"
+                onclick="closeDeleteModal()"
+                class="bg-gray-300 px-4 py-2 rounded">
+                キャンセル
+            </button>
+
+            <button
+                type="button"
+                onclick="deleteSite()"
+                class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+                削除する
+            </button>
+
+        </div>
+
+    </div>
+</div>
 {{-- TODO: JS肥大化時は resources/js/dashboard へ移動 --}}
 <script>
+    // 新規作成モーダルを開く
     function openModal() {
-        document
-            .getElementById('siteModal')
-            .classList.remove('hidden');
+        const modal = document.getElementById('siteModal');
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
     }
 
+
+    // 新規作成モーダルを閉じる
     function closeModal() {
-        document
-            .getElementById('siteModal')
-            .classList.add('hidden');
+        const modal = document.getElementById('siteModal');
+
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
     }
+    // 編集モーダルを開く
+    function openEditModal(button) {
+
+        document.getElementById('editSiteId').value =
+            button.dataset.id;
+
+        document.getElementById('editTitle').value =
+            button.dataset.title;
+
+        document.getElementById('editDescription').value =
+            button.dataset.description;
+
+        document.getElementById('editSlug').value =
+            button.dataset.slug;
+
+        const modal = document.getElementById('editSiteModal');
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+
+    // 編集モーダルを閉じる
+    function closeEditModal() {
+
+        const modal = document.getElementById('editSiteModal');
+
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+
+    // 削除確認モーダルを開く
+    function openDeleteModal(id) {
+        document.getElementById('deleteSiteId').value = id;
+        document.getElementById('deleteModal').classList.remove('hidden');
+        document.getElementById('deleteModal').classList.add('flex');
+    }
+
+
+    // 削除確認モーダルを閉じる
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.add('hidden');
+        document.getElementById('deleteModal').classList.remove('flex');
+    }
+
+
+    // サイト削除
+    async function deleteSite() {
+        const id = document.getElementById('deleteSiteId').value;
+
+        try {
+            const res = await fetch(`/sites/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (!res.ok) {
+                throw new Error('削除失敗');
+            }
+
+            location.reload();
+
+        } catch (e) {
+            alert('削除に失敗しました');
+            console.error(e);
+        }
+    }
+    // サイト更新
+    document.getElementById('editSiteForm')
+        .addEventListener('submit', async function (e) {
+
+        e.preventDefault();
+
+        const id = document.getElementById('editSiteId').value;
+
+        const data = {
+            title: document.getElementById('editTitle').value,
+            description: document.getElementById('editDescription').value,
+            slug: document.getElementById('editSlug').value,
+        };
+
+        try {
+            const res = await fetch(`/sites/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error('更新失敗');
+            }
+
+            closeEditModal();
+
+            location.reload();
+
+        } catch (e) {
+            alert('更新に失敗しました');
+            console.error(e);
+        }
+    });
 </script>
 </x-app-layout>

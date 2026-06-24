@@ -36,6 +36,12 @@ Route::middleware('auth')->group(function () {
     // Sites
     Route::get('/sites', [SiteController::class, 'index'])->name('sites.index');
     Route::post('/sites', [SiteController::class, 'store'])->name('sites.store');
+    
+    Route::put('/sites/{site}', [SiteController::class, 'update'])
+        ->name('sites.update');
+    
+    Route::delete('/sites/{site}', [SiteController::class, 'destroy'])
+        ->name('sites.destroy');
 
     // Pages
     Route::get('/sites/{site}/pages', [PageController::class, 'index'])
