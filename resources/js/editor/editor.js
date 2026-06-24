@@ -5,24 +5,29 @@ import { SelectionManager } from './managers/SelectionManager.js';
 import { DragDrop } from './drag-drop.js';
 import { Resize } from './resize.js';
 import { BlockSerializer } from './serializers/BlockSerializer.js';
+import { AutoSaveManager } from './services/AutoSaveManager.js';
 
 export class Editor {
     constructor() {
         this.historyManager = new HistoryManager();
-        this.propertyManager = new PropertyManager(this.historyManager);
+        this.propertyManager = 
+            new PropertyManager(
+                this.historyManager,
+                this
+            );
         this.selectionManager = new SelectionManager();
-
+        this.autoSaveManager = new AutoSaveManager(this);
+        this.dragDrop = new DragDrop();
+        this.resize = new Resize();
+        this.isSaving = false;
         this.blockManager = new BlockManager(
             this.propertyManager,
             this.historyManager,
-            this.selectionManager
+            this.selectionManager,
+            this
         );
-
         this.historyManager.blockManager = this.blockManager;
-        this.dragDrop = new DragDrop();
-        this.resize = new Resize();
 
-        this.isSaving = false;
     }
 
     // 画面保存
@@ -58,6 +63,8 @@ export class Editor {
 
         this.restoreBlocks(blocks);
         this.historyManager.save();
+
+        this.autoSaveManager.isDirty = false;
     }
 
     restoreBlocks(blocks) {
@@ -127,5 +134,13 @@ export class Editor {
             }
         
         }
+        document.getElementById('save-status')
+            .textContent = '保存済み';
+    }
+    
+
+    // 自動保存
+    markDirty() {
+        this.autoSaveManager.markDirty();
     }
 }

@@ -1,23 +1,58 @@
 .toolbar {
     height: 64px;
-
     background: rgba(255, 255, 255, 0.85);
-
     backdrop-filter: blur(12px);
-
     border-bottom: 1px solid rgba(255,255,255,0.5);
-
     box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    flex-shrink: 0;
+    z-index: 10;
+}
+
+.editor-logo {
+    display: flex;
+    align-items: center;
+}
+
+.editor-logo img {
+    height: 36px;
+}
+
+.toolbar-menu {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    margin-left: 20px;
+}
+
+.toolbar-menu-item {
+    background: transparent;
+    border: none;
+
+    padding: 8px 12px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+    font-weight: 500;
+
+    border-radius: 8px;
+}
+
+.toolbar-menu-item:hover {
+    background: rgba(0,0,0,0.05);
+}
+
+.toolbar-actions {
+    margin-left: auto;
 
     display: flex;
     align-items: center;
     gap: 12px;
-
-    padding: 0 20px;
-
-    flex-shrink: 0;
-
-    z-index: 10;
 }
 
 /* 共通ボタン */
@@ -92,4 +127,17 @@
 
 .toolbar-publish:active {
     transform: translateY(0);
+}
+
+/* 保存表示 */
+.save-status {
+    padding: 6px 12px;
+
+    border-radius: 999px;
+
+    background: #ecfdf5;
+    color: #059669;
+
+    font-size: 13px;
+    font-weight: 600;
 }

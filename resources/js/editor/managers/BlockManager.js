@@ -9,11 +9,12 @@ import { BlockSerializer }
     from '../serializers/BlockSerializer.js';
 
 export class BlockManager {
-    constructor(propertyManager, historyManager, selectionManager){
+    constructor(propertyManager, historyManager, selectionManager,editor){
         this.canvas = document.getElementById('canvas');
         this.propertyManager = propertyManager;
         this.historyManager = historyManager;
         this.selectionManager = selectionManager;
+        this.editor = editor;
     }
 
     initialize() {
@@ -67,6 +68,8 @@ export class BlockManager {
                 block.remove();
 
                 this.historyManager.save();
+
+                this.editor.markDirty();
             });
         }       
 
@@ -88,8 +91,8 @@ export class BlockManager {
 
                 element.dataset.blurBound = 'true';
 
-                element.addEventListener('blur', () => {
-                    this.historyManager.save();
+                element.addEventListener('input', () => {
+                    this.editor.markDirty();
 
                 });
             });
@@ -123,6 +126,8 @@ export class BlockManager {
         this.canvas.appendChild(block);
 
         this.historyManager.save();
+
+        this.editor.markDirty();
     }
 
     addText() {
@@ -132,6 +137,8 @@ export class BlockManager {
         this.canvas.appendChild(block);
 
         this.historyManager.save();
+
+        this.editor.markDirty();
     }
 
     addList() {
@@ -141,6 +148,8 @@ export class BlockManager {
         this.canvas.appendChild(block);
 
         this.historyManager.save();
+
+        this.editor.markDirty();
     }
 
     addButton() {
@@ -150,6 +159,8 @@ export class BlockManager {
         this.canvas.appendChild(block);
 
         this.historyManager.save();
+
+        this.editor.markDirty();
     }
 
     addImage() {
@@ -159,6 +170,8 @@ export class BlockManager {
         this.canvas.appendChild(block);
 
         this.historyManager.save();
+
+        this.editor.markDirty();
     }
 
     addForm() {
@@ -168,6 +181,8 @@ export class BlockManager {
         this.canvas.appendChild(block);
 
         this.historyManager.save();
+
+        this.editor.markDirty();
     }
 
     // 保存復元用
