@@ -1,6 +1,6 @@
 export class PropertyManager {
 
-    constructor(historyManager) {
+    constructor(historyManager,editor) {
         this.panel =
             document.getElementById('block-settings');
 
@@ -8,6 +8,7 @@ export class PropertyManager {
             document.getElementById('element-settings');
 
         this.historyManager = historyManager;
+        this.editor = editor;
     }
 
     safeColor(v) {
@@ -339,6 +340,7 @@ export class PropertyManager {
                 block.dataset.color = e.target.value;
 
                 this.historyManager.save();
+                this.editor.markDirty();
             });
 
         document
@@ -362,6 +364,7 @@ export class PropertyManager {
 
                 block.dataset.tag = e.target.value;
                 this.historyManager.save();
+                this.editor.markDirty();
             });
 
         document
@@ -372,6 +375,7 @@ export class PropertyManager {
 
                 block.dataset.align = e.target.value;
                 this.historyManager.save();
+                this.editor.markDirty();
             });
 
         // I
@@ -392,6 +396,7 @@ export class PropertyManager {
                         : 'normal';
                 
                 this.historyManager.save();
+                this.editor.markDirty();
             }
         );
 
@@ -408,6 +413,7 @@ export class PropertyManager {
 
                 this.updateTextDecoration(heading, block);
                 this.historyManager.save();
+                this.editor.markDirty();
             }
         );
 
@@ -424,6 +430,7 @@ export class PropertyManager {
 
                 this.updateTextDecoration(heading, block);
                 this.historyManager.save();
+                this.editor.markDirty();
             }
         );
     }
@@ -455,6 +462,7 @@ export class PropertyManager {
 
                 block.dataset.color = e.target.value;
                 this.historyManager.save();
+                this.editor.markDirty();
             });
 
         document.getElementById('text-size')
@@ -464,6 +472,7 @@ export class PropertyManager {
 
                 block.dataset.fontSize = e.target.value;
                 this.historyManager.save();
+                this.editor.markDirty();
             });
 
         document.getElementById('text-align')
@@ -473,6 +482,7 @@ export class PropertyManager {
 
                 block.dataset.align = e.target.value;
                 this.historyManager.save();
+                this.editor.markDirty();
             });
 
         this.toggleButton(
@@ -515,6 +525,7 @@ export class PropertyManager {
             () => {
                 this.updateTextDecoration(text, block);
                 this.historyManager.save();
+                this.editor.markDirty();
             }
         );
     }
@@ -540,6 +551,7 @@ export class PropertyManager {
                     );
                     
                 this.historyManager.save();
+                this.editor.markDirty();
             });
     }
     
@@ -553,6 +565,7 @@ export class PropertyManager {
 
                 block.dataset.listStyle = e.target.value;
                 this.historyManager.save();
+                this.editor.markDirty();
             });
     }
 
@@ -569,6 +582,7 @@ export class PropertyManager {
 
                 block.dataset.buttonColor = e.target.value;
                 this.historyManager.save();
+                this.editor.markDirty();
             });
 
         document.getElementById('button-text-color')
@@ -578,6 +592,7 @@ export class PropertyManager {
 
                 block.dataset.buttonTextColor = e.target.value;
                 this.historyManager.save();
+                this.editor.markDirty();
             });
 
         document.getElementById('button-radius')
@@ -587,6 +602,7 @@ export class PropertyManager {
 
                 block.dataset.buttonRadius = e.target.value;
                 this.historyManager.save();
+                this.editor.markDirty();
             });
     }
 
@@ -623,6 +639,7 @@ export class PropertyManager {
 
                 block.dataset.src = reader.result;
                 this.historyManager.save();
+                this.editor.markDirty();
             };
 
             reader.readAsDataURL(file);
@@ -648,6 +665,7 @@ export class PropertyManager {
                     label.textContent = `${width}%`;
                 }
                 this.historyManager.save();
+                this.editor.markDirty();
             });
     }
 
@@ -664,6 +682,7 @@ export class PropertyManager {
 
                 block.dataset.placeholder = e.target.value;
                 this.historyManager.save();
+                this.editor.markDirty();
             });
     }
 }

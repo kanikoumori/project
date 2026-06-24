@@ -2,10 +2,13 @@
 .canvas-wrapper {
     flex: 1;
 
+    display: flex;
+    flex-direction: column;
+
     overflow-y: auto;
     overflow-x: auto;
 
-    padding: 32px;
+    padding: 0px 16px 16px 16px;
 
     background: linear-gradient(
         340deg,
@@ -33,4 +36,47 @@
         0 12px 30px rgba(0, 0, 0, 0.08);
 
     box-sizing: border-box;
+}
+.canvas-toolbar {
+    position: sticky;
+    top: 12px;
+
+    z-index: 20;
+
+    display: flex;
+    gap: 8px;
+
+    margin-bottom: 12px;
+}
+
+.canvas-action-button {
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #000;
+    border-radius: 999px;
+
+    background: transparent;
+
+    box-shadow:
+        0 4px 12px rgba(0,0,0,0.08);
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s,
+        box-shadow 0.2s,
+        border-color 0.2s;
+}
+
+.canvas-action-button:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.canvas-action-button:active {
+    transform: scale(0.95);
 }
