@@ -88,7 +88,7 @@
 
             @empty
 
-            <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition">
+            <div class="bg-white rounded-lg shadow p-6 text-center">
                 <p class="text-gray-500 text-lg">
                     作成されたページはありません
                 </p>
