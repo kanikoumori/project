@@ -12,8 +12,8 @@
             
             {{-- TODO: モーダル表示に変更予定 --}}
 
-            <button
-                onclick="openPageModal()"
+            <button     
+                onclick="openModal()"
                 class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
                 + 新規ページ作成
             </button>
@@ -30,16 +30,25 @@
 
                     <div class="flex justify-between items-start">
 
-                        <div class="flex items-center justify-between mb-2">
-                            <h2 class="text-xl font-semibold">
+                        <div>
+
+                            <h2 class="text-xl font-semibold mb-2">
                                 {{ $page->title }}
                             </h2>
+
+                            <p class="text-gray-500 mb-2">
+                                slug : {{ $page->slug }}
+                            </p>
+
+                            <p class="text-sm text-gray-400">
+                                更新日 : {{ $page->updated_at }}
+                            </p>
 
                         </div>
                         <span
                             class="inline-block px-3 py-1 text-sm bg-yellow-100 text-yellow-700 rounded">
 
-                            非公開
+                            Draft
 
                         </span>
 
@@ -49,24 +58,34 @@
 
                         {{-- TODO: editor.show 接続 --}}
                         <button
-                                onclick="openEditModal(@js($page))"
-                                class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
+                            onclick="openEditModal(
+                                @js($page->title ?? ''),
+                                @js($page->slug ?? '')
+                            )"
+                            class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
+
                             編集
+
                         </button>
+
                         {{-- TODO: pages.destroy 接続 --}}
+                        <button
+                            onclick="openDeleteModal(
+                                @js($page->title ?? '未設定'),
+                                @js($page->id)
+                            )"
+                            class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
 
-                            <button
-                                onclick="openDeleteModal(@js($page))"
-                                class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+                            削除
 
-                                削除
-                            </button>
+                        </button>
 
                     </div>
 
                 </div>
 
             @empty
+
                 <div class="bg-white rounded-lg shadow p-8 text-center">
 
                     <p class="text-gray-500 text-lg">
@@ -203,7 +222,7 @@
 
 <div
     id="pageModal"
-    onclick="closePageModal()"
+    onclick="closeModal()"
     class="hidden fixed inset-0 bg-black/50 items-center justify-center z-50">
 
     <div
@@ -239,7 +258,11 @@
             <div class="mb-4">
 
                 <label class="block mb-1">
+<<<<<<< HEAD
                    slug (URL識別子)
+=======
+                    slug
+>>>>>>> develop
                 </label>
 
                 <input
@@ -260,7 +283,7 @@
 
                 <button
                     type="button"
-                    onclick="closePageModal()"
+                    onclick="closeModal()"
                     class="bg-gray-300 px-4 py-2 rounded">
 
                     キャンセル
@@ -318,7 +341,7 @@
         closeDeleteModal();
     }
 
-    function openPageModal() {
+    function openModal() {
 
     const modal = document.getElementById('pageModal');
 
@@ -328,7 +351,7 @@
     modal.classList.add('flex');
 }
 
-    function closePageModal() {
+    function closeModal() {
 
         const modal = document.getElementById('pageModal');
         const form = document.getElementById('createPageForm');
@@ -338,6 +361,7 @@
         modal.classList.add('hidden');
     }
 
+<<<<<<< HEAD
     if (form) {
         form.reset();
     }
@@ -353,6 +377,19 @@
         modal.classList.remove('hidden');
         modal.classList.add('flex');
     }
+=======
+    function openEditModal(page) {
+
+        document.getElementById('editTitle').value = page.title;
+        document.getElementById('editSlug').value = page.slug;
+
+        const modal = document.getElementById('editModal');
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+>>>>>>> develop
     function closeEditModal() {
 
         const modal = document.getElementById('editModal');
@@ -360,8 +397,12 @@
         modal.classList.remove('flex');
         modal.classList.add('hidden');
     }
+<<<<<<< HEAD
     
     // ① 送信処理
+=======
+
+>>>>>>> develop
     document
     .getElementById('createPageForm')
     document.addEventListener('DOMContentLoaded', function () {
