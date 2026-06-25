@@ -11,8 +11,12 @@ export class AutoSaveManager {
     markDirty() {
         this.isDirty = true;
 
-        document.getElementById('save-status')
-            .textContent = '未保存';
+        const saveStatus =
+            document.getElementById('save-status');
+
+        if (saveStatus) {
+            saveStatus.textContent = '未保存';
+        }
         
         this.schedule();
     }
@@ -30,8 +34,13 @@ export class AutoSaveManager {
     async save() {
         if (!this.isDirty || this.isSaving) return;
 
-        document.getElementById('save-status')
-            .textContent = '保存中';
+        const saveStatus =
+            document.getElementById('save-status');
+
+        if (saveStatus) {
+            saveStatus.textContent = '保存済み';
+        }
+
 
         this.isSaving = true;
 
