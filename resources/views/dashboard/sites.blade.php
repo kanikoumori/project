@@ -132,16 +132,8 @@
             新規サイト作成
         </h2>
 
-        @if ($errors->any())
-            <div class="bg-red-100 text-red-700 p-3 rounded mb-4">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
         <form
+            id="siteForm"
             method="POST"
             action="{{ route('sites.store') }}">   
 
@@ -152,11 +144,13 @@
                 </label>
 
                 <input
+                    id="title"
                     type="text"
                     name="title"
                     class="w-full p-2"
                     placeholder="My Site"
                     required>
+
             </div>
 
             <div class="mb-4">
@@ -165,6 +159,7 @@
                 </label>
 
                 <textarea
+                    id="description"
                     name="description"
                     class="w-full p-2"
                     rows="3"></textarea>
@@ -172,15 +167,21 @@
 
             <div class="mb-4">
                 <label class="block mb-1">
-                    slug
+                    slug(URL識別子)
                 </label>
 
                 <input
+                    id="slug"
                     type="text"
                     name="slug"
                     class="w-full p-2"
                     placeholder="my-site"
                     required>
+
+                <div
+                    id="errorMessage"
+                    class="hidden text-red-600 text-sm mt-2">
+                </div>
             </div>
 
             <div class="flex justify-end gap-2">
