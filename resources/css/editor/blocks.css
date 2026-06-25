@@ -13,6 +13,8 @@
         background-color 0.2s;
 
     cursor: pointer;
+
+    position: relative;
 }
 
 /* ホバー時 */
@@ -51,6 +53,48 @@
 
 .block.selected .delete-button {
     display: block;
+}
+
+/* ドラッグメニュー */
+.drag-handle {
+    cursor: grab;
+
+    position: absolute;
+
+    top: 4px;
+    left: 12px;
+
+    background: transparent;
+    border: none;
+
+    color: #9ca3af;
+
+    font-size: 14px;
+
+    z-index: 10;
+
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.drag-handle:hover {
+    color: #374151;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+}
+
+.sortable-ghost {
+    opacity: 0;
+}
+
+.sortable-chosen {
+    background: transparent;
+}
+
+.sortable-drag {
+    opacity: 1;
 }
 
 /* 見出し */

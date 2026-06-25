@@ -17,7 +17,10 @@ export class Editor {
             );
         this.selectionManager = new SelectionManager();
         this.autoSaveManager = new AutoSaveManager(this);
-        this.dragDrop = new DragDrop();
+        this.dragDrop = new DragDrop(
+            this.historyManager,
+            this
+        );
         this.resize = new Resize();
         this.isSaving = false;
         this.blockManager = new BlockManager(
@@ -34,6 +37,7 @@ export class Editor {
     initialize() {
         this.historyManager.initialize();
         this.blockManager.initialize();
+        this.dragDrop.initialize();
         this.loadPage();
 
         document.getElementById('undo-button')
@@ -139,8 +143,13 @@ export class Editor {
             }
         
         }
-        document.getElementById('save-status')
-            .textContent = '保存済み';
+        const saveStatus =
+            document.getElementById('save-status');
+
+        if (saveStatus) {
+            saveStatus.textContent = '保存済み';
+}
+
     }
     
 
