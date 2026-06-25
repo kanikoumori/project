@@ -25,7 +25,9 @@
             {{-- TODO: PageController接続後に$pagesを受け取る --}}
             @forelse($pages as $page)
 
-                <div class="bg-white rounded-lg shadow p-6">
+                <div
+                    class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition cursor-pointer"
+                    onclick="location.href='/editor/{{ $page->id }}'">
 
                     <div class="flex justify-between items-start">
 
@@ -58,7 +60,7 @@
 
                         {{-- TODO: editor.show 接続 --}}
                         <button
-                            onclick="openEditModal(
+                            onclick="event.stopPropagation(); openEditModal(
                                 @js($page->title ?? ''),
                                 @js($page->slug ?? '')
                             )"
@@ -70,7 +72,7 @@
 
                         {{-- TODO: pages.destroy 接続 --}}
                         <button
-                            onclick="openDeleteModal(
+                            onclick="event.stopPropagation(); openDeleteModal(
                                 @js($page->title ?? '未設定'),
                                 @js($page->id)
                             )"
@@ -86,7 +88,9 @@
 
             @empty
 
-                <div class="bg-white rounded-lg shadow p-8 text-center">
+                <div
+                    class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition cursor-pointer"
+                    onclick="location.href='/editor/{{ $page->id }}'">
 
                     <p class="text-gray-500 text-lg">
                         作成されたページはありません
