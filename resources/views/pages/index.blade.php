@@ -27,7 +27,7 @@
 
                 <div
                     class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition cursor-pointer"
-                    onclick="location.href='/editor/{{ $page->id }}'">
+                    onclick="location.href='{{ route('editor.show', $page->id) }}'">
 
                     <div class="flex justify-between items-start">
 
@@ -88,19 +88,15 @@
 
             @empty
 
-                <div
-                    class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition cursor-pointer"
-                    onclick="location.href='/editor/{{ $page->id }}'">
+            <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition">
+                <p class="text-gray-500 text-lg">
+                    作成されたページはありません
+                </p>
 
-                    <p class="text-gray-500 text-lg">
-                        作成されたページはありません
-                    </p>
-
-                    <p class="text-sm text-gray-400 mt-2">
-                        「新規ページ作成」から最初のページを作成してください
-                    </p>
-
-                </div>
+                <p class="text-sm text-gray-400 mt-2">
+                    「新規ページ作成」から最初のページを作成してください
+                </p>
+            </div>
 
             @endforelse
 
