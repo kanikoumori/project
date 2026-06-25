@@ -26,23 +26,37 @@ class PageController extends Controller
      */
     public function store(Request $request, Site $site)
     {
-        $this->authorize('update', $site);
-        $validated = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'slug' => ['required','string','max:255','unique:pages,slug'],
-        ]);
+        dd('store reached');
 
-        $page = Page::create([
-            'site_id' => $site->id,
-            'title' => $validated['title'],
-            'slug' => $validated['slug'],
-            'sort_order' => 0,
-            'is_home' => false,
-            'status' => 'draft',
-        ]);
+    $validated = $request->validate([
+        'title' => ['required', 'string', 'max:255'],
+        'slug' => [
+            'required',
+            'string',
+            'max:255',
+            Rule::unique('pages')->where(function ($query) use ($site) {
+                return $query->where('site_id', $site->id);
+            }),
+        ],
+    ], [
+        'title.required' => 'このフィールドに値を入力してください',
+        'slug.required' => 'このフィールドに値を入力してください',
+        'slug.unique' => 'このURL(slug)は既に使用されています',
+    ]);
 
-        return response()->json($page, 201);
-    }
+    $page = Page::create([
+        'site_id' => $site->id,
+        'title' => $validated['title'],
+        'slug' => $validated['slug'],
+        'sort_order' => 0,
+        'is_home' => false,
+        'status' => 'draft',
+    ]);
+
+    return response()->json($page, 201);
+}
+
+
 
     /**
      * ページ詳細取得

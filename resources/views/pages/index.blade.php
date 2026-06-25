@@ -1,4 +1,5 @@
 <x-app-layout>
+    
 
     <div class="max-w-7xl mx-auto p-8">
 
@@ -35,7 +36,6 @@
                             </h2>
 
                         </div>
-
                         <span
                             class="inline-block px-3 py-1 text-sm bg-yellow-100 text-yellow-700 rounded">
 
@@ -85,7 +85,6 @@
 
     </div>
 
-<!-- 新規ページ作成モーダル -->
 
 <!-- 編集モーダル -->
 <div
@@ -106,29 +105,29 @@
             {{-- TODO: pages.update 接続 --}}
 
             <div class="mb-4">
-
-                <label class="block mb-1">
-                    ページ名
-                </label>
+                <label class="block mb-1">ページ名</label>
 
                 <input
-                    id="editTitle"
+                    id="editPageTitle"
+                    name="title"
                     type="text"
-                    class="w-full border rounded p-2">
-
+                    class="w-full border rounded p-2"
+                    placeholder="TOPページ">
+                
+                <p id="editPageError" class="text-red-600 text-sm mt-1"></p>
             </div>
 
             <div class="mb-4">
-
-                <label class="block mb-1">
-                    URL識別子
-                </label>
+                <label class="block mb-1">slug (URL識別子)</label>
 
                 <input
-                    id="editSlug"
+                    id="editPageSlug"
+                    name="slug"
                     type="text"
-                    class="w-full border rounded p-2">
+                    class="w-full border rounded p-2"
+                    placeholder="home">
 
+                <p id="editSlugError" class="text-red-600 text-sm mt-1"></p>
             </div>
 
             <div class="flex justify-end gap-2">
@@ -201,6 +200,7 @@
 
     </div>
 </div>
+
 <div
     id="pageModal"
     onclick="closePageModal()"
@@ -214,7 +214,8 @@
             新規ページ作成
         </h2>
 
-        <form id="createPageForm">
+        <form id="createPageForm" method="POST" action="/sites/{{ $site->id }}/pages">
+            @csrf
 
             {{-- TODO: POST /sites/{site}/pages --}}
             {{-- TODO: 作成成功後 /editor/{page} へ遷移 --}}
@@ -227,29 +228,34 @@
                 </label>
 
                 <input
-                    id="pageTitle"
-                    name="title"
-                    type="text"
-                    class="w-full border rounded p-2"
-                    placeholder="TOPページ">
+            id="createPageTitle"
+            name="title"
+            type="text"
+            class="w-full border rounded p-2 @error('title') border-red-500 @enderror"
+            placeholder="TOPページ">
 
+            <p id="titleError" class="text-red-500 text-sm mt-1"></p>
             </div>
-
             <div class="mb-4">
 
                 <label class="block mb-1">
-                   URL識別子
+                   slug (URL識別子)
                 </label>
 
                 <input
-                    id="pageSlug"
-                    name="slug"
-                    type="text"
-                    class="w-full border rounded p-2"
-                    placeholder="home">
+            id="createPageSlug"
+            name="slug"
+            type="text"
+            class="w-full border rounded p-2 @error('slug') border-red-500 @enderror"
+            placeholder="home">
+            
+            <p id="slugError" class="text-red-500 text-sm mt-1"></p>    
 
+        @error('slug')
+            <div class="text-red-500 text-sm mt-1">
+                {{ $message }}
             </div>
-
+        @enderror
             <div class="flex justify-end gap-2">
 
                 <button
@@ -314,33 +320,39 @@
 
     function openPageModal() {
 
-        const modal = document.getElementById('pageModal');
+    const modal = document.getElementById('pageModal');
 
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-    }
+    if (!modal) return;
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
 
     function closePageModal() {
 
         const modal = document.getElementById('pageModal');
+        const form = document.getElementById('createPageForm');
 
+    if (modal) {
         modal.classList.remove('flex');
         modal.classList.add('hidden');
+    }
+
+    if (form) {
+        form.reset();
+    }
     }
 
 
     function openEditModal(page) {
 
+        document.getElementById('editPageTitle').value = page.title;
+        document.getElementById('editPageSlug').value = page.slug;
 
-
-    document.getElementById('editTitle').value = page.title;
-    document.getElementById('editSlug').value = page.slug;
-
-    const modal = document.getElementById('editModal');
-
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-}
+        const modal = document.getElementById('editModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
     function closeEditModal() {
 
         const modal = document.getElementById('editModal');
@@ -348,85 +360,75 @@
         modal.classList.remove('flex');
         modal.classList.add('hidden');
     }
+    
+    // ① 送信処理
     document
     .getElementById('createPageForm')
-    .addEventListener('submit', async function (e) {
+    document.addEventListener('DOMContentLoaded', function () {
 
-        e.preventDefault();
+        const form = document.getElementById('createPageForm');
 
-        const title =
-            document.getElementById('pageTitle').value.trim();
-
-        const slug =
-            document.getElementById('pageSlug').value.trim();
-
-        // ここに追加
-        if (!title || !slug) {
-            alert('ページ名とslugを入力してください');
+        if (!form) {
+            console.error('createPageFormが見つかりません');
             return;
         }
 
-        const siteId = @js($site->id);
+        form.addEventListener('submit', async function (e) {
 
-        try {
+            e.preventDefault();
 
-            const response = await fetch(
-                `/sites/${siteId}/pages`,
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN':
-                            document.querySelector(
-                                'meta[name="csrf-token"]'
-                            ).content
-                    },
-                    body: JSON.stringify({
-                        title,
-                        slug
-                    })
-                }
-            );
+            const title = document.getElementById('createPageTitle').value.trim();
+            const slug = document.getElementById('createPageSlug').value.trim();
 
-            if (!response.ok) {
+            document.getElementById('titleError').innerText = '';
+            document.getElementById('slugError').innerText = '';
 
-                let message = '通信に失敗しました';
+            let hasError = false;
 
-                try {
-                    const errorData = await response.json();
-
-                    message = errorData.errors
-                        ? Object.values(errorData.errors)
-                            .flat()
-                            .join('\n')
-                        : errorData.message ?? message;
-
-                } catch {
-                    // JSONでないレスポンスの場合
-                }
-
-                throw new Error(message);
+            if (!title) {
+                showBubble('titleErrorBubble');
+                hasError = true;
+            } else {
+                hideBubble('titleErrorBubble');
             }
+
+            if (!slug) {
+                showBubble('slugErrorBubble');
+                hasError = true;
+            } else {
+                hideBubble('slugErrorBubble');
+            }
+
+            if (hasError) return;
+
+            const siteId = @js($site->id);
+
+            const response = await fetch(`/sites/${siteId}/pages`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({ title, slug })
+            });
 
             const page = await response.json();
 
             if (!page.id) {
-                throw new Error('ページIDの取得に失敗しました');
+                document.getElementById('slugError').innerText =
+                    'ページIDの取得に失敗しました';
+                return;
             }
 
             const editorBase = @js(url('/editor'));
-
             window.location.href = `${editorBase}/${page.id}`;
+        });
 
-        } catch (error) {
+});
 
-            console.error(error);
-
-            alert(error.message);
-
-        }
-
-    });
+    document.getElementById('pageSlug')
+        .addEventListener('input', function () {
+        });
 
 </script>
 </x-app-layout>
