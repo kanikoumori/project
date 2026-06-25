@@ -1,10 +1,11 @@
 <div class="toolbar">
 
     <a href="/dashboard" class="editor-logo">
-        <img src="/images/image.png" ait="ロゴ">
+        <img src="/images/image.png" alt="ロゴ">
     </a>
 
     <div class="toolbar-menu">
+
         <button class="toolbar-menu-item">
             編集
         </button>
@@ -16,7 +17,9 @@
         <button class="toolbar-menu-item">
             設定
         </button>
+
     </div>
+
     <div class="toolbar-actions">
 
         <span id="save-status" class="save-status">

@@ -22,18 +22,13 @@ export class HistoryManager {
     }
 
     restore() {
-        const canvas = document.getElementById('canvas');
-
         if (this.currentIndex < 0) return;
 
         const blocks = this.history[this.currentIndex];
 
-        canvas.innerHTML = '';
-
-        blocks.forEach(block => {
-            this.blockManager.createFromData(block);
-        });
+        this.blockManager.editor.refreshFromHistory(blocks);
     }
+    
 
     undo() {
         if (this.currentIndex <= 0) return;

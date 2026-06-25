@@ -2,7 +2,7 @@ export class FormBlock {
     static create(data = {}) {
         const block = document.createElement('div');
 
-        block.className = 'block p-4 rounded mb-4';
+        block.className = 'block p-2 rounded';
 
         block.dataset.type = 'form';
         block.dataset.placeholder = data.placeholder || '入力してください';

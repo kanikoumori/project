@@ -2,7 +2,7 @@ export class HeadingBlock {
     static create() {
         const block = document.createElement('div');
 
-        block.className = 'block p-6 rounded mb-4';
+        block.className = 'block p-2 rounded';
 
         block.dataset.type = 'heading';
         block.dataset.tag = 'h1';
