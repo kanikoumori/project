@@ -30,7 +30,7 @@ export class Editor {
 
     }
 
-    // 画面保存
+    // ボタン操作
     initialize() {
         this.historyManager.initialize();
         this.blockManager.initialize();
@@ -39,11 +39,13 @@ export class Editor {
         document.getElementById('undo-button')
             ?.addEventListener('click', () => {
                 this.historyManager.undo();
+                this.markDirty();
             });
 
         document.getElementById('redo-button')
             ?.addEventListener('click', () => {
                 this.historyManager.redo();
+                this.markDirty();
             });
 
         document.getElementById('save-button')
@@ -52,6 +54,7 @@ export class Editor {
             });
     }
 
+    // ページの再読み込み
     async loadPage() {
 
         const pageId = document
@@ -67,6 +70,7 @@ export class Editor {
         this.autoSaveManager.isDirty = false;
     }
 
+    // ブロックの復元
     restoreBlocks(blocks) {
 
         const canvas = document.getElementById('canvas');
@@ -80,6 +84,7 @@ export class Editor {
             });
     }
 
+    // ボタンセーブ
     async save() {
 
         if (this.isSaving) return;
@@ -142,5 +147,14 @@ export class Editor {
     // 自動保存
     markDirty() {
         this.autoSaveManager.markDirty();
+    }
+
+    refreshFromHistory(blocks) {
+        const canvas = document.getElementById('canvas');
+        canvas.innerHTML = '';
+
+        blocks.forEach(block => {
+            this.blockManager.createFromData(block);
+        });
     }
 }

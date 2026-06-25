@@ -1,6 +1,6 @@
 <div class="canvas-wrapper">
 
-    <div class="canvas-toolbar">
+    <div class="canvas-floating-tools">
 
         <button id="undo-button" class="canvas-action-button">
             ←
@@ -13,7 +13,7 @@
     </div>
 
     <div id="canvas" class="canvas" data-page-id="{{ $page->id }}">
-        
+
     </div>
 
 </div>

@@ -2,7 +2,7 @@ export class TextBlock {
     static create() {
         const block = document.createElement('div');
 
-        block.className = 'block p-4 rounded mb-4';
+        block.className = 'block p-2 rounded';
 
         block.dataset.type = 'text';
         block.dataset.color = '#000000';

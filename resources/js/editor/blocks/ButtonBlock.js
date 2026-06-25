@@ -2,7 +2,7 @@ export class ButtonBlock{
     static create(){
         const block = document.createElement('div');
 
-        block.className = 'block p-4 rounded mb-4';
+        block.className = 'block p-2 rounded';
 
         // ボタン初期値
         block.dataset.type = 'button';

@@ -192,6 +192,8 @@
 }
 
 .editor-list{
+    border: none;
+    outline: none;
     list-style-type: disc;
 }
 
