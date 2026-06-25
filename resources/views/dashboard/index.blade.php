@@ -2,41 +2,10 @@
 
     <div class="flex min-h-[calc(100vh-64px)]">
 
-        {{-- サイドメニュー --}}
-        <div class="w-64 bg-white border-r">
-
-            <ul class="p-4 space-y-3">
-
-                <li>
-                    <a href="{{ route('dashboard.sites') }}">
-                        サイト管理
-                    </a>
-                </li>
-
-                <li>
-                    <a href="#">
-                        プレビュー
-                    </a>
-                </li>
-
-                <li>
-                    <a href="{{ route('dashboard.analytics') }}">
-                        サイト分析
-                    </a>
-                </li>
-
-                <li>
-                    <a href="{{ route('dashboard.settings') }}">
-                        設定
-                    </a>
-                </li>
-
-            </ul>
-
-        </div>
+        @include('dashboard.sidebar')
 
         {{-- メイン画面 --}}
-        <main class="flex-1 p-8">
+<main class="flex-1 min-w-0 p-8 transition-all duration-300">
 
             <h1 class="text-3xl font-bold mb-6">
                 <p>ホーム</p>
@@ -46,7 +15,7 @@
             <div class="mb-10">
 
                 <a href="#"
-                    class="block max-w-md p-6 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">   
+                    class="block w-full p-6 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">   
                     
                     <h2 class="text-2xl font-bold mb-2">
                         ＋ 新規サイト作成
@@ -65,7 +34,7 @@
 
             </div>
             {{-- サイト公開までのステップ --}}
-            <section class="mb-12 max-w-3xl">
+            <section class="mb-12 w-full">
                 <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
 
                     <div class="flex items-start justify-between mb-6">
@@ -357,111 +326,6 @@
                     </div>
 
                 </div>
-
-                {{-- 作成例・デモサイト --}}
-                <section class="mt-12">
-
-                    <div class="flex items-center justify-between mb-4">
-                        <div>
-                            <h2 class="text-xl font-semibold">
-                                作成例・デモサイト
-                            </h2>
-
-                            <p class="text-sm text-gray-500 mt-1">
-                                このアプリケーションで作成したWebサイトの例を紹介します。
-                            </p>
-                        </div>
-
-                        <a
-                            href="#"
-                            class="text-sm text-blue-600 hover:text-blue-700">
-                            すべて見る
-                        </a>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-                        <div class="bg-white border rounded-xl shadow-sm overflow-hidden hover:shadow-md transition">
-                            <div class="h-40 bg-gray-100 flex items-center justify-center text-gray-400">
-                                デモ画像
-                            </div>
-
-                            <div class="p-5">
-                                <span class="inline-block text-xs px-2 py-1 rounded-full bg-blue-50 text-blue-600 mb-3">
-                                    Portfolio
-                                </span>
-
-                                <h3 class="font-bold text-lg text-gray-900">
-                                    ポートフォリオサイト
-                                </h3>
-
-                                <p class="text-sm text-gray-500 mt-2">
-                                    自己紹介や制作実績を掲載する個人向けサイトの作成例です。
-                                </p>
-
-                                <a
-                                    href="#"
-                                    class="inline-block mt-4 text-sm font-medium text-blue-600 hover:text-blue-700">
-                                    デモを見る →
-                                </a>
-                            </div>
-                        </div>
-
-                        <div class="bg-white border rounded-xl shadow-sm overflow-hidden hover:shadow-md transition">
-                            <div class="h-40 bg-gray-100 flex items-center justify-center text-gray-400">
-                                デモ画像
-                            </div>
-
-                            <div class="p-5">
-                                <span class="inline-block text-xs px-2 py-1 rounded-full bg-green-50 text-green-600 mb-3">
-                                    Shop
-                                </span>
-
-                                <h3 class="font-bold text-lg text-gray-900">
-                                    ショップ紹介サイト
-                                </h3>
-
-                                <p class="text-sm text-gray-500 mt-2">
-                                    店舗情報や商品紹介を掲載する小規模ビジネス向けサイトです。
-                                </p>
-
-                                <a
-                                    href="#"
-                                    class="inline-block mt-4 text-sm font-medium text-blue-600 hover:text-blue-700">
-                                    デモを見る →
-                                </a>
-                            </div>
-                        </div>
-
-                        <div class="bg-white border rounded-xl shadow-sm overflow-hidden hover:shadow-md transition">
-                            <div class="h-40 bg-gray-100 flex items-center justify-center text-gray-400">
-                                デモ画像
-                            </div>
-
-                            <div class="p-5">
-                                <span class="inline-block text-xs px-2 py-1 rounded-full bg-purple-50 text-purple-600 mb-3">
-                                    Landing
-                                </span>
-
-                                <h3 class="font-bold text-lg text-gray-900">
-                                    ランディングページ
-                                </h3>
-
-                                <p class="text-sm text-gray-500 mt-2">
-                                    サービス紹介やイベント告知に使える1ページ構成の作成例です。
-                                </p>
-
-                                <a
-                                    href="#"
-                                    class="inline-block mt-4 text-sm font-medium text-blue-600 hover:text-blue-700">
-                                    デモを見る →
-                                </a>
-                            </div>
-                        </div>
-
-                    </div>
-
-                </section>
 
         </main>
 

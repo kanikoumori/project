@@ -1,10 +1,22 @@
 export class PropertyManager {
 
-    constructor(historyManager) {
-        this.panel = document.getElementById('block-settings');
+    constructor(historyManager,editor) {
+        this.panel =
+            document.getElementById('block-settings');
+
+        this.elementPanel =
+            document.getElementById('element-settings');
+
         this.historyManager = historyManager;
+        this.editor = editor;
     }
 
+    safeColor(v) {
+        return (typeof v === 'string' && v.startsWith('#'))
+            ? v
+            : '#000000';
+    }
+    
     show(block) {
 
         const settings = document.getElementById('block-settings');
@@ -13,9 +25,9 @@ export class PropertyManager {
 
         const type = block.dataset.type;
 
-        // 見出しカラー
+        // 見出し色
         const currentColor = 
-            block.dataset.color || '#000000'
+            block.dataset.color || '#000000';
 
         // 見出し文字サイズ
         const currentTag =
@@ -41,13 +53,13 @@ export class PropertyManager {
 
             // 見出しメニュー表示
             case 'heading':
-                this.panel.innerHTML = `
+                this.elementPanel.innerHTML = `
                     <div class="accordion-title">見出し設定</div>
                     <label>文字色</label>
                     <input
                         type="color"
                         id="heading-color"
-                        value="${currentColor}"
+                        value="${this.safeColor(currentColor)}"
                     >
 
                     <label>見出しサイズ</label>
@@ -113,14 +125,14 @@ export class PropertyManager {
 
             case 'text':
 
-                this.panel.innerHTML = `
+                this.elementPanel.innerHTML = `
                     <div class="accordion-title">テキスト設定</div>
 
                     <label>文字色</label>
                     <input
                         type="color"
                         id="text-color"
-                        value="${block.dataset.color || '#000000'}"
+                        value="${this.safeColor(currentColor)}"
                     >
 
                     <label>文字サイズ</label>
@@ -131,19 +143,6 @@ export class PropertyManager {
                         max="72"
                         value="${block.dataset.fontSize || '16'}"
                     >
-
-                    <label>太さ</label>
-                    <select id="text-weight">
-                        <option value="400"
-                            ${block.dataset.fontWeight === '400' ? 'selected' : ''}>
-                            標準
-                        </option>
-
-                        <option value="700"
-                            ${block.dataset.fontWeight === '700' ? 'selected' : ''}>
-                            太字
-                        </option>
-                    </select>
 
                     <label>配置</label>
                     <select id="text-align">
@@ -164,8 +163,18 @@ export class PropertyManager {
                     </select>
 
                     <label>装飾</label>
+                    
 
                     <div class="property-toggle-group">
+
+                        <button
+                            type="button"
+                            id="text-bold"
+                            class="toolbar-button property-toggle
+                                ${block.dataset.bold === 'true' ? 'active' : ''}"
+                        >
+                            <strong>B</strong>
+                        </button>
 
                         <button
                             type="button"
@@ -202,7 +211,7 @@ export class PropertyManager {
                 break;
 
             case 'list':
-                this.panel.innerHTML = `
+                this.elementPanel.innerHTML = `
                     <div class="accordion-title">リスト設定</div>
 
                     <label>リストタイプ</label>
@@ -218,14 +227,14 @@ export class PropertyManager {
 
             case 'button':
 
-                this.panel.innerHTML = `
+                this.elementPanel.innerHTML = `
                     <div class="accordion-title">ボタン設定</div>
 
                     <label>背景色</label>
                     <input
                         type="color"
                         id="button-color"
-                        value="${block.dataset.buttonColor || '#5B9DFF'}"
+                        value="${this.safeColor(block.dataset.buttonColor)}"
                     >
 
                     <label>文字色</label>
@@ -251,7 +260,7 @@ export class PropertyManager {
 
             case 'image':
 
-                this.panel.innerHTML = `
+                this.elementPanel.innerHTML = `
                     <div class="accordion-title">画像設定</div>
 
                     <input
@@ -289,7 +298,7 @@ export class PropertyManager {
                 break;
             case 'form':
 
-            this.panel.innerHTML = `
+            this.elementPanel.innerHTML = `
                 <div class="accordion-title">入力欄設定</div>
 
                 <label>プレースホルダー</label>
@@ -307,7 +316,7 @@ export class PropertyManager {
             break;
 
             default:
-                this.panel.innerHTML = `
+                this.elementPanel.innerHTML = `
                     <p>設定なし</p>
                 `;
         }
@@ -331,6 +340,7 @@ export class PropertyManager {
                 block.dataset.color = e.target.value;
 
                 this.historyManager.save();
+                this.editor.markDirty();
             });
 
         document
@@ -354,6 +364,7 @@ export class PropertyManager {
 
                 block.dataset.tag = e.target.value;
                 this.historyManager.save();
+                this.editor.markDirty();
             });
 
         document
@@ -364,6 +375,7 @@ export class PropertyManager {
 
                 block.dataset.align = e.target.value;
                 this.historyManager.save();
+                this.editor.markDirty();
             });
 
         // I
@@ -384,6 +396,7 @@ export class PropertyManager {
                         : 'normal';
                 
                 this.historyManager.save();
+                this.editor.markDirty();
             }
         );
 
@@ -400,6 +413,7 @@ export class PropertyManager {
 
                 this.updateTextDecoration(heading, block);
                 this.historyManager.save();
+                this.editor.markDirty();
             }
         );
 
@@ -416,6 +430,7 @@ export class PropertyManager {
 
                 this.updateTextDecoration(heading, block);
                 this.historyManager.save();
+                this.editor.markDirty();
             }
         );
     }
@@ -447,6 +462,7 @@ export class PropertyManager {
 
                 block.dataset.color = e.target.value;
                 this.historyManager.save();
+                this.editor.markDirty();
             });
 
         document.getElementById('text-size')
@@ -456,15 +472,7 @@ export class PropertyManager {
 
                 block.dataset.fontSize = e.target.value;
                 this.historyManager.save();
-            });
-
-        document.getElementById('text-weight')
-            ?.addEventListener('change', (e) => {
-
-                text.style.fontWeight = e.target.value;
-
-                block.dataset.fontWeight = e.target.value;
-                this.historyManager.save();
+                this.editor.markDirty();
             });
 
         document.getElementById('text-align')
@@ -474,7 +482,20 @@ export class PropertyManager {
 
                 block.dataset.align = e.target.value;
                 this.historyManager.save();
+                this.editor.markDirty();
             });
+
+        this.toggleButton(
+            block,
+            'text-bold',
+            'bold',
+            () => {
+                text.style.fontWeight =
+                    block.dataset.bold === 'true'
+                        ? '700'
+                        : '400';
+            }
+        );
 
         this.toggleButton(
             block,
@@ -504,6 +525,7 @@ export class PropertyManager {
             () => {
                 this.updateTextDecoration(text, block);
                 this.historyManager.save();
+                this.editor.markDirty();
             }
         );
     }
@@ -529,6 +551,7 @@ export class PropertyManager {
                     );
                     
                 this.historyManager.save();
+                this.editor.markDirty();
             });
     }
     
@@ -542,6 +565,7 @@ export class PropertyManager {
 
                 block.dataset.listStyle = e.target.value;
                 this.historyManager.save();
+                this.editor.markDirty();
             });
     }
 
@@ -558,6 +582,7 @@ export class PropertyManager {
 
                 block.dataset.buttonColor = e.target.value;
                 this.historyManager.save();
+                this.editor.markDirty();
             });
 
         document.getElementById('button-text-color')
@@ -567,6 +592,7 @@ export class PropertyManager {
 
                 block.dataset.buttonTextColor = e.target.value;
                 this.historyManager.save();
+                this.editor.markDirty();
             });
 
         document.getElementById('button-radius')
@@ -576,6 +602,7 @@ export class PropertyManager {
 
                 block.dataset.buttonRadius = e.target.value;
                 this.historyManager.save();
+                this.editor.markDirty();
             });
     }
 
@@ -612,6 +639,7 @@ export class PropertyManager {
 
                 block.dataset.src = reader.result;
                 this.historyManager.save();
+                this.editor.markDirty();
             };
 
             reader.readAsDataURL(file);
@@ -637,6 +665,7 @@ export class PropertyManager {
                     label.textContent = `${width}%`;
                 }
                 this.historyManager.save();
+                this.editor.markDirty();
             });
     }
 
@@ -653,6 +682,7 @@ export class PropertyManager {
 
                 block.dataset.placeholder = e.target.value;
                 this.historyManager.save();
+                this.editor.markDirty();
             });
     }
 }
