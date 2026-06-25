@@ -132,16 +132,8 @@
             新規サイト作成
         </h2>
 
-        @if ($errors->any())
-            <div class="bg-red-100 text-red-700 p-3 rounded mb-4">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
         <form
+            id="siteForm"
             method="POST"
             action="{{ route('sites.store') }}">   
 
@@ -152,11 +144,13 @@
                 </label>
 
                 <input
+                    id="title"
                     type="text"
                     name="title"
                     class="w-full p-2"
                     placeholder="My Site"
                     required>
+
             </div>
 
             <div class="mb-4">
@@ -165,6 +159,7 @@
                 </label>
 
                 <textarea
+                    id="description"
                     name="description"
                     class="w-full p-2"
                     rows="3"></textarea>
@@ -172,15 +167,21 @@
 
             <div class="mb-4">
                 <label class="block mb-1">
-                    slug
+                    slug(URL識別子)
                 </label>
 
                 <input
+                    id="slug"
                     type="text"
                     name="slug"
                     class="w-full p-2"
                     placeholder="my-site"
                     required>
+
+                <div
+                    id="errorMessage"
+                    class="hidden text-red-600 text-sm mt-2">
+                </div>
             </div>
 
             <div class="flex justify-end gap-2">
@@ -341,11 +342,22 @@
 
     // 新規作成モーダルを閉じる
     function closeModal() {
+
         const modal = document.getElementById('siteModal');
+        const form = document.getElementById('siteForm');
+        const errorMessage = document.getElementById('errorMessage');
 
         modal.classList.add('hidden');
         modal.classList.remove('flex');
+
+        // 入力内容を消す
+        form.reset();
+
+        // エラーも消す
+        errorMessage.classList.add('hidden');
+        errorMessage.textContent = '';
     }
+
     // 編集モーダルを開く
     function openEditModal(button) {
 
@@ -372,9 +384,17 @@
     function closeEditModal() {
 
         const modal = document.getElementById('editSiteModal');
+        const form = document.getElementById('editSiteForm');
+        const errorMessage =
+            document.getElementById('editErrorMessage');
 
         modal.classList.add('hidden');
         modal.classList.remove('flex');
+
+        form.reset();
+
+        errorMessage.classList.add('hidden');
+        errorMessage.textContent = '';
     }
 
 
@@ -417,6 +437,7 @@
             console.error(e);
         }
     }
+
     // サイト更新
     document.getElementById('editSiteForm')
         .addEventListener('submit', async function (e) {
@@ -443,8 +464,24 @@
             });
 
             if (!res.ok) {
+
                 const errorData = await res.json();
-                throw new Error('更新失敗');
+
+                if (
+                    errorData.errors &&
+                    errorData.errors.slug
+                ) {
+
+                    const errorMessage =
+                        document.getElementById('editErrorMessage');
+
+                    errorMessage.textContent =
+                        `✖ ${errorData.errors.slug[0]}`;
+
+                    errorMessage.classList.remove('hidden');
+                }
+
+                return;
             }
 
             closeEditModal();
@@ -454,6 +491,100 @@
         } catch (e) {
             alert('更新に失敗しました');
             console.error(e);
+        }
+    });
+
+    // 編集モーダルのslug入力でエラーを消す//
+    document.getElementById('editSlug')
+        .addEventListener('input', function () {
+
+        const errorMessage =
+            document.getElementById('editErrorMessage');
+
+        errorMessage.classList.add('hidden');
+        errorMessage.textContent = '';
+    });
+
+    // 新規サイト作成のslug入力でエラーを消す//
+    document.getElementById('slug')
+        .addEventListener('input', function () {
+
+        const errorMessage =
+            document.getElementById('errorMessage');
+
+        errorMessage.classList.add('hidden');
+        errorMessage.textContent = '';
+
+    });
+
+    // 新規サイト作成のサイト名入力でエラーを消す
+    document.getElementById('title')
+        .addEventListener('input', function () {
+
+        const errorMessage =
+            document.getElementById('errorMessage');
+
+        errorMessage.classList.add('hidden');
+        errorMessage.textContent = '';
+    });
+
+    document.getElementById('siteForm')
+        .addEventListener('submit', async function (e) {
+
+        e.preventDefault();
+
+        const data = {
+            title: document.getElementById('title').value,
+            description: document.getElementById('description').value,
+            slug: document.getElementById('slug').value,
+        };
+
+        const errorMessage =
+            document.getElementById('errorMessage');
+
+        errorMessage.classList.add('hidden');
+        errorMessage.textContent = '';
+
+        try {
+
+            const res = await fetch('/sites', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            if (!res.ok) {
+
+                const errorData = await res.json();
+
+                if (
+                    errorData.errors &&
+                    errorData.errors.slug
+                ) {
+
+                    errorMessage.textContent =
+                        `✖ ${errorData.errors.slug[0]}`;
+
+                    errorMessage.classList.remove('hidden');
+                }
+
+                return;
+            }
+
+            location.reload();
+
+        } catch (e) {
+
+            console.error(e);
+
+            errorMessage.textContent =
+                '✖ サイトの作成に失敗しました';
+
+            errorMessage.classList.remove('hidden');
         }
     });
 </script>
