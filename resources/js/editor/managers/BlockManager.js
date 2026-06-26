@@ -46,6 +46,18 @@ export class BlockManager {
     }
 
     setupBlock(block) {
+        let dragHandle =
+            block.querySelector('.drag-handle');
+
+        if (!dragHandle) {
+
+            dragHandle = document.createElement('button');
+
+            dragHandle.className = 'drag-handle';
+            dragHandle.textContent = '⋮⋮';
+
+            block.prepend(dragHandle);
+        }
         let deleteButton =
             block.querySelector('.delete-button');
 
