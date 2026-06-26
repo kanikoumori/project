@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     // 編集モーダルを開く
-    window.openEditModal = function (button) {
+    window.openSiteEditModal = function (button) {
 
         const modal = document.getElementById('editSiteModal');
 
@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     // 編集モーダルを閉じる
-    window.closeEditModal = function () {
+    window.closeSiteEditModal = function () {
 
         const modal = document.getElementById('editSiteModal');
         const form = document.getElementById('editSiteForm');
@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // =====================
 
     // 削除確認モーダルを開く
-    window.openDeleteModal = function(id) {
+    window.openSiteDeleteModal = function(id) {
 
         document.getElementById('deleteSiteId').value = id;
 
@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     // 削除確認モーダルを閉じる
-    window.closeDeleteModal = function() {
+    window.closeSiteDeleteModal = function() {
 
         const modal =
             document.getElementById('deleteModal');
