@@ -53,9 +53,7 @@ class SiteController extends Controller
             'status' => 'draft',
         ]);
  
-        return redirect()
-            ->route('dashboard.sites')
-            ->with('success', 'サイトを作成しました');
+        return response()->json($site, 201);
     }
  
     /**

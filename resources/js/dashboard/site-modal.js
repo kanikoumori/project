@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     });
     // 新規サイト作成モーダルを開く
-    window.openModal = function () {
+    window.openSiteModal = function () {
 
         const modal = document.getElementById('siteModal');
 
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     // 新規サイト作成モーダルを閉じる
-    window.closeModal = function () {
+    window.closeSiteModal = function () {
 
         const modal = document.getElementById('siteModal');
         const form = document.getElementById('siteForm');
@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     // 編集モーダルを開く
-    window.openEditModal = function (button) {
+    window.openSiteEditModal = function (button) {
 
         const modal = document.getElementById('editSiteModal');
 
@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     // 編集モーダルを閉じる
-    window.closeEditModal = function () {
+    window.closeSiteEditModal = function () {
 
         const modal = document.getElementById('editSiteModal');
         const form = document.getElementById('editSiteForm');
@@ -73,12 +73,71 @@ document.addEventListener('DOMContentLoaded', function () {
         modal.classList.remove('flex');
         modal.classList.add('hidden');
 
-        // 入力内容をリセット
         form.reset();
 
-        // エラーメッセージを削除
         errorMessage.classList.add('hidden');
         errorMessage.textContent = '';
+    };
+
+
+    // =====================
+    // 削除モーダル関連
+    // =====================
+
+    // 削除確認モーダルを開く
+    window.openSiteDeleteModal = function(id) {
+
+        document.getElementById('deleteSiteId').value = id;
+
+        const modal =
+            document.getElementById('deleteModal');
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    };
+
+
+    // 削除確認モーダルを閉じる
+    window.closeSiteDeleteModal = function() {
+
+        const modal =
+            document.getElementById('deleteModal');
+
+        modal.classList.remove('flex');
+        modal.classList.add('hidden');
+    };
+
+
+    // サイト削除
+    window.deleteSite = async function() {
+
+        const id =
+            document.getElementById('deleteSiteId').value;
+
+        try {
+
+            const response = await fetch(`/sites/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN':
+                        document.querySelector(
+                            'meta[name="csrf-token"]'
+                        ).content,
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('削除失敗');
+            }
+
+            location.reload();
+
+        } catch (e) {
+
+            alert('削除に失敗しました');
+            console.error(e);
+        }
     };
     const form = document.getElementById('siteForm');
 
@@ -164,7 +223,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const description = document.getElementById('editDescription').value;
             const slug = document.getElementById('editSlug').value;
 
-            const response = await fetch(`/dashboard/sites/${id}`, {
+            const response = await fetch(`/sites/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

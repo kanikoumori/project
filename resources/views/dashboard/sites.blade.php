@@ -16,7 +16,7 @@
                     </h1>
 
                     <button
-                        onclick="openModal()"
+                        onclick="openSiteModal()"
                         class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
                         + 新規サイト作成
                     </button>
@@ -82,7 +82,7 @@
 
                                 <button
                                     type="button"
-                                    onclick="openEditModal(this)"
+                                    onclick="openSiteEditModal(this)"
                                     data-id="{{ $site->id }}"
                                     data-title="{{ $site->title }}"
                                     data-description="{{ $site->description }}"
@@ -93,7 +93,7 @@
 
                                 <button
                                     type="button"
-                                    onclick="openDeleteModal({{ $site->id }})"
+                                    onclick="openSiteDeleteModal({{ $site->id }})"
                                     class="text-gray-500 hover:text-red-600 text-xl">
                                     ✕
                                 </button>
@@ -121,7 +121,7 @@
 <!-- 新規サイト作成モーダル -->
 <div
     id="siteModal"
-    onclick="closeModal()"
+    onclick="closeSiteModal()"
     class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
 
     <div 
@@ -188,7 +188,7 @@
 
                 <button
                     type="button"
-                    onclick="closeModal()"
+                    onclick="closeSiteModal()"
                     class="bg-gray-300 px-4 py-2 rounded">
                     キャンセル
                 </button>
@@ -209,7 +209,7 @@
 <!-- Site編集モーダル -->
 <div
     id="editSiteModal"
-    onclick="closeEditModal()"
+    onclick="closeSiteEditModal()"
     class="hidden fixed inset-0 bg-black/50 items-center justify-center z-50">
 
     <div
@@ -271,7 +271,7 @@
 
                 <button
                     type="button"
-                    onclick="closeEditModal()"
+                    onclick="closeSiteEditModal()"
                     class="bg-gray-300 px-4 py-2 rounded">
                     キャンセル
                 </button>
@@ -292,7 +292,7 @@
 <!-- 削除確認モーダル -->
 <div
     id="deleteModal"
-    onclick="closeDeleteModal()"
+    onclick="closeSiteDeleteModal()"
     class="hidden fixed inset-0 bg-black/50 items-center justify-center z-50">
 
     <div
@@ -313,7 +313,7 @@
 
             <button
                 type="button"
-                onclick="closeDeleteModal()"
+                onclick="closeSiteDeleteModal()"
                 class="bg-gray-300 px-4 py-2 rounded">
                 キャンセル
             </button>
