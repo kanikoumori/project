@@ -1,7 +1,7 @@
 <div class="toolbar">
 
     <a href="/dashboard" class="editor-logo">
-        <img src="/images/image.png" alt="ロゴ">
+        <img src="{{ asset('images/logo.png') }}" alt="ロゴ">
     </a>
 
     <div class="toolbar-menu">
