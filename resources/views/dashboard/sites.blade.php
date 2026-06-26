@@ -16,7 +16,7 @@
                     </h1>
 
                     <button
-                        onclick="openModal()"
+                        onclick="openSiteModal()"
                         class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
                         + 新規サイト作成
                     </button>
@@ -121,7 +121,7 @@
 <!-- 新規サイト作成モーダル -->
 <div
     id="siteModal"
-    onclick="closeModal()"
+    onclick="closeSiteModal()"
     class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
 
     <div 

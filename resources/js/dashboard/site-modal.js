@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     });
     // 新規サイト作成モーダルを開く
-    window.openModal = function () {
+    window.openSiteModal = function () {
 
         const modal = document.getElementById('siteModal');
 
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     // 新規サイト作成モーダルを閉じる
-    window.closeModal = function () {
+    window.closeSiteModal = function () {
 
         const modal = document.getElementById('siteModal');
         const form = document.getElementById('siteForm');
