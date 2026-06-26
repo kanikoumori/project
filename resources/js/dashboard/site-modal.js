@@ -73,12 +73,71 @@ document.addEventListener('DOMContentLoaded', function () {
         modal.classList.remove('flex');
         modal.classList.add('hidden');
 
-        // 入力内容をリセット
         form.reset();
 
-        // エラーメッセージを削除
         errorMessage.classList.add('hidden');
         errorMessage.textContent = '';
+    };
+
+
+    // =====================
+    // 削除モーダル関連
+    // =====================
+
+    // 削除確認モーダルを開く
+    window.openDeleteModal = function(id) {
+
+        document.getElementById('deleteSiteId').value = id;
+
+        const modal =
+            document.getElementById('deleteModal');
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    };
+
+
+    // 削除確認モーダルを閉じる
+    window.closeDeleteModal = function() {
+
+        const modal =
+            document.getElementById('deleteModal');
+
+        modal.classList.remove('flex');
+        modal.classList.add('hidden');
+    };
+
+
+    // サイト削除
+    window.deleteSite = async function() {
+
+        const id =
+            document.getElementById('deleteSiteId').value;
+
+        try {
+
+            const response = await fetch(`/sites/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN':
+                        document.querySelector(
+                            'meta[name="csrf-token"]'
+                        ).content,
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('削除失敗');
+            }
+
+            location.reload();
+
+        } catch (e) {
+
+            alert('削除に失敗しました');
+            console.error(e);
+        }
     };
     const form = document.getElementById('siteForm');
 

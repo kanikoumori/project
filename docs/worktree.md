@@ -292,6 +292,7 @@ C:.
 |   |   |       dashboard.css
 |   |   |       settings.css
 |   |   |       
+|   |   |       
 |   |   +---editor
 |   |   |       blocks.css
 |   |   |       canvas.css
@@ -319,6 +320,9 @@ C:.
 |   |   |       autosave.js
 |   |   |       realtime-save.js
 |   |   |       version-control.js
+|   |   |
+|   |   +---dashboard
+|   |   |       site-modal.js
 |   |   |       
 |   |   +---editor
 |   |   |   |   drag-drop.js
