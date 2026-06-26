@@ -223,7 +223,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const description = document.getElementById('editDescription').value;
             const slug = document.getElementById('editSlug').value;
 
-            const response = await fetch(`/dashboard/sites/${id}`, {
+            const response = await fetch(`/sites/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
