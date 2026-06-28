@@ -5,7 +5,7 @@
     overflow-y: auto;
     overflow-x: auto;
 
-    padding: 32px;
+    padding: 0 16px 16px 16px;
 
     background: linear-gradient(
         340deg,
@@ -23,7 +23,7 @@
 
     margin: 0 auto;
 
-    padding: 48px;
+    padding: 16px;
 
     background: #ffffff;
 
@@ -33,4 +33,43 @@
         0 12px 30px rgba(0, 0, 0, 0.08);
 
     box-sizing: border-box;
+}
+
+.canvas-floating-tools {
+    position: sticky;
+
+    top: 16px;
+
+    z-index: 20;
+
+    display: flex;
+    gap: 8px;
+
+    margin-bottom: 16px;
+}
+
+.canvas-action-button {
+    width: 42px;
+    height: 42px;
+
+    border-radius: 999px;
+
+    border: 1px solid #000;
+
+    background: transparent;
+
+    backdrop-filter: blur(8px);
+
+    cursor: pointer;
+
+    font-size: 18px;
+
+    transition: all 0.2s;
+}
+
+.canvas-action-button:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 20px rgba(0,0,0,0.08);
 }

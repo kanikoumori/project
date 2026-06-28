@@ -2,7 +2,7 @@ export class ImageBlock{
     static create(){
         const block = document.createElement('div');
 
-        block.className = 'block p-4 rounded mb-4';
+        block.className = 'block p-2 rounded';
 
         // 画像初期値
         block.dataset.type = 'image';

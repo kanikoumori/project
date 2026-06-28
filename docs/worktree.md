@@ -292,6 +292,7 @@ C:.
 |   |   |       dashboard.css
 |   |   |       settings.css
 |   |   |       
+|   |   |       
 |   |   +---editor
 |   |   |       blocks.css
 |   |   |       canvas.css
@@ -322,7 +323,7 @@ C:.
 |   |   |
 |   |   +---dashboard
 |   |   |       site-modal.js
-|   |   |
+|   |   |       
 |   |   +---editor
 |   |   |   |   drag-drop.js
 |   |   |   |   editor.js
@@ -382,8 +383,10 @@ C:.
 |       |       
 |       +---dashboard
 |       |       analytics.blade.php
+|       |       demo-sites.blade.php
 |       |       index.blade.php
 |       |       settings.blade.php
+|       |       sidebar.blade.php
 |       |       sites.blade.php
 |       |       
 |       +---editor

@@ -11,7 +11,7 @@
             
             {{-- TODO: モーダル表示に変更予定 --}}
 
-            <button
+            <button     
                 onclick="openPageModal()"
                 class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
                 + 新規ページ作成
@@ -25,21 +25,32 @@
             {{-- TODO: PageController接続後に$pagesを受け取る --}}
             @forelse($pages as $page)
 
-                <div class="bg-white rounded-lg shadow p-6">
+                <div
+                    class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition cursor-pointer"
+                    onclick="location.href='{{ route('editor.show', $page->id) }}'">
 
                     <div class="flex justify-between items-start">
 
-                        <div class="flex items-center justify-between mb-2">
-                            <h2 class="text-xl font-semibold">
+                        <div>
+
+                            <h2 class="text-xl font-semibold mb-2">
                                 {{ $page->title }}
                             </h2>
+
+                            <p class="text-gray-500 mb-2">
+                                slug : {{ $page->slug }}
+                            </p>
+
+                            <p class="text-sm text-gray-400">
+                                更新日 : {{ $page->updated_at }}
+                            </p>
 
                         </div>
 
                         <span
                             class="inline-block px-3 py-1 text-sm bg-yellow-100 text-yellow-700 rounded">
 
-                            非公開
+                            Draft
 
                         </span>
 
@@ -49,35 +60,43 @@
 
                         {{-- TODO: editor.show 接続 --}}
                         <button
-                                onclick="openEditModal(@js($page))"
-                                class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
+                            onclick="event.stopPropagation(); openEditModal(
+                                @js($page->title ?? ''),
+                                @js($page->slug ?? '')
+                            )"
+                            class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
+
                             編集
+
                         </button>
+
                         {{-- TODO: pages.destroy 接続 --}}
+                        <button
+                            onclick="event.stopPropagation(); openDeleteModal(
+                                @js($page->title ?? '未設定'),
+                                @js($page->id)
+                            )"
+                            class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
 
-                            <button
-                                onclick="openDeleteModal(@js($page))"
-                                class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+                            削除
 
-                                削除
-                            </button>
+                        </button>
 
                     </div>
 
                 </div>
 
             @empty
-                <div class="bg-white rounded-lg shadow p-8 text-center">
 
-                    <p class="text-gray-500 text-lg">
-                        作成されたページはありません
-                    </p>
+            <div class="bg-white rounded-lg shadow p-6 text-center">
+                <p class="text-gray-500 text-lg">
+                    作成されたページはありません
+                </p>
 
-                    <p class="text-sm text-gray-400 mt-2">
-                        「新規ページ作成」から最初のページを作成してください
-                    </p>
-
-                </div>
+                <p class="text-sm text-gray-400 mt-2">
+                    「新規ページ作成」から最初のページを作成してください
+                </p>
+            </div>
 
             @endforelse
 
@@ -121,7 +140,7 @@
             <div class="mb-4">
 
                 <label class="block mb-1">
-                    URL識別子
+                    slug
                 </label>
 
                 <input
@@ -238,7 +257,7 @@
             <div class="mb-4">
 
                 <label class="block mb-1">
-                   URL識別子
+                    slug
                 </label>
 
                 <input
@@ -256,9 +275,7 @@
                     type="button"
                     onclick="closePageModal()"
                     class="bg-gray-300 px-4 py-2 rounded">
-
                     キャンセル
-
                 </button>
 
                 <button
@@ -281,11 +298,11 @@
 
     let deleteTarget = null;
 
-    function openDeleteModal(page) {
+    function openDeleteModal(title, id) {
 
-        deleteTarget = page.id;
+        deleteTarget = id;
 
-        document.getElementById('deleteTargetTitle').innerText = page.title;
+        document.getElementById('deleteTargetTitle').innerText = title;
 
         const modal = document.getElementById('deleteModal');
 
@@ -313,34 +330,33 @@
     }
 
     function openPageModal() {
-
+ 
         const modal = document.getElementById('pageModal');
+    
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+    
+    function closePageModal() {
+    
+        const modal = document.getElementById('pageModal');
+    
+        modal.classList.remove('flex');
+        modal.classList.add('hidden');
+}
+ 
+
+    function openEditModal(title, slug) {
+
+        document.getElementById('editTitle').value = title;
+        document.getElementById('editSlug').value = slug;
+
+        const modal = document.getElementById('editModal');
 
         modal.classList.remove('hidden');
         modal.classList.add('flex');
     }
 
-    function closePageModal() {
-
-        const modal = document.getElementById('pageModal');
-
-        modal.classList.remove('flex');
-        modal.classList.add('hidden');
-    }
-
-
-    function openEditModal(page) {
-
-
-
-    document.getElementById('editTitle').value = page.title;
-    document.getElementById('editSlug').value = page.slug;
-
-    const modal = document.getElementById('editModal');
-
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-}
     function closeEditModal() {
 
         const modal = document.getElementById('editModal');
@@ -348,6 +364,7 @@
         modal.classList.remove('flex');
         modal.classList.add('hidden');
     }
+
     document
     .getElementById('createPageForm')
     .addEventListener('submit', async function (e) {
@@ -376,11 +393,13 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Accept': 'application/json',
                         'X-CSRF-TOKEN':
                             document.querySelector(
                                 'meta[name="csrf-token"]'
                             ).content
                     },
+ 
                     body: JSON.stringify({
                         title,
                         slug

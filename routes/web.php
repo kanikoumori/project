@@ -27,6 +27,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard/settings', fn () => view('dashboard.settings'))
         ->name('dashboard.settings');
+        
+    Route::get('/dashboard/demo-sites', fn () => view('dashboard.demo-sites'))
+    ->name('dashboard.demo-sites');
 
     Route::get(
         '/dashboard/sites/{site}/pages',
@@ -36,6 +39,12 @@ Route::middleware('auth')->group(function () {
     // Sites
     Route::get('/sites', [SiteController::class, 'index'])->name('sites.index');
     Route::post('/sites', [SiteController::class, 'store'])->name('sites.store');
+    
+    Route::put('/sites/{site}', [SiteController::class, 'update'])
+        ->name('sites.update');
+    
+    Route::delete('/sites/{site}', [SiteController::class, 'destroy'])
+        ->name('sites.destroy');
 
     // Pages
     Route::get('/sites/{site}/pages', [PageController::class, 'index'])
@@ -57,10 +66,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/editor/{page}', [EditorController::class, 'show'])
         ->name('editor.show');
 
+    Route::delete('/pages/{page}/blocks', [BlockController::class, 'clear']);
+
     // Blocks
     Route::get('/pages/{page}/blocks', [BlockController::class, 'index'])
         ->name('blocks.index');
     Route::post('/blocks', [BlockController::class, 'store'])->name('blocks.store');
+    Route::post(
+        '/pages/{page}/blocks/bulk',
+        [BlockController::class, 'bulkSave']
+    );
     Route::put('/blocks/{block}', [BlockController::class, 'update'])->name('blocks.update');
     Route::delete('/blocks/{block}', [BlockController::class, 'destroy'])->name('blocks.destroy');
     

@@ -1,22 +1,18 @@
 import './bootstrap';
 
 import Alpine from 'alpinejs';
-import './dashboard/site-modal';
 
 window.Alpine = Alpine;
 
 Alpine.start();
 
+import './dashboard/site-modal.js';
+
 import { Editor } from './editor/editor.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-
-    const editorRoot = document.getElementById('editor-app');
-
-    if (!editorRoot) {
-        return;
+    if (document.getElementById('editor-app')) {
+        const editor = new Editor();
+        editor.initialize();
     }
-
-    const editor = new Editor();
-    editor.initialize();
 });

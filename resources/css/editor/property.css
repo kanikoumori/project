@@ -1,5 +1,5 @@
 .property {
-    width: 320px;
+    width: 280px;
 
     box-sizing: border-box;
 
@@ -20,27 +20,35 @@
 }
 
 .property-section {
-    background: rgba(255,255,255,0.75);
+    background: rgba(255,255,255,0.8);
 
-    border: 1px solid #e5e7eb;
+    border: 1px solid rgba(255,255,255,0.5);
 
     border-radius: 16px;
 
+    backdrop-filter: blur(8px);
+
     padding: 16px;
 
-    margin-bottom: 20px;
+    margin-bottom: 16px;
+
+    transition: all 0.2s;
 }
 
 /* タイトル */
 .property-title {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 700;
 
-    margin-bottom: 24px;
+    padding-bottom: 12px;
+
+    border-bottom: 1px solid #e5e7eb;
+
+    margin-bottom: 16px;
 }
 
 /* アコーディオン見出し */
-.property .accordion-title {
+.accordion-title {
     font-size: 16px;
     font-weight: 700;
 
@@ -55,7 +63,7 @@
     transition: color 0.2s;
 }
 
-.property .accordion-title:hover {
+.accordion-title:hover {
     color: #5B9DFF;
 }
 
@@ -64,7 +72,7 @@
     display: none;
 
     margin-top: 12px;
-    margin-bottom: 24px;
+    margin-bottom: 0px;
 }
 
 /* 開いている状態 */
@@ -99,7 +107,9 @@
 
     box-sizing: border-box;
 
-    background: #ffffff;
+    background: rgba(255,255,255,0.8);
+
+    backdrop-filter: blur(8px);
 
     margin-bottom: 12px;
 
@@ -136,6 +146,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    background: rgba(255,255,255,0.8);
+
+    border: 1px solid rgba(255,255,255,0.5);
+
+    backdrop-filter: blur(8px);
+
+    border-radius: 16px;
 }
 
 .property-toggle-group {
@@ -175,6 +192,8 @@
 }
 
 .editor-list{
+    border: none;
+    outline: none;
     list-style-type: disc;
 }
 

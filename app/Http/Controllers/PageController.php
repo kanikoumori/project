@@ -27,10 +27,16 @@ class PageController extends Controller
     public function store(Request $request, Site $site)
     {
         $this->authorize('update', $site);
-        $validated = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'slug' => ['required','string','max:255','unique:pages,slug'],
-        ]);
+        $validated = $request->validate(
+            [
+                'title' => ['required', 'string', 'max:255'],
+                'slug' => ['required','string','max:255',Rule::unique('pages', 'slug')->where(fn ($query) =>$query->where('site_id', $site->id)),],
+            ],
+            [
+                'slug.unique' => 'このslugは既に使用されています。',
+            ]
+        );
+ 
 
         $page = Page::create([
             'site_id' => $site->id,
@@ -61,7 +67,7 @@ class PageController extends Controller
         $this->authorize('update', $page);
         $validated = $request->validate([
             'title' => ['sometimes', 'string', 'max:255'],
-            'slug' => ['sometimes', 'string', 'max:255',Rule::unique('pages', 'slug')->ignore($page->id),],
+            'slug' => ['sometimes','string','max:255',Rule::unique('pages', 'slug')->where(fn ($query) =>$query->where('site_id', $page->site_id))->ignore($page->id),], 
             'sort_order' => ['sometimes', 'integer'],
             'is_home' => ['sometimes', 'boolean'],
             'status' => ['sometimes', 'string', 'max:50'],

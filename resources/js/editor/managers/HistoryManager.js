@@ -1,64 +1,34 @@
+import { BlockSerializer } from '../serializers/BlockSerializer.js';
+
 export class HistoryManager {
     constructor() {
         this.history = [];
         this.currentIndex = -1;
         this.blockManager = null;
+
+        this.serializer = new BlockSerializer();
     }
 
-    initialize() {
-        this.save();
-    }
+    initialize() {}
 
     save() {
-        const canvas = document.getElementById('canvas');
+        const snapshot = this.serializer.serialize();
 
-        const clonedCanvas = canvas.cloneNode(true);
-
-        clonedCanvas.querySelectorAll('.block')
-            .forEach(block => {
-                delete block.dataset.clickBound;
-
-                const deleteButton =
-                    block.querySelector('.delete-button');
-
-                if (deleteButton) {
-                    delete deleteButton.dataset.bound;
-                }
-
-                block.querySelectorAll('[contenteditable="true"]')
-                    .forEach(element => {
-                        delete element.dataset.blurBound;
-                    });
-            });
-
-        const snapshot = clonedCanvas.innerHTML;
-
-        if (this.currentIndex < this.history.length - 1) {
-            this.history = this.history.slice(
-                0,
-                this.currentIndex + 1
-            );
-        }
+        // 未来履歴削除
+        this.history = this.history.slice(0, this.currentIndex + 1);
 
         this.history.push(snapshot);
-
-        this.currentIndex = this.history.length - 1;
+        this.currentIndex++;
     }
 
     restore() {
-        const canvas = document.getElementById('canvas');
-
         if (this.currentIndex < 0) return;
 
-        canvas.innerHTML = this.history[this.currentIndex];
+        const blocks = this.history[this.currentIndex];
 
-        requestAnimationFrame(() => {
-            canvas.querySelectorAll('.block')
-                .forEach(block => {
-                    this.blockManager.setupBlock(block);
-                });
-        });
+        this.blockManager.editor.refreshFromHistory(blocks);
     }
+    
 
     undo() {
         if (this.currentIndex <= 0) return;
