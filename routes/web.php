@@ -8,6 +8,7 @@ use App\Http\Controllers\SiteController;
 use App\Http\Controllers\PageHistoryController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EditorController;
+use App\Models\Site;
 
 Route::get('/', function () {
     return view('welcome');
@@ -28,8 +29,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/settings', fn () => view('dashboard.settings'))
         ->name('dashboard.settings');
         
-    Route::get('/dashboard/demo-sites', fn () => view('dashboard.demo-sites'))
-    ->name('dashboard.demo-sites');
+    Route::get('/dashboard/demo-sites', function () {
+        $demoSites = Site::where('user_id', auth()->id())
+            ->where('status', 'demo')
+            ->with(['pages' => function ($query) {
+                $query->orderBy('sort_order');
+            }])
+            ->latest('updated_at')
+            ->get();
+
+        return view('dashboard.demo-sites', compact('demoSites'));
+    })->name('dashboard.demo-sites');
 
     Route::get(
         '/dashboard/sites/{site}/pages',
