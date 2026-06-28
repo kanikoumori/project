@@ -60,7 +60,9 @@
                                 </div>
 
                                 <div class="absolute inset-0 flex items-center justify-center">
-                                    <span class="text-lg font-bold text-gray-700">
+                                    <span
+                                        id="completedStepsText"
+                                        class="text-lg font-bold text-gray-700">
                                         {{ $completedSteps }}/{{ $totalSteps }}
                                     </span>
                                 </div>
@@ -78,9 +80,11 @@
                             <select
                                 id="targetSite"
                                 class="w-full border rounded-lg px-3 py-2">
+
                                 @foreach ($sites as $site)
                                     <option
-                                        value="{{ route('pages.manage', $site) }}"
+                                        value="{{ $site->id }}"
+                                        data-pages-url="{{ route('pages.manage', $site) }}"
                                         title="{{ $site->title }}">
 
                                         {{ \Illuminate\Support\Str::limit(
@@ -92,6 +96,22 @@
                                 @endforeach
 
                             </select>
+                            <div class="mt-4 max-w-xs">
+
+                                <label
+                                    class="block text-sm text-gray-500 mb-2">
+                                    対象ページ
+                                </label>
+
+                                <select
+                                    id="targetPage"
+                                    class="w-full border rounded-lg px-3 py-2">
+                                    <option value="">
+                                        対象ページを選択してください
+                                    </option>
+                                </select>
+
+                            </div>
 
                         </div>
                     <div class="divide-y divide-gray-200">
@@ -101,9 +121,11 @@
 
                             <div>
                                 <div class="flex items-center gap-3">
-                                    @if ($completedSteps >= 1)
-                                        <span class="text-green-600 font-bold">✓</span>
-                                    @endif
+                                    <span
+                                        id="siteStepCheck"
+                                        class="text-green-600 font-bold {{ $completedSteps >= 1 ? '' : 'hidden' }}">
+                                        ✓
+                                    </span>
 
                                     <h3 class="text-lg font-bold text-gray-900">
                                         サイトを作成
@@ -127,9 +149,11 @@
 
                             <div>
                                 <div class="flex items-center gap-3">
-                                    @if ($completedSteps >= 2)
-                                        <span class="text-green-600 font-bold">✓</span>
-                                    @endif
+                                    <span
+                                        id="pageStepCheck"
+                                        class="text-green-600 font-bold {{ $completedSteps >= 2 ? '' : 'hidden' }}">
+                                        ✓
+                                    </span>
 
                                     <h3 class="text-lg font-bold text-gray-900">
                                         ページを追加
@@ -149,13 +173,24 @@
 
                         </button>
 
-                        <a href="#"
-                            class="group flex items-center justify-between py-5">
+                        <button
+                            type="button"
+                            onclick="goToEditor()"
+                            class="group flex items-center justify-between py-5 w-full text-left">
 
                             <div>
-                                <h3 class="text-lg font-bold text-gray-900">
-                                    デザインを編集
-                                </h3>
+                                <div class="flex items-center gap-3">
+                                    <span
+                                        id="designStepCheck"
+                                        class="text-green-600 font-bold {{ $completedSteps >= 3 ? '' : 'hidden' }}">
+                                        ✓
+                                    </span>
+
+                                    <h3 class="text-lg font-bold text-gray-900">
+                                        デザインを編集
+                                    </h3>
+                                </div>
+
                                 <p class="text-sm text-gray-500 mt-1">
                                     エディターで見出し・文章・画像・ボタンなどを配置します。
                                 </p>
@@ -164,7 +199,8 @@
                             <span class="text-3xl text-gray-800 group-hover:translate-x-1 transition">
                                 ›
                             </span>
-                        </a>
+
+                        </button>
 
                         <a href="#"
                             class="group flex items-center justify-between py-5">
@@ -546,10 +582,54 @@
     </div>
 
     <script>
+        const sitePages = @js($sitePages);
+        const siteProgresses = @js($siteProgresses);
+        const totalSteps = @js($totalSteps);
+
+        function updateTargetPages()
+        {
+            const siteSelect = document.getElementById('targetSite');
+            const pageSelect = document.getElementById('targetPage');
+
+            if (!siteSelect || !pageSelect) {
+                return;
+            }
+
+            const siteId = siteSelect.value;
+            const pages = sitePages[siteId] || [];
+
+            pageSelect.innerHTML = '';
+
+            if (pages.length === 0) {
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = 'このサイトにはページがありません';
+                pageSelect.appendChild(option);
+                return;
+            }
+
+            pages.forEach(function (page) {
+                const option = document.createElement('option');
+
+                option.value = page.url;
+                option.textContent = page.title;
+
+                pageSelect.appendChild(option);
+            });
+        }
+
         function goToPageManage()
         {
-            const url =
-                document.getElementById('targetSite').value;
+            const siteSelect = document.getElementById('targetSite');
+
+            if (!siteSelect) {
+                return;
+            }
+
+            const selectedOption =
+                siteSelect.options[siteSelect.selectedIndex];
+
+            const url = selectedOption.dataset.pagesUrl;
 
             if (!url) {
                 alert('対象サイトを選択してください');
@@ -557,6 +637,88 @@
             }
 
             window.location.href = url;
+        }
+
+        function goToEditor()
+        {
+            const pageSelect = document.getElementById('targetPage');
+
+            if (!pageSelect || !pageSelect.value) {
+                alert('対象ページを選択してください');
+                return;
+            }
+
+            window.location.href = pageSelect.value;
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const siteSelect = document.getElementById('targetSite');
+
+            if (siteSelect) {
+                siteSelect.addEventListener('change', function () {
+                    updateTargetPages();
+                    updateStepProgress();
+                });
+
+                updateTargetPages();
+                updateStepProgress();
+            }
+        });
+
+        function updateStepProgress()
+        {
+            const siteSelect = document.getElementById('targetSite');
+
+            if (!siteSelect) {
+                return;
+            }
+
+            const siteId = siteSelect.value;
+
+            const progress = siteProgresses[siteId] || {
+                completedSteps: 0,
+                hasSite: false,
+                hasPage: false,
+                hasEditedDesign: false
+            };
+
+            const completedStepsText =
+                document.getElementById('completedStepsText');
+
+            if (completedStepsText) {
+                completedStepsText.textContent =
+                    `${progress.completedSteps}/${totalSteps}`;
+            }
+
+            const siteStepCheck =
+                document.getElementById('siteStepCheck');
+
+            const pageStepCheck =
+                document.getElementById('pageStepCheck');
+
+            const designStepCheck =
+                document.getElementById('designStepCheck');
+
+            if (siteStepCheck) {
+                siteStepCheck.classList.toggle(
+                    'hidden',
+                    !progress.hasSite
+                );
+            }
+
+            if (pageStepCheck) {
+                pageStepCheck.classList.toggle(
+                    'hidden',
+                    !progress.hasPage
+                );
+            }
+
+            if (designStepCheck) {
+                designStepCheck.classList.toggle(
+                    'hidden',
+                    !progress.hasEditedDesign
+                );
+            }
         }
     </script>
 
