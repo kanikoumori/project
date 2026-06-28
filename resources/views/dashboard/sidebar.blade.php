@@ -21,7 +21,7 @@
 </style>
 <aside
     id="dashboardSidebar"
-    class="w-64 bg-white border-r shrink-0 transition-all duration-300"
+    class="sticky top-0 self-start h-[calc(100vh-64px)] overflow-y-auto w-64 bg-white border-r shrink-0 transition-all duration-300 z-10"
 >
     <div class="p-4">
 

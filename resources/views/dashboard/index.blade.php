@@ -14,23 +14,25 @@
 
             <div class="mb-10">
 
-                <a href="#"
-                    class="block w-full p-6 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">   
-                    
+                <button
+                    type="button"
+                    onclick="openSiteModal()"
+                    class="block w-full text-left p-6 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">
+
                     <h2 class="text-2xl font-bold mb-2">
                         ＋ 新規サイト作成
                     </h2>
+
                     <div class="mt-4 text-sm opacity-80">
                         現在作成中のサイト：
                         {{ $sites->count() }}件
                     </div>
-                    
 
                     <p>
                         新しいWebサイトを作成します
                     </p>
 
-                </a>
+                </button>
 
             </div>
             {{-- サイト公開までのステップ --}}
@@ -184,6 +186,7 @@
                     </div>
 
                 </div>
+            </section>
             {{-- お知らせ --}}
             <section class="mt-12">
 
@@ -217,24 +220,23 @@
 
                             <span
                                 class="px-2 py-1 text-xs rounded-full
-                                bg-blue-100 text-blue-700">
+                                bg-green-100 text-green-700">
 
-                                NEW
+                                UPDATE
 
                             </span>
 
                             <span class="text-sm text-gray-500">
-                                2025/08/08
+                                2026/06/27
                             </span>
 
                         </div>
 
                         <h3 class="font-semibold text-gray-900">
-                            サイト公開までのステップ機能を追加しました
-                        </h3>
+                            ホーム画面のUIを変更しました                        </h3>
 
                         <p class="text-sm text-gray-500 mt-2">
-                            ホーム画面からサイト公開までの進捗状況を確認できるようになりました。
+                            最近追加したサイトのUIをページ管理画面と同じ表示にしました。
                         </p>
 
                     </div>
@@ -252,7 +254,7 @@
                             </span>
 
                             <span class="text-sm text-gray-500">
-                                2025/08/05
+                                2025/06/29
                             </span>
 
                         </div>
@@ -270,78 +272,292 @@
                 </div>
 
             </section>    
-            </section>
-             {{-- 最近編集したサイト --}}
-                <div class="mt-12">
 
-                    <h2 class="text-xl font-semibold mb-4">
-                        最近編集したサイト
-                    </h2>
+            {{-- 最近編集したサイト --}}
+            <section class="mt-10">
 
-                    <div class="space-y-4">
+                <h2 class="text-2xl font-bold mb-6">
+                    最近編集したサイト
+                </h2>
 
-                        @forelse ($recentSites as $site)
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-                            <div class="bg-white border rounded-lg shadow p-5 hover:shadow-lg transition">
+                    @forelse ($recentSites as $site)
 
-                                <div class="flex justify-between items-center">
+                        <div
+                            class="relative bg-white rounded-lg shadow hover:shadow-lg hover:bg-gray-100 transition-all duration-200 group p-4">
+
+                            <a
+                                href="{{ route('pages.manage', $site) }}"
+                                class="inline-block p-1 rounded-sm focus:outline-none">
+
+                                <div class="space-y-3">
 
                                     <div>
-                                        <h3 class="text-lg font-bold">
-                                            {{ $site->title }}
-                                        </h3>
-
                                         <p class="text-sm text-gray-500">
-                                            最終更新：
-                                            {{ $site->updated_at }}
+                                            サイト名
+                                        </p>
+
+                                        <h2 class="text-xl font-bold">
+                                            {{ $site->title }}
+                                        </h2>
+                                    </div>
+
+                                    <div>
+                                        <p class="text-sm text-gray-500">
+                                            サイト説明
+                                        </p>
+
+                                        <p class="text-gray-700">
+                                            {{ $site->description }}
                                         </p>
                                     </div>
 
-                                    <span class="px-3 py-1 text-sm rounded">
-                                        {{ $site->status }}
-                                    </span>
+                                    <div>
+                                        <p class="text-sm text-gray-500">
+                                            URL (slug)
+                                        </p>
+
+                                        <p class="text-gray-700">
+                                            {{ $site->slug }}
+                                        </p>
+                                    </div>
+
+                                    <p class="text-sm text-gray-400">
+                                        更新日：{{ $site->updated_at }}
+                                    </p>
 
                                 </div>
 
-                                <div class="mt-4">
-                                    <a
-                                        href="{{ route('pages.manage', $site) }}"
-                                        class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                            </a>
 
-                                        ページ管理
+                            <div
+                                class="absolute top-2 right-2 z-20 flex gap-2
+                                    opacity-0 group-hover:opacity-100
+                                    transition pointer-events-auto">
 
-                                    </a>
-                                </div>
+                                <button
+                                    type="button"
+                                    onclick="openSiteEditModal(this)"
+                                    data-id="{{ $site->id }}"
+                                    data-title="{{ $site->title }}"
+                                    data-description="{{ $site->description }}"
+                                    data-slug="{{ $site->slug }}"
+                                    class="text-gray-500 hover:text-green-600 text-xl">
+                                    ⚙
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onclick="openSiteDeleteModal({{ $site->id }})"
+                                    class="text-gray-500 hover:text-red-600 text-xl">
+                                    ✕
+                                </button>
 
                             </div>
 
-                        @empty
+                        </div>
 
-                            <div class="bg-white border rounded-lg p-6 text-gray-500">
-                                サイトがまだ作成されていません
-                            </div>
+                    @empty
 
-                        @endforelse
+                        <div class="col-span-full text-center text-gray-500">
+                            最近編集したサイトはありません
+                        </div>
 
-                    </div>
+                    @endforelse
 
                 </div>
 
+            </section>
+
+            <!-- 新規サイト作成モーダル -->
+            <div
+                id="siteModal"
+                onclick="closeSiteModal()"
+                class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+
+                <div
+                    onclick="event.stopPropagation()"
+                    class="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
+
+                    <h2 class="text-2xl font-bold mb-4">
+                        新規サイト作成
+                    </h2>
+
+                    <form
+                        id="siteForm"
+                        method="POST"
+                        action="{{ route('sites.store') }}">
+
+                        @csrf
+
+                        <div class="mb-4">
+                            <label class="block mb-1">
+                                サイト名
+                            </label>
+
+                            <input
+                                id="title"
+                                type="text"
+                                name="title"
+                                class="w-full border rounded p-2"
+                                placeholder="My Site"
+                                required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block mb-1">
+                                サイト説明
+                            </label>
+
+                            <textarea
+                                id="description"
+                                name="description"
+                                class="w-full border rounded p-2"
+                                rows="3"></textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block mb-1">
+                                slug(URL識別子)
+                            </label>
+
+                            <input
+                                id="slug"
+                                type="text"
+                                name="slug"
+                                class="w-full border rounded p-2"
+                                placeholder="my-site"
+                                required>
+
+                            <div
+                                id="errorMessage"
+                                class="hidden text-red-600 text-sm mt-2">
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end gap-2">
+
+                            <button
+                                type="button"
+                                onclick="closeSiteModal()"
+                                class="bg-gray-300 px-4 py-2 rounded">
+                                キャンセル
+                            </button>
+
+                            <button
+                                type="submit"
+                                class="bg-blue-600 text-white px-4 py-2 rounded">
+                                作成
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+            <!-- Site編集モーダル -->
+            <div
+                id="editSiteModal"
+                onclick="closeSiteEditModal()"
+                class="hidden fixed inset-0 bg-black/50 items-center justify-center z-50">
+
+                <div
+                    onclick="event.stopPropagation()"
+                    class="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
+
+                    <h2 class="text-2xl font-bold mb-4">
+                        サイト編集
+                    </h2>
+
+                    <form id="editSiteForm">
+
+                        <input
+                            type="hidden"
+                            id="editSiteId">
+
+                        <div class="mb-4">
+                            <label class="block mb-1">
+                                サイト名
+                            </label>
+
+                            <input
+                                id="editTitle"
+                                type="text"
+                                class="w-full border rounded p-2"
+                                required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block mb-1">
+                                サイト説明
+                            </label>
+
+                            <textarea
+                                id="editDescription"
+                                class="w-full border rounded p-2"
+                                rows="3"></textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block mb-1">
+                                slug (URL識別子)
+                            </label>
+
+                            <input
+                                id="editSlug"
+                                type="text"
+                                class="w-full border rounded p-2"
+                                required>
+
+                            <div
+                                id="editErrorMessage"
+                                class="hidden text-red-600 text-sm mt-2">
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end gap-2">
+
+                            <button
+                                type="button"
+                                onclick="closeSiteEditModal()"
+                                class="bg-gray-300 px-4 py-2 rounded">
+                                キャンセル
+                            </button>
+
+                            <button
+                                type="submit"
+                                class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                                更新
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
         </main>
 
     </div>
-<script>
-    function goToPageManage()
-    {
-        const url =
-            document.getElementById('targetSite').value;
 
-        if (!url) {
-            alert('対象サイトを選択してください');
-            return;
+    <script>
+        function goToPageManage()
+        {
+            const url =
+                document.getElementById('targetSite').value;
+
+            if (!url) {
+                alert('対象サイトを選択してください');
+                return;
+            }
+
+            window.location.href = url;
         }
+    </script>
 
-        window.location.href = url;
-    }
-</script>
 </x-app-layout>
