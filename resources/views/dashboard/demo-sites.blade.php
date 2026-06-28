@@ -4,57 +4,77 @@
 
         @include('dashboard.sidebar')
 
-        <main class="flex-1 min-w-0 p-8 transition-all duration-300">
+        <main class="flex-1 min-w-0 p-8">
 
-            <div class="w-full max-w-none">
+            <div class="max-w-7xl mx-auto">
 
-                <div class="mb-8">
-                    <h1 class="text-3xl font-bold">
-                        作成例・デモサイト
-                    </h1>
+                <h1 class="text-3xl font-bold mb-2">
+                    作成例・デモサイト
+                </h1>
 
-                    <p class="text-gray-500 mt-2">
-                        サイト作成の参考になる作成例やデモサイトを確認できます。
-                    </p>
-                </div>
+                <p class="text-sm text-gray-500 mb-8">
+                    エディターで作成したサイトの作成例を展示しています。
+                </p>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-                    <div class="bg-white rounded-xl shadow p-6">
-                        <div class="h-36 rounded-lg bg-gradient-to-br from-pink-100 via-blue-100 to-yellow-100 mb-4"></div>
+                    @forelse ($demoSites as $site)
 
-                        <h2 class="text-xl font-bold">
-                            カフェサイト例
-                        </h2>
+                        @php
+                            $firstPage = $site->pages->first();
+                        @endphp
 
-                        <p class="text-gray-500 mt-2">
-                            店舗紹介・メニュー・アクセス情報を掲載するサンプルです。
-                        </p>
-                    </div>
+                        <div class="bg-white rounded-lg shadow hover:shadow-lg transition p-6">
 
-                    <div class="bg-white rounded-xl shadow p-6">
-                        <div class="h-36 rounded-lg bg-gradient-to-br from-blue-100 via-green-100 to-purple-100 mb-4"></div>
+                            <p class="text-sm text-gray-500">
+                                サイト名
+                            </p>
 
-                        <h2 class="text-xl font-bold">
-                            ポートフォリオサイト例
-                        </h2>
+                            <h2 class="text-xl font-bold mb-4">
+                                {{ $site->title }}
+                            </h2>
 
-                        <p class="text-gray-500 mt-2">
-                            自己紹介や制作実績を掲載するサンプルです。
-                        </p>
-                    </div>
+                            <p class="text-sm text-gray-500">
+                                サイト説明
+                            </p>
 
-                    <div class="bg-white rounded-xl shadow p-6">
-                        <div class="h-36 rounded-lg bg-gradient-to-br from-yellow-100 via-pink-100 to-blue-100 mb-4"></div>
+                            <p class="text-gray-700 mb-4">
+                                {{ $site->description ?? '説明はありません' }}
+                            </p>
 
-                        <h2 class="text-xl font-bold">
-                            サービス紹介サイト例
-                        </h2>
+                            <p class="text-sm text-gray-500">
+                                URL(slug)
+                            </p>
 
-                        <p class="text-gray-500 mt-2">
-                            サービス内容や特徴を紹介するサンプルです。
-                        </p>
-                    </div>
+                            <p class="text-gray-700 mb-4">
+                                {{ $site->slug }}
+                            </p>
+
+                            <p class="text-sm text-gray-400 mb-6">
+                                更新日：{{ $site->updated_at }}
+                            </p>
+
+                            @if ($firstPage)
+                                <a
+                                    href="{{ route('editor.show', $firstPage) }}"
+                                    class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                                    デモを見る
+                                </a>
+                            @else
+                                <span class="text-sm text-gray-400">
+                                    ページがありません
+                                </span>
+                            @endif
+
+                        </div>
+
+                    @empty
+
+                        <div class="col-span-full bg-white rounded-lg shadow p-6 text-center text-gray-500">
+                            表示できるデモサイトはまだありません。
+                        </div>
+
+                    @endforelse
 
                 </div>
 
