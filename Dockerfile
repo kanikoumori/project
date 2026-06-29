@@ -41,6 +41,8 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 # Laravel本体をコピー
 COPY . .
 
+# 開発用Vite hotファイルが残っていたら削除
+RUN rm -f public/hot
 # Viteでビルドした成果物をコピー
 COPY --from=node-build /app/public/build ./public/build
 

@@ -3,6 +3,7 @@
 .env
 node_modules
 vendor
+public/hot
 storage/logs/*
 storage/framework/cache/*
 storage/framework/sessions/*
