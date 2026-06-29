@@ -38,7 +38,7 @@ export class AutoSaveManager {
             document.getElementById('save-status');
 
         if (saveStatus) {
-            saveStatus.textContent = '保存済み';
+            saveStatus.textContent = '保存中';
         }
 
 
@@ -49,10 +49,19 @@ export class AutoSaveManager {
 
             this.isDirty = false;
 
-            document.getElementById('save-status')
-                .textContent = '保存済み';
+            if (saveStatus) {
+                saveStatus.textContent = '保存済み';
+            }
 
-        } finally {
+        }catch (error) {
+
+            if (saveStatus) {
+                saveStatus.textContent = '保存失敗';
+            }
+
+            throw error; 
+        
+        }finally {
             this.isSaving = false;
         }
     }

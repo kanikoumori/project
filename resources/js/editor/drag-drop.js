@@ -12,13 +12,15 @@ export class DragDrop {
         const canvas =
             document.getElementById('canvas');
 
-        Sortable.create(canvas, {
+        this.sortable = Sortable.create(canvas, {
 
             animation: 150,
 
             draggable: '.block',
 
             handle: '.drag-handle',
+
+            disabled: true,
 
             fallbackOnBody: false,
 
@@ -35,5 +37,13 @@ export class DragDrop {
                 this.editor.markDirty();
             }
         });
+    }
+    setEnabled(enabled) {
+
+        this.sortable.option(
+            'disabled',
+            !enabled
+        );
+
     }
 }

@@ -20,6 +20,8 @@
 
             @include('editor.toolbar')
 
+            @include('editor.status')
+
             <div class="editor-body">
 
                 @include('editor.sidebar')
