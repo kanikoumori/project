@@ -46,56 +46,103 @@ export class BlockManager {
     }
 
     setupBlock(block) {
+        this.createBlockContent(block);
+        this.createDragHandle(block);
+        this.createDeleteButton(block);
+
+        this.bindClick(block);
+        this.bindEditable(block);
+    }
+
+    // block-contentの作成
+    createBlockContent(block) {
+
+        let content =
+            block.querySelector('.block-content');
+
+        if (content) return;
+
+        content = document.createElement('div');
+        content.className = 'block-content';
+
+        while (
+            block.firstChild &&
+            !block.firstChild.classList?.contains('drag-handle') &&
+            !block.firstChild.classList?.contains('delete-button')
+        ) {
+            content.appendChild(block.firstChild);
+        }
+
+        block.appendChild(content);
+    }
+
+    // ドラッグハンドル
+    createDragHandle(block) {
+
         let dragHandle =
             block.querySelector('.drag-handle');
 
-        if (!dragHandle) {
+        if (dragHandle) return;
 
-            dragHandle = document.createElement('button');
+        dragHandle = document.createElement('button');
 
-            dragHandle.className = 'drag-handle';
-            dragHandle.textContent = '⋮⋮';
+        dragHandle.className = 'drag-handle';
 
-            block.prepend(dragHandle);
-        }
+        dragHandle.innerHTML = `
+            <span></span>
+            <span></span>
+            <span></span>
+        `;
+
+        block.prepend(dragHandle);
+    }
+
+    // 削除ボタン
+    createDeleteButton(block) {
+
         let deleteButton =
             block.querySelector('.delete-button');
 
-        if (!deleteButton) {
-            deleteButton = document.createElement('button');
+        if (deleteButton) return;
 
-            deleteButton.className = 'delete-button';
-            deleteButton.textContent = '×';
+        deleteButton = document.createElement('button');
 
-            block.appendChild(deleteButton);
-        }
+        deleteButton.className = 'delete-button';
+        deleteButton.textContent = '×';
 
-        if (deleteButton.dataset.bound !== 'true') {
+        deleteButton.addEventListener('click', (e) => {
 
-            deleteButton.dataset.bound = 'true';
+            e.stopPropagation();
 
-            deleteButton.addEventListener('click', (e) => {
-                e.stopPropagation();
+            block.remove();
 
-                block.remove();
+            this.historyManager.save();
 
-                this.historyManager.save();
+            this.editor.markDirty();
 
-                this.editor.markDirty();
-            });
-        }       
+        });
 
-        if (block.dataset.clickBound !== 'true') {
+        block.appendChild(deleteButton);
+    }
 
-            block.dataset.clickBound = 'true';
+    // ブロッククリック
+    bindClick(block) {
 
-            block.addEventListener('click', () => {
-                this.selectionManager.select(block);
-                this.propertyManager.show(block);
-            });
-        }
-        
-         // テキスト編集終了時
+        if (block.dataset.clickBound === 'true') return;
+
+        block.dataset.clickBound = 'true';
+
+        block.addEventListener('click', () => {
+
+            this.selectionManager.select(block);
+
+            this.propertyManager.show(block);
+
+        });
+    }
+
+    bindEditable(block) {
+
         block.querySelectorAll('[contenteditable="true"]')
             .forEach(element => {
 
@@ -104,9 +151,11 @@ export class BlockManager {
                 element.dataset.blurBound = 'true';
 
                 element.addEventListener('input', () => {
+
                     this.editor.markDirty();
 
                 });
+
             });
     }
 

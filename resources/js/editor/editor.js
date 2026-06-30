@@ -6,6 +6,7 @@ import { DragDrop } from './drag-drop.js';
 import { Resize } from './resize.js';
 import { BlockSerializer } from './serializers/BlockSerializer.js';
 import { AutoSaveManager } from './services/AutoSaveManager.js';
+import { ModeManager } from './managers/ModeManager.js';
 
 export class Editor {
     constructor() {
@@ -22,6 +23,7 @@ export class Editor {
             this
         );
         this.resize = new Resize();
+        this.modeManager = new ModeManager(this);
         this.isSaving = false;
         this.blockManager = new BlockManager(
             this.propertyManager,
@@ -39,7 +41,9 @@ export class Editor {
         this.blockManager.initialize();
         this.dragDrop.initialize();
         this.loadPage();
+        this.modeManager.initialize();
 
+        
         document.getElementById('undo-button')
             ?.addEventListener('click', () => {
                 this.historyManager.undo();
@@ -55,6 +59,16 @@ export class Editor {
         document.getElementById('save-button')
             ?.addEventListener('click', async () => {
                 this.save();
+            });
+
+        document.getElementById('edit-mode-button')
+            ?.addEventListener('click', () => {
+                this.modeManager.setMode('edit');
+            });
+
+        document.getElementById('sort-mode-button')
+            ?.addEventListener('click', () => {
+                this.modeManager.setMode('sort');
             });
     }
 
