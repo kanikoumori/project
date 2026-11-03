@@ -11,7 +11,7 @@ RUN npm run build
 
 
 # PHP + Apache
-FROM php:8.2-apache
+FROM php:8.4.27-apache
 
 WORKDIR /var/www/html
 
