@@ -2,19 +2,21 @@
 .block {
     position: relative;
 
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+
     border: 2px solid transparent;
     border-radius: 12px;
 
-    padding: 16px;
+    padding: 16px 16px 16px 40px;
 
     transition:
-        border-color 0.2s,
-        box-shadow 0.2s,
-        background-color 0.2s;
+        border-color .2s,
+        box-shadow .2s,
+        background-color .2s;
 
     cursor: pointer;
-
-    position: relative;
 }
 
 /* ホバー時 */
@@ -57,24 +59,32 @@
 
 /* ドラッグメニュー */
 .drag-handle {
-    cursor: grab;
-
     position: absolute;
 
-    top: 4px;
     left: 12px;
+    top: 50%;
 
-    background: transparent;
-    border: none;
+    transform: translateY(-50%);
 
-    color: #9ca3af;
+    width: 16px;
 
-    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
 
-    z-index: 10;
+    align-items: center;
+}
 
-    user-select: none;
-    -webkit-user-drag: none;
+.drag-handle span {
+    width: 12px;
+    height: 2px;
+
+    background: #9ca3af;
+    border-radius: 999px;
+}
+
+.drag-handle:hover span {
+    background: #374151;
 }
 
 .drag-handle:hover {
@@ -83,6 +93,22 @@
 
 .drag-handle:active {
     cursor: grabbing;
+}
+
+.edit-mode .block {
+    padding-left: 16px;   /* 通常 */
+}
+
+.edit-mode .drag-handle {
+    display: none;
+}
+
+.sort-mode .block {
+    padding-left: 60px;
+}
+
+.sort-mode .drag-handle {
+    display: flex;
 }
 
 .sortable-ghost {

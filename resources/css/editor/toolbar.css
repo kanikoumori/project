@@ -1,36 +1,25 @@
 .toolbar {
-    height: 64px;
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(255,255,255,0.5);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 0 20px;
-    flex-shrink: 0;
-    z-index: 10;
-}
 
-.editor-logo {
-    display: flex;
-    align-items: center;
-}
+    background: #6b7280;
 
-.editor-logo img {
     height: 36px;
+    padding: 0 12px;
+
+    position: relative;
+    z-index: 1000;
 }
 
 .toolbar-menu {
     display: flex;
     align-items: center;
     gap: 4px;
-
-    margin-left: 20px;
 }
 
 .toolbar-menu-item {
     background: transparent;
+    color: #f4f4f4;
     border: none;
 
     padding: 8px 12px;
@@ -41,10 +30,21 @@
     font-weight: 500;
 
     border-radius: 8px;
+
+    line-height: 1;
 }
 
 .toolbar-menu-item:hover {
-    background: rgba(0,0,0,0.05);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.toolbar-menu-item.active {
+    background: rgba(255, 255, 255, 0.15);
+    font-weight: 600;
+}
+
+.toolbar-dropdown {
+    position: relative;
 }
 
 .toolbar-actions {
@@ -55,78 +55,49 @@
     gap: 12px;
 }
 
-/* 共通ボタン */
-.toolbar-button {
-    padding: 10px 16px;
+.dropdown-menu {
+    display: none;
 
-    background: rgba(255,255,255,0.8);
+    position: absolute;
+    top: 100%;
+    left: 0;
 
-    border: 1px solid #dbe3ee;
+    min-width: 180px;
 
-    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 
-    font-weight: 600;
-
-    cursor: pointer;
-
-    transition:
-        transform 0.2s,
-        box-shadow 0.2s,
-        border-color 0.2s,
-        background 0.2s;
+    padding: 6px 0;
+    z-index: 1001;
 }
 
-.toolbar-button:hover {
-    transform: translateY(-2px);
-
-    border-color: #5B9DFF;
-
-    box-shadow:
-        0 8px 20px rgba(91,157,255,0.15);
-
-    background: #ffffff;
+.toolbar-dropdown:hover .dropdown-menu {
+    display: block;
 }
 
-.toolbar-button:active {
-    transform: translateY(0);
-}
-
-/* 公開ボタン */
-.toolbar-publish {
-    margin-left: auto;
-
-    padding: 10px 22px;
-
-    background: linear-gradient(
-        135deg,
-        #6FAEFF,
-        #5B9DFF
-    );
-
-    color: #ffffff;
+.dropdown-menu button {
+    width: 100%;
+    padding: 8px 16px;
 
     border: none;
+    background: transparent;
 
-    border-radius: 14px;
-
-    font-weight: 700;
-
+    text-align: left;
     cursor: pointer;
-
-    transition:
-        transform 0.2s,
-        box-shadow 0.2s;
 }
 
-.toolbar-publish:hover {
-    transform: translateY(-2px);
-
-    box-shadow:
-        0 10px 24px rgba(91,157,255,0.35);
+.dropdown-menu button:hover {
+    background: #f3f4f6;
 }
 
-.toolbar-publish:active {
-    transform: translateY(0);
+.editor-logo {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+}
+
+.editor-logo img {
+    height: 36px;
 }
 
 /* 保存表示 */
