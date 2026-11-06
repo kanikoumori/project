@@ -33,6 +33,10 @@
                 入力欄
             </button>
 
+            <button id="add-divider" class="sidebar-button">
+                区切り線
+            </button>
+
             <button id="add-container" class="sidebar-button">
                 コンテナ
             </button>

@@ -7,6 +7,8 @@ export class HeadingBlock {
         block.dataset.type = 'heading';
         block.dataset.tag = 'h1';
         block.dataset.align = 'left';
+        block.dataset.lineHeight = '1';
+        block.dataset.letterSpacing = '0px';
         block.dataset.italic = 'false';
         block.dataset.underline = 'false';
         block.dataset.strike = 'false';

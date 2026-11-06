@@ -7,6 +7,8 @@ export class TextBlock {
         block.dataset.type = 'text';
         block.dataset.color = '#000000';
         block.dataset.fontSize = '16';
+        block.dataset.lineHeight = '1';
+        block.dataset.letterSpacing = '0px';
         block.dataset.bold = 'false';
         block.dataset.align = 'left';
         block.dataset.italic = 'false';

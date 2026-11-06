@@ -2,6 +2,11 @@
 .block {
     position: relative;
 
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+
     border: 2px solid transparent;
     border-radius: 12px;
 
@@ -13,8 +18,6 @@
         background-color 0.2s;
 
     cursor: pointer;
-
-    position: relative;
 }
 
 /* ホバー時 */
@@ -134,27 +137,29 @@
 
     outline: none;
 }
-
-/* テキスト */
-.editor-text {
-    width: 100%;
-
-    min-height: 28px;
-
-    line-height: 1.7;
-
-    outline: none;
-}
-
 /* リスト */
 .editor-list {
-    padding-left: 1.5rem;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
+    padding-left: 2em;
+    margin-left: 0;
+
+    list-style-position: outside;
 
     line-height: 1.8;
+
+    box-sizing: border-box;
+
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .editor-list li {
     outline: none;
+    max-width: 100%;
+    overflow-wrap: anywhere;
 }
 
 /* ボタン */
@@ -259,4 +264,41 @@
 .editor-button:active,
 .image-upload-button:active {
     transform: scale(0.98);
+}
+/* リストブロックの幅調整 */
+.list-block {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow-wrap: anywhere;
+}
+
+.list-block .editor-list li {
+    display: list-item;
+
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
+    box-sizing: border-box;
+
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-wrap: break-word;
+    word-break: break-all;
+}
+/* 区切り線ブロック */
+.divider-block {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+/* 区切り線本体 */
+.editor-divider-element {
+    width: 100%;
+    border: none;
+    border-top: 2px solid #000000;
+    margin: 10px 0;
 }

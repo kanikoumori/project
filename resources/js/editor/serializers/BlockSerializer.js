@@ -27,10 +27,11 @@ export class BlockSerializer {
                         italic: block.dataset.italic === 'true',
                         underline: block.dataset.underline === 'true',
                         strike: block.dataset.strike === 'true',
-                        align: block.dataset.align || 'left'
+                        align: block.dataset.align || 'left',
+                        lineHeight: block.dataset.lineHeight || '1',
+                        letterSpacing: block.dataset.letterSpacing || '0px'
                     }
                 };
-
                 blocksData.push(data);
                 return;
             }
@@ -48,7 +49,10 @@ export class BlockSerializer {
                         italic: block.dataset.italic === 'true',
                         underline: block.dataset.underline === 'true',
                         strike: block.dataset.strike === 'true',
-                        align: block.dataset.align || 'left'
+                        align: block.dataset.align || 'left',
+                        lineHeight: block.dataset.lineHeight || '1',
+                        letterSpacing: block.dataset.letterSpacing || '0px',
+                        height: block.dataset.height || '',
                     }
                 };
 
@@ -64,7 +68,9 @@ export class BlockSerializer {
                 data.data = {
                     items,
                     style: {
-                        listStyle: block.dataset.listStyle || 'disc'
+                        listStyle: block.dataset.listStyle || 'disc',
+                        listColor: block.dataset.listColor || '#000000',
+                        listFontSize: block.dataset.listFontSize || '16'
                     }
                 };
 
@@ -121,6 +127,29 @@ export class BlockSerializer {
                 blocksData.push(data);
                 return;
             }
+            // 独立した区切り線
+        if (type === 'divider') {
+
+            data.data = {
+                style: {
+                    dividerStyle:
+                        block.dataset.dividerStyle || 'solid',
+
+                    dividerThickness:
+                        block.dataset.dividerThickness || '2',
+                    
+                    dividerColor:
+                        block.dataset.dividerColor || '#000000',
+                    
+                    dividerMargin:
+                        block.dataset.dividerMargin || '10'
+                }
+            };
+
+            blocksData.push(data);
+            return;
+        }
+
         });
 
         return blocksData;

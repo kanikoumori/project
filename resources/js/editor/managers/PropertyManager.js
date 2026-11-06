@@ -25,6 +25,21 @@ export class PropertyManager {
 
         const type = block.dataset.type;
 
+        // 独立した区切り線の種類
+        const currentDividerStyle =
+            block.dataset.dividerStyle || 'solid';
+        //区切り線の太さ
+        const currentDividerThickness =
+            block.dataset.dividerThickness || '2';
+
+        // 区切り線の色
+        const currentDividerColor =
+            block.dataset.dividerColor || '#000000';
+        
+        // 区切り線の余白
+        const currentDividerMargin =
+            block.dataset.dividerMargin || '10';
+
         // 見出し色
         const currentColor = 
             block.dataset.color || '#000000';
@@ -40,6 +55,17 @@ export class PropertyManager {
         // 見出し斜体
         const currentItalic =
         block.dataset.italic === 'true';
+
+        const currentLineHeight =
+        block.dataset.lineHeight || '1.5';
+
+        // テキストブロックの高さ
+        const currentHeight =
+        block.dataset.height || '';
+
+        // 見出し文字間隔
+        const currentLetterSpacing =
+        block.dataset.letterSpacing || '0px';
 
         // 見出し下線
         const currentUnderline =
@@ -89,7 +115,24 @@ export class PropertyManager {
                             右
                         </option>
                     </select>
+                    
+                    <label>行間</label>
+                    <input
+                        type="number"
+                        id="heading-line-height"
+                        min="1.0"
+                        step="0.1"
+                        value="${currentLineHeight}"
+                    >
 
+                    <label>文字間隔（px）</label>
+                    <input
+                        type="number"
+                        id="heading-letter-spacing"
+                        step="0.1"
+                        value="${parseFloat(currentLetterSpacing) || 0}"
+                    >                   
+                    
                     <label>装飾</label>
                     <div class="property-toggle-group">
 
@@ -118,6 +161,8 @@ export class PropertyManager {
                         </button>
 
                     </div>
+
+                    
                 `;
 
                 this.bindHeadingEvents(block);
@@ -163,7 +208,32 @@ export class PropertyManager {
                     </select>
 
                     <label>装飾</label>
-                    
+
+                    <label>行間</label>
+                    <input
+                        type="number"
+                        id="text-line-height"
+                        min="1.0"
+                        step="0.1"
+                        value="${currentLineHeight}"
+                    >
+                    <label>文字間隔（px）</label>
+                    <input
+                        type="number"
+                        id="text-letter-spacing"
+                        step="0.1"
+                        value="${parseFloat(block.dataset.letterSpacing || '0')}"
+                    >
+
+                    <label>ブロックの高さ（px）</label>
+                    <input
+                        type="number"
+                        id="text-height"
+                        min="1"
+                        step="1"
+                        placeholder="自動"
+                        value="${currentHeight}"
+                    >
 
                     <div class="property-toggle-group">
 
@@ -220,6 +290,24 @@ export class PropertyManager {
                         <option value="circle" ${block.dataset.listStyle === 'circle' ? 'selected' : ''}>○ 白丸</option>
                         <option value="decimal" ${block.dataset.listStyle === 'decimal' ? 'selected' : ''}>1. 2. 3.</option>
                     </select>
+
+                    <label>文字色</label>
+                    <input
+                        type="color"
+                        id="list-color"
+                        value="${this.safeColor(block.dataset.listColor || '#000000')}"
+                    >
+                    <label>文字サイズ（px）</label>
+                    <input
+                        type="range"
+                        id="list-font-size"
+                        min="12"
+                        max="72"
+                        value="${block.dataset.listFontSize || '16'}"
+                    >
+                    <span id="list-font-size-value">
+                        ${block.dataset.listFontSize || '16'}px
+                    </span>
                 `;
 
                 this.bindListEvents(block);
@@ -315,11 +403,70 @@ export class PropertyManager {
 
             break;
 
+            case 'divider':
+
+                this.elementPanel.innerHTML = `
+                    <div class="accordion-title">区切り線設定</div>
+
+                    <label>区切り線の種類</label>
+                    <select id="divider-style">
+                        <option value="solid"
+                            ${currentDividerStyle === 'solid' ? 'selected' : ''}>
+                            実線
+                        </option>
+
+                        <option value="dashed"
+                            ${currentDividerStyle === 'dashed' ? 'selected' : ''}>
+                            破線
+                        </option>
+
+                        <option value="dotted"
+                            ${currentDividerStyle === 'dotted' ? 'selected' : ''}>
+                            点線
+                        </option>
+
+                        <option value="double"
+                            ${currentDividerStyle === 'double' ? 'selected' : ''}>
+                            二重線
+                        </option>
+                    </select>
+                    <label>区切り線の太さ（px）</label>
+
+                    <input
+                        type="number"
+                        id="divider-thickness"
+                        min="1"
+                        max="20"
+                        value="${currentDividerThickness}"
+                    >
+                    <label>区切り線の色</label>
+                    <input
+                        type="color"
+                        id="divider-color"
+                        value="${this.safeColor(currentDividerColor)}"
+                    >
+                    <label>区切り線の余白（px）</label>
+                    <input
+                        type="number"
+                        id="divider-margin"
+                        min="0"
+                        max="100"
+                        step="1"
+                        value="${currentDividerMargin}"
+                    >
+                 `;
+
+                this.bindDividerEvents(block);
+
+                break;
+
+
+            // ここから下は元のまま
             default:
                 this.elementPanel.innerHTML = `
                     <p>設定なし</p>
                 `;
-        }
+                        }
     }
 // ↑↑↑switch block関数↑↑↑
 
@@ -342,6 +489,59 @@ export class PropertyManager {
                 this.historyManager.save();
                 this.editor.markDirty();
             });
+                // 文字間隔設定
+        document
+            .getElementById('heading-letter-spacing')
+            ?.addEventListener('change', (e) => {
+
+                const heading = block.querySelector(
+                    'h1, h2, h3, h4, h5, h6'
+                );
+
+                if (!heading) return;
+
+                const letterSpacing = `${e.target.value}px`;
+
+                // 見出しに文字間隔を反映
+                heading.style.letterSpacing = letterSpacing;
+
+                // 文字間隔を保存用データに記録
+                block.dataset.letterSpacing = letterSpacing;
+
+                this.historyManager.save();
+                this.editor.markDirty();
+            });
+            // 行間設定
+        document
+            .getElementById('heading-line-height')
+            ?.addEventListener('change', (e) => {
+
+                const heading = block.querySelector(
+                    'h1, h2, h3, h4, h5, h6'
+                );
+
+                if (!heading) return;
+
+                let lineHeight = parseFloat(e.target.value);
+
+                // 最小値を1.0にする
+                if (!Number.isFinite(lineHeight) || lineHeight < 1.0) {
+                    lineHeight = 1.0;
+                }
+
+                // 入力欄にも補正後の値を反映
+                e.target.value = lineHeight;
+
+                // テキストに行間を反映
+                heading.style.lineHeight = lineHeight;
+
+                // 行間を保存用データに記録
+                block.dataset.lineHeight = lineHeight;
+
+                this.historyManager.save();
+                this.editor.markDirty();
+            });
+     
 
         document
             .getElementById('heading-tag')
@@ -456,7 +656,7 @@ export class PropertyManager {
         if (!text) return;
 
         document.getElementById('text-color')
-            ?.addEventListener('input', (e) => {
+            .addEventListener('change', (e) => {
 
                 text.style.color = e.target.value;
 
@@ -481,6 +681,62 @@ export class PropertyManager {
                 block.style.textAlign = e.target.value;
 
                 block.dataset.align = e.target.value;
+                this.historyManager.save();
+                this.editor.markDirty();
+            });
+        
+                // 行間設定
+        document.getElementById('text-line-height')
+            ?.addEventListener('change', (e) => {
+
+                let lineHeight = parseFloat(e.target.value);
+
+                // 最小値を1.0にする
+                if (!Number.isFinite(lineHeight) || lineHeight < 1.0) {
+                    lineHeight = 1.0;
+                }
+
+                // 入力欄にも補正後の値を反映
+                e.target.value = lineHeight;
+
+                // テキストに行間を反映
+                text.style.lineHeight = lineHeight;
+
+                // 行間を保存用データに記録
+                block.dataset.lineHeight = lineHeight;
+
+                this.historyManager.save();
+                this.editor.markDirty();
+            });
+            // 文字間隔設定
+        document.getElementById('text-letter-spacing')
+            ?.addEventListener('change', (e) => {
+
+                const letterSpacing = `${e.target.value}px`;
+
+                // テキストに文字間隔を反映
+                text.style.letterSpacing = letterSpacing;
+
+                // 文字間隔を保存用データに記録
+                block.dataset.letterSpacing = letterSpacing;
+
+                this.historyManager.save();
+                this.editor.markDirty();
+            });
+                            // ブロックの高さ設定
+        document.getElementById('text-height')
+            ?.addEventListener('change', (e) => {
+
+                const height = e.target.value;
+
+                if (height === '') {
+                    block.style.height = '';
+                    delete block.dataset.height;
+                } else {
+                    block.style.height = `${height}px`;
+                    block.dataset.height = height;
+                }
+
                 this.historyManager.save();
                 this.editor.markDirty();
             });
@@ -556,14 +812,56 @@ export class PropertyManager {
     }
     
     bindListEvents(block) {
+
+        const ul = block.querySelector('ul');
+
+        if (!ul) return;
+
+        // リストタイプ設定
         document.getElementById('list-style')
             ?.addEventListener('change', (e) => {
-                const ul = block.querySelector('ul');
-                if (!ul) return;
 
                 ul.style.listStyleType = e.target.value;
 
                 block.dataset.listStyle = e.target.value;
+
+                this.historyManager.save();
+                this.editor.markDirty();
+            });
+
+        // 文字色設定
+        document.getElementById('list-color')
+            ?.addEventListener('input', (e) => {
+
+                const color = e.target.value;
+
+                ul.style.color = color;
+
+                block.dataset.listColor = color;
+
+                this.historyManager.save();
+                this.editor.markDirty();
+            });
+                    // 文字サイズ設定
+        document.getElementById('list-font-size')
+            ?.addEventListener('input', (e) => {
+
+                const fontSize = e.target.value;
+
+                const items = block.querySelectorAll('li');
+
+                items.forEach((li) => {
+                    li.style.fontSize = `${fontSize}px`;
+                });
+
+                block.dataset.listFontSize = fontSize;
+
+                const label = document.getElementById('list-font-size-value');
+
+                if (label) {
+                    label.textContent = `${fontSize}px`;
+                }
+
                 this.historyManager.save();
                 this.editor.markDirty();
             });
@@ -669,20 +967,113 @@ export class PropertyManager {
             });
     }
 
-    bindFormEvents(block) {
+    // 入力欄の設定
+bindFormEvents(block) {
 
-        const input = block.querySelector('input');
+    const input = block.querySelector('input');
 
-        if (!input) return;
+    if (!input) return;
 
-        document.getElementById('form-placeholder')
-            ?.addEventListener('input', (e) => {
+    document.getElementById('form-placeholder')
+        ?.addEventListener('input', (e) => {
 
-                input.placeholder = e.target.value;
+            input.placeholder = e.target.value;
 
-                block.dataset.placeholder = e.target.value;
-                this.historyManager.save();
-                this.editor.markDirty();
-            });
-    }
+            block.dataset.placeholder = e.target.value;
+            this.historyManager.save();
+            this.editor.markDirty();
+        });
+}
+
+// 独立した区切り線の設定
+bindDividerEvents(block) {
+
+    // 区切り線の要素を取得
+    const divider = block.querySelector('.editor-divider-element');
+
+    if (!divider) return;
+
+    // 区切り線の種類が変更されたとき
+    document.getElementById('divider-style')
+        ?.addEventListener('change', (e) => {
+
+            const style = e.target.value;
+
+            // 区切り線の見た目を変更
+            divider.style.borderTopStyle = style;
+
+            // 設定をブロックに保存
+            block.dataset.dividerStyle = style;
+
+            // 履歴保存・変更通知
+            this.historyManager.save();
+            this.editor.markDirty();
+        });
+            // 区切り線の太さが変更されたとき
+    document.getElementById('divider-thickness')
+        ?.addEventListener('change', (e) => {
+
+            let thickness = parseInt(e.target.value, 10);
+
+            // 最小値1、最大値20に制限
+            if (!Number.isFinite(thickness)) {
+                thickness = 1;
+            }
+
+            thickness = Math.max(1, Math.min(20, thickness));
+
+            // 入力欄にも補正後の値を反映
+            e.target.value = thickness;
+
+            // 区切り線に太さを反映
+            divider.style.borderTopWidth = `${thickness}px`;
+
+            // 保存用データに記録
+            block.dataset.dividerThickness = String(thickness);
+
+            this.historyManager.save();
+            this.editor.markDirty();
+        });
+            // 区切り線の色が変更されたとき
+    document.getElementById('divider-color')
+        ?.addEventListener('input', (e) => {
+
+            const color = e.target.value;
+
+            // 区切り線に色を反映
+            divider.style.borderTopColor = color;
+
+            // 保存用データに記録
+            block.dataset.dividerColor = color;
+
+            this.historyManager.save();
+            this.editor.markDirty();
+        });
+        // 区切り線の余白が変更されたとき
+    document.getElementById('divider-margin')
+        ?.addEventListener('change', (e) => {
+
+            let margin = parseInt(e.target.value, 10);
+
+            // 最小値0、最大値100に制限
+            if (!Number.isFinite(margin)) {
+                margin = 10;
+            }
+
+            margin = Math.max(0, Math.min(100, margin));
+
+            // 入力欄にも補正後の値を反映
+            e.target.value = margin;
+
+            // 区切り線の上下に余白を反映
+            divider.style.marginTop = `${margin}px`;
+            divider.style.marginBottom = `${margin}px`;
+
+            // 保存用データに記録
+            block.dataset.dividerMargin = String(margin);
+
+            this.historyManager.save();
+            this.editor.markDirty();
+        });
+}
 }

@@ -4,6 +4,7 @@ import { ListBlock } from '../blocks/ListBlock.js';
 import { ButtonBlock } from '../blocks/ButtonBlock.js';
 import { ImageBlock } from '../blocks/ImageBlock.js';
 import { FormBlock } from '../blocks/FormBlock.js';
+import { DividerBlock } from '../blocks/DividerBlock.js';
 
 import { BlockSerializer }
     from '../serializers/BlockSerializer.js';
@@ -42,6 +43,9 @@ export class BlockManager {
 
             case 'form':
                 return this.addFormFromData(block);
+            
+            case 'divider':
+                return this.addDividerFromData(block);
         }
     }
 
@@ -128,6 +132,9 @@ export class BlockManager {
 
         document.getElementById('add-form')
             ?.addEventListener('click', () => this.addForm());
+        
+        document.getElementById('add-divider')
+            ?.addEventListener('click', () => this.addDivider());
     }
 
     // ------キャンバス内の追加表示------
@@ -186,8 +193,8 @@ export class BlockManager {
         this.editor.markDirty();
     }
 
-    addForm() {
-        const block = FormBlock.create();
+    addDivider() {
+        const block = DividerBlock.create();
 
         this.setupBlock(block);
         this.canvas.appendChild(block);
@@ -224,11 +231,15 @@ export class BlockManager {
         el.dataset.underline = style.underline;
         el.dataset.strike = style.strike;
         el.dataset.align = style.align;
+        el.dataset.lineHeight = style.lineHeight || '1';
+        el.dataset.letterSpacing = style.letterSpacing || '0px';
 
         const heading =
             el.querySelector('.editor-heading');
 
         heading.style.color = style.color || '';
+        heading.style.lineHeight = style.lineHeight || '1';
+        heading.style.letterSpacing = style.letterSpacing || '0px';
         heading.style.fontStyle =
             style.italic ? 'italic' : 'normal';
 
@@ -270,6 +281,15 @@ export class BlockManager {
         el.dataset.underline = style.underline;
         el.dataset.strike = style.strike;
         el.dataset.align = style.align;
+        el.dataset.lineHeight = style.lineHeight || '1';
+        el.dataset.letterSpacing = style.letterSpacing || '0px';
+
+        // ブロックの高さを復元
+        el.dataset.height = style.height || '';
+
+        if (style.height) {
+            el.style.height = `${style.height}px`;
+        }
 
         const text = el.querySelector('.editor-text');
 
@@ -277,6 +297,8 @@ export class BlockManager {
 
         text.style.fontSize =
             (style.fontSize || 16) + 'px';
+        text.style.lineHeight = style.lineHeight || '1';
+        text.style.letterSpacing = style.letterSpacing || '0px';
 
         text.style.fontStyle =
             style.italic ? 'italic' : 'normal';
@@ -302,22 +324,33 @@ export class BlockManager {
     addListFromData(block) {
 
         const el = document.createElement('div');
-        el.classList.add('block');
+        el.classList.add('block', 'list-block');
         el.dataset.type = 'list';
 
         const style = block.data.style || {};
 
+        const listColor = style.listColor || '#000000';
+        const listStyle = style.listStyle || 'disc';
+        const listFontSize = style.listFontSize || '16';
+
         el.innerHTML = `
-            <ul style="list-style-type:${style.listStyle || 'disc'}">
+            <ul class="editor-list" style="
+                list-style-type:${listStyle};
+                color:${listColor};
+            ">
                 ${block.data.items.map(item =>
                     `<li contenteditable="true">${item}</li>`
                 ).join('')}
             </ul>
         `;
 
-        el.dataset.listStyle =
-            style.listStyle || 'disc';
+        el.querySelectorAll('li').forEach((li) => {
+            li.style.fontSize = `${listFontSize}px`;
+        });
 
+        el.dataset.listStyle = listStyle;
+        el.dataset.listColor = listColor;
+        el.dataset.listFontSize = listFontSize;
         this.setupBlock(el);
         this.canvas.appendChild(el);
     }
@@ -404,6 +437,49 @@ export class BlockManager {
         el.dataset.placeholder = input.placeholder;
 
         this.setupBlock(el);
+        this.canvas.appendChild(el);    
+    }
+       // 独立した区切り線の保存復元
+    addDividerFromData(block) {
+
+        const el = DividerBlock.create();
+
+        // 保存データから種類を取得
+        const style =
+            block.data.style?.dividerStyle || 'solid';
+
+        // 保存データから太さを取得
+        const thickness =
+            block.data.style?.dividerThickness || '2';
+        
+        // 保存データから色を取得
+        const color =
+            block.data.style?.dividerColor || '#000000';
+        
+        // 保存データから余白を取得
+        const margin =
+            block.data.style?.dividerMargin || '10';
+
+        // 設定を復元
+        el.dataset.dividerStyle = style;
+        el.dataset.dividerThickness = thickness;
+        el.dataset.dividerColor = color;
+        el.dataset.dividerMargin = margin;
+
+        const divider =
+            el.querySelector('.editor-divider-element');
+
+        if (divider) {
+            divider.style.borderTopStyle = style;
+            divider.style.borderTopWidth = `${thickness}px`;
+            divider.style.borderTopColor = color;
+
+            divider.style.marginTop = `${margin}px`;
+            divider.style.marginBottom = `${margin}px`;
+        }
+
+        this.setupBlock(el);
         this.canvas.appendChild(el);
     }
+
 }
