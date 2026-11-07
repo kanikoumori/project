@@ -30,28 +30,22 @@ export class AutoSaveManager {
             this.save();
         }, this.interval);
     }
-
     async save() {
         if (!this.isDirty || this.isSaving) return;
 
-        const saveStatus =
-            document.getElementById('save-status');
+        // 手動保存中なら、1秒後にもう一度確認
+        if (this.editor.isSaving) {
+            this.timer = setTimeout(() => {
+                this.save();
+            }, 1000);
 
-        if (saveStatus) {
-            saveStatus.textContent = '保存済み';
+            return;
         }
-
 
         this.isSaving = true;
 
         try {
             await this.editor.save();
-
-            this.isDirty = false;
-
-            document.getElementById('save-status')
-                .textContent = '保存済み';
-
         } finally {
             this.isSaving = false;
         }

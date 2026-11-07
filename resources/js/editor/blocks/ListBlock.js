@@ -2,19 +2,24 @@ export class ListBlock{
     static create(){
         const block = document.createElement('div');
 
-        block.className = 'block p-2 rounded';
+        block.className = 'block list-block p-2 rounded';
 
-        // リスト初期値
+        const list = document.createElement('ul');
+        list.className = 'editor-list';
+
+        for (let i = 0; i < 3; i++) {
+            const item = document.createElement('li');
+
+            item.contentEditable = 'true';
+            item.textContent = 'リスト項目';
+
+            list.appendChild(item);
+        }
+
+        block.appendChild(list);
         block.dataset.type = 'list';
         block.dataset.listStyle = 'disc';
-
-        block.innerHTML = `
-            <ul class="editor-list" contenteditable="true">
-                <li contenteditable="true">リスト項目</li>
-                <li contenteditable="true">リスト項目</li>
-                <li contenteditable="true">リスト項目</li>
-            </ul>
-        `;
+        block.dataset.listFontSize = '16';
 
        return block;
     }

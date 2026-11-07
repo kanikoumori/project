@@ -8,21 +8,18 @@ export class FormBlock {
         block.dataset.placeholder = data.placeholder || '入力してください';
         block.dataset.value = data.value || '';
 
-        block.innerHTML = `
-            <input
-                type="text"
-                class="editor-input"
-                placeholder="${block.dataset.placeholder}"
-                value="${block.dataset.value}"
-            >
-        `;
+        const input = document.createElement('input');
 
-        const input = block.querySelector('.editor-input');
+        input.type = 'text';
+        input.className = 'editor-input';
+        input.placeholder = block.dataset.placeholder;
+        input.value = block.dataset.value;
 
-        // 入力同期（これ必須）
         input.addEventListener('input', (e) => {
             block.dataset.value = e.target.value;
         });
+
+        block.appendChild(input);
 
         return block;
     }

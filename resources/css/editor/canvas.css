@@ -1,9 +1,10 @@
 /* 作業スペース */
 .canvas-wrapper {
     flex: 1;
+    min-width: 0;
 
     overflow-y: auto;
-    overflow-x: auto;
+    overflow-x: hidden;
 
     padding: 0 16px 16px 16px;
 
@@ -12,12 +13,15 @@
         #f7fbff,
         #fff8f5
     );
+
+    box-sizing: border-box;
 }
 
 /* 実際のページ */
 .canvas {
     width: 100%;
     max-width: 1200px;
+    min-width: 0;
 
     min-height: calc(100vh - 140px);
 
