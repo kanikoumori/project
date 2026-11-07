@@ -119,7 +119,7 @@
 }
 
 /* フォーカス時 */
-.property input:focus,
+.property input:not([type="range"]):focus,
 .property select:focus {
     outline: none;
 
@@ -138,6 +138,23 @@
     cursor: pointer;
 
     border-radius: 8px;
+}
+/* スライダー */
+.property input[type="range"] {
+    width: 100%;
+    padding: 0;
+    margin: 8px 0 12px;
+
+    border: none;
+    border-radius: 0;
+
+    background: transparent;
+
+    box-shadow: none;
+
+    cursor: pointer;
+
+    appearance: auto;
 }
 
 .property-toggle {
