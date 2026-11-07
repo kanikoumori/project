@@ -10,21 +10,18 @@ export class ButtonBlock{
         block.dataset.buttonTextColor = '#ffffff';
         block.dataset.buttonRadius = '12';
 
-        block.innerHTML = `
-            <button
-                class="editor-button"
-                contenteditable="true"
-                style="
-                    background-color:#5B9DFF;
-                    color:#ffffff;
-                    border:none;
-                    border-radius:12px;
-                    padding:12px 24px;
-                "
-            >
-                ボタン
-            </button>
-        `;
+        const button = document.createElement('button');
+
+        button.className = 'editor-button';
+        button.contentEditable = 'true';
+        button.style.backgroundColor = '#5B9DFF';
+        button.style.color = '#ffffff';
+        button.style.border = 'none';
+        button.style.borderRadius = '12px';
+        button.style.padding = '12px 24px';
+        button.textContent = 'ボタン';
+
+        block.appendChild(button);
         
         return block;
     }
