@@ -12,7 +12,7 @@ export class PropertyManager {
     }
 
     safeColor(v) {
-        return (typeof v === 'string' && v.startsWith('#'))
+        return (typeof v === 'string' && /^#[0-9a-fA-F]{6}$/.test(v))
             ? v
             : '#000000';
     }
@@ -56,12 +56,22 @@ export class PropertyManager {
         const currentItalic =
         block.dataset.italic === 'true';
 
+        const lineHeightValue = Number(block.dataset.lineHeight);
+
         const currentLineHeight =
-        block.dataset.lineHeight || '1.5';
+            Number.isFinite(lineHeightValue)
+                ? Math.max(1, lineHeightValue)
+                : 1.5;
 
         // テキストブロックの高さ
+        const heightValue = Number(block.dataset.height);
+
         const currentHeight =
-        block.dataset.height || '';
+            block.dataset.height === undefined || block.dataset.height === ''
+                ? ''
+                : (Number.isFinite(heightValue) && heightValue >= 1
+                    ? heightValue
+                    : '');
 
         // 見出し文字間隔
         const currentLetterSpacing =
@@ -130,7 +140,7 @@ export class PropertyManager {
                         type="number"
                         id="heading-letter-spacing"
                         step="0.1"
-                        value="${parseFloat(currentLetterSpacing) || 0}"
+                        value="${Number.isFinite(parseFloat(currentLetterSpacing)) ? parseFloat(currentLetterSpacing) : 0}"
                     >                   
                     
                     <label>装飾</label>
@@ -186,7 +196,7 @@ export class PropertyManager {
                         id="text-size"
                         min="12"
                         max="72"
-                        value="${block.dataset.fontSize || '16'}"
+                        value="${Math.min(72, Math.max(12, Number(block.dataset.fontSize) || 16))}"
                     >
 
                     <label>配置</label>
@@ -222,7 +232,7 @@ export class PropertyManager {
                         type="number"
                         id="text-letter-spacing"
                         step="0.1"
-                        value="${parseFloat(block.dataset.letterSpacing || '0')}"
+                        value="${Number.isFinite(parseFloat(block.dataset.letterSpacing)) ? parseFloat(block.dataset.letterSpacing) : 0}"
                     >
 
                     <label>ブロックの高さ（px）</label>
@@ -303,10 +313,10 @@ export class PropertyManager {
                         id="list-font-size"
                         min="12"
                         max="72"
-                        value="${block.dataset.listFontSize || '16'}"
+                        value="${Math.min(72, Math.max(12, Number(block.dataset.listFontSize) || 16))}"
                     >
                     <span id="list-font-size-value">
-                        ${block.dataset.listFontSize || '16'}px
+                        ${Math.min(72, Math.max(12, Number(block.dataset.listFontSize) || 16))}px
                     </span>
                 `;
 
@@ -329,7 +339,7 @@ export class PropertyManager {
                     <input
                         type="color"
                         id="button-text-color"
-                        value="${block.dataset.buttonTextColor || '#ffffff'}"
+                        value="${this.safeColor(block.dataset.buttonTextColor)}"
                     >
 
                     <label>角丸</label>
@@ -338,7 +348,7 @@ export class PropertyManager {
                         id="button-radius"
                         min="0"
                         max="50"
-                        value="${block.dataset.buttonRadius || '12'}"
+                        value="${Math.min(50, Math.max(0, Number.isFinite(Number(block.dataset.buttonRadius)) && block.dataset.buttonRadius !== '' ? Number(block.dataset.buttonRadius) : 12))}"
                     >
                 `;
 
@@ -354,7 +364,7 @@ export class PropertyManager {
                     <input
                         type="file"
                         id="image-upload"
-                        accept="image/*"
+                        accept=".jpg,.jpeg,.png,.gif,.webp"
                         style="display: none;"
                     >
 
@@ -373,11 +383,11 @@ export class PropertyManager {
                             id="image-width"
                             min="1"
                             max="100"
-                            value="${block.dataset.imageWidth || '100'}"
+                            value="${Math.min(100, Math.max(1, Number(block.dataset.imageWidth) || 100))}"
                         >
 
                         <span id="image-width-value">
-                            ${block.dataset.imageWidth || '100'} %
+                            ${Math.min(100, Math.max(1, Number(block.dataset.imageWidth) || 100))} %
                         </span>
                 `;
 
@@ -395,9 +405,11 @@ export class PropertyManager {
                     type="text"
                     id="form-placeholder"
                     class="editor-input"
-                    value="${block.dataset.placeholder || ''}"
                 >
             `;
+
+            document.getElementById('form-placeholder').value =
+                block.dataset.placeholder || '';
 
             this.bindFormEvents(block);
 
@@ -437,7 +449,7 @@ export class PropertyManager {
                         id="divider-thickness"
                         min="1"
                         max="20"
-                        value="${currentDividerThickness}"
+                        value="${Math.min(20, Math.max(1, Number(currentDividerThickness) || 2))}"
                     >
                     <label>区切り線の色</label>
                     <input
@@ -452,7 +464,7 @@ export class PropertyManager {
                         min="0"
                         max="100"
                         step="1"
-                        value="${currentDividerMargin}"
+                        value="${Math.min(100, Math.max(0, Number(currentDividerMargin) || 0))}"
                     >
                  `;
 
@@ -482,10 +494,10 @@ export class PropertyManager {
                 );
                 if (!heading) return;
 
-                heading.style.color = e.target.value;
+                const color = this.safeColor(e.target.value);
 
-                block.dataset.color = e.target.value;
-
+                heading.style.color = color;
+                block.dataset.color = color;
                 this.historyManager.save();
                 this.editor.markDirty();
             });
@@ -500,7 +512,17 @@ export class PropertyManager {
 
                 if (!heading) return;
 
-                const letterSpacing = `${e.target.value}px`;
+                let spacing = Number(e.target.value);
+
+                if (!Number.isFinite(spacing)) {
+                    spacing = 0;
+                }
+
+                spacing = Math.max(-20, Math.min(100, spacing));
+
+                e.target.value = spacing;
+
+                const letterSpacing = `${spacing}px`;
 
                 // 見出しに文字間隔を反映
                 heading.style.letterSpacing = letterSpacing;
@@ -550,19 +572,24 @@ export class PropertyManager {
                 const oldHeading = block.querySelector(
                     'h1, h2, h3, h4, h5, h6'
                 );
+                if (!oldHeading) return;
 
-                const newHeading = document.createElement(
-                    e.target.value
-                );
+                const allowedTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
 
-                newHeading.innerHTML = oldHeading.innerHTML;
+                const tag = allowedTags.includes(e.target.value)
+                    ? e.target.value
+                    : 'h1';
+
+                const newHeading = document.createElement(tag);
+
+                newHeading.textContent = oldHeading.textContent;
                 newHeading.contentEditable = true;
                 newHeading.className = oldHeading.className;
                 newHeading.style.cssText = oldHeading.style.cssText;
 
                 oldHeading.replaceWith(newHeading);
 
-                block.dataset.tag = e.target.value;
+                block.dataset.tag = tag;
                 this.historyManager.save();
                 this.editor.markDirty();
             });
@@ -571,9 +598,14 @@ export class PropertyManager {
             .getElementById('heading-align')
             ?.addEventListener('change', (e) => {
 
-                block.style.textAlign = e.target.value;
+                const allowedAlignments = ['left', 'center', 'right'];
 
-                block.dataset.align = e.target.value;
+                const align = allowedAlignments.includes(e.target.value)
+                    ? e.target.value
+                    : 'left';
+
+                block.style.textAlign = align;
+                block.dataset.align = align;
                 this.historyManager.save();
                 this.editor.markDirty();
             });
@@ -658,9 +690,10 @@ export class PropertyManager {
         document.getElementById('text-color')
             .addEventListener('change', (e) => {
 
-                text.style.color = e.target.value;
+                const color = this.safeColor(e.target.value);
 
-                block.dataset.color = e.target.value;
+                text.style.color = color;
+                block.dataset.color = color;
                 this.historyManager.save();
                 this.editor.markDirty();
             });
@@ -668,9 +701,19 @@ export class PropertyManager {
         document.getElementById('text-size')
             ?.addEventListener('change', (e) => {
 
-                text.style.fontSize = `${e.target.value}px`;
+                let fontSize = Number(e.target.value);
 
-                block.dataset.fontSize = e.target.value;
+                if (!Number.isFinite(fontSize)) {
+                    fontSize = 16;
+                }
+
+                fontSize = Math.max(12, Math.min(72, fontSize));
+
+                e.target.value = fontSize;
+
+                text.style.fontSize = `${fontSize}px`;
+
+                block.dataset.fontSize = fontSize;
                 this.historyManager.save();
                 this.editor.markDirty();
             });
@@ -678,9 +721,14 @@ export class PropertyManager {
         document.getElementById('text-align')
             ?.addEventListener('change', (e) => {
 
-                block.style.textAlign = e.target.value;
+                const allowedAlignments = ['left', 'center', 'right'];
 
-                block.dataset.align = e.target.value;
+                const align = allowedAlignments.includes(e.target.value)
+                    ? e.target.value
+                    : 'left';
+
+                block.style.textAlign = align;
+                block.dataset.align = align;
                 this.historyManager.save();
                 this.editor.markDirty();
             });
@@ -712,7 +760,17 @@ export class PropertyManager {
         document.getElementById('text-letter-spacing')
             ?.addEventListener('change', (e) => {
 
-                const letterSpacing = `${e.target.value}px`;
+                let spacing = Number(e.target.value);
+
+                if (!Number.isFinite(spacing)) {
+                    spacing = 0;
+                }
+
+                spacing = Math.max(-20, Math.min(100, spacing));
+
+                e.target.value = spacing;
+
+                const letterSpacing = `${spacing}px`;
 
                 // テキストに文字間隔を反映
                 text.style.letterSpacing = letterSpacing;
@@ -727,16 +785,25 @@ export class PropertyManager {
         document.getElementById('text-height')
             ?.addEventListener('change', (e) => {
 
-                const height = e.target.value;
+                const heightValue = e.target.value;
 
-                if (height === '') {
+                if (heightValue === '') {
                     block.style.height = '';
                     delete block.dataset.height;
                 } else {
+                    let height = Number(heightValue);
+
+                    if (!Number.isFinite(height)) {
+                        height = 100;
+                    }
+
+                    height = Math.max(1, Math.min(2000, height));
+
+                    e.target.value = height;
+
                     block.style.height = `${height}px`;
                     block.dataset.height = height;
                 }
-
                 this.historyManager.save();
                 this.editor.markDirty();
             });
@@ -821,9 +888,14 @@ export class PropertyManager {
         document.getElementById('list-style')
             ?.addEventListener('change', (e) => {
 
-                ul.style.listStyleType = e.target.value;
+                const allowedStyles = ['disc', 'circle', 'decimal'];
 
-                block.dataset.listStyle = e.target.value;
+                const style = allowedStyles.includes(e.target.value)
+                    ? e.target.value
+                    : 'disc';
+
+                ul.style.listStyleType = style;
+                block.dataset.listStyle = style;
 
                 this.historyManager.save();
                 this.editor.markDirty();
@@ -833,10 +905,9 @@ export class PropertyManager {
         document.getElementById('list-color')
             ?.addEventListener('input', (e) => {
 
-                const color = e.target.value;
+                const color = this.safeColor(e.target.value);
 
                 ul.style.color = color;
-
                 block.dataset.listColor = color;
 
                 this.historyManager.save();
@@ -846,7 +917,15 @@ export class PropertyManager {
         document.getElementById('list-font-size')
             ?.addEventListener('input', (e) => {
 
-                const fontSize = e.target.value;
+                let fontSize = Number(e.target.value);
+
+                if (!Number.isFinite(fontSize)) {
+                    fontSize = 16;
+                }
+
+                fontSize = Math.max(12, Math.min(72, fontSize));
+
+                e.target.value = fontSize;
 
                 const items = block.querySelectorAll('li');
 
@@ -869,16 +948,17 @@ export class PropertyManager {
 
     bindButtonEvents(block) {
 
-        const button = block.querySelector('button');
+        const button = block.querySelector('.editor-button');
 
         if (!button) return;
 
         document.getElementById('button-color')
             ?.addEventListener('input', (e) => {
 
-                button.style.backgroundColor = e.target.value;
+                const color = this.safeColor(e.target.value);
 
-                block.dataset.buttonColor = e.target.value;
+                button.style.backgroundColor = color;
+                block.dataset.buttonColor = color;
                 this.historyManager.save();
                 this.editor.markDirty();
             });
@@ -886,9 +966,10 @@ export class PropertyManager {
         document.getElementById('button-text-color')
             ?.addEventListener('input', (e) => {
 
-                button.style.color = e.target.value;
+                const color = this.safeColor(e.target.value);
 
-                block.dataset.buttonTextColor = e.target.value;
+                button.style.color = color;
+                block.dataset.buttonTextColor = color;
                 this.historyManager.save();
                 this.editor.markDirty();
             });
@@ -896,9 +977,19 @@ export class PropertyManager {
         document.getElementById('button-radius')
             ?.addEventListener('change', (e) => {
 
-                button.style.borderRadius = `${e.target.value}px`;
+                let radius = Number(e.target.value);
 
-                block.dataset.buttonRadius = e.target.value;
+                if (!Number.isFinite(radius)) {
+                    radius = 12;
+                }
+
+                radius = Math.max(0, Math.min(50, radius));
+
+                e.target.value = radius;
+
+                button.style.borderRadius = `${radius}px`;
+
+                block.dataset.buttonRadius = radius;
                 this.historyManager.save();
                 this.editor.markDirty();
             });
@@ -916,28 +1007,61 @@ export class PropertyManager {
             });
 
         fileInput?.addEventListener('change', (e) => {
-
             const file = e.target.files[0];
 
             if (!file) return;
 
+            const allowedTypes = [
+                'image/jpeg',
+                'image/png',
+                'image/gif',
+                'image/webp'
+            ];
+
+            if (!allowedTypes.includes(file.type)) {
+                alert('JPEG、PNG、GIF、WebP形式の画像を選択してください。');
+                e.target.value = '';
+                return;
+            }
+            if (file.size > 5 * 1024 * 1024) {
+                alert('画像ファイルは5MB以下にしてください。');
+                e.target.value = '';
+                return;
+            }
             const reader = new FileReader();
+
+
 
             reader.onload = () => {
 
-                block.innerHTML = `
-                    <img
-                        src="${reader.result}"
-                        class="editor-image"
-                        style="
-                            width:${block.dataset.imageWidth || 100}%;
-                        "
-                    >
-                `;
+                if (typeof reader.result !== 'string') {
+                    alert('画像の読み込みに失敗しました。');
+                    return;
+                }
+
+
+                const img = document.createElement('img');
+
+                img.src = reader.result;
+                img.className = 'editor-image';
+                let width = Number(block.dataset.imageWidth);
+
+                if (!Number.isFinite(width)) {
+                    width = 100;
+                }
+
+                width = Math.max(1, Math.min(100, width));
+
+                img.style.width = `${width}%`;
+
+                block.replaceChildren(img);
 
                 block.dataset.src = reader.result;
                 this.historyManager.save();
                 this.editor.markDirty();
+            };
+            reader.onerror = () => {
+                alert('画像の読み込みに失敗しました。');
             };
 
             reader.readAsDataURL(file);
@@ -950,7 +1074,15 @@ export class PropertyManager {
 
                 if (!img) return;
 
-                const width = e.target.value;
+                let width = Number(e.target.value);
+
+                if (!Number.isFinite(width)) {
+                    width = 100;
+                }
+
+                width = Math.max(1, Math.min(100, width));
+
+                e.target.value = width;
 
                 block.dataset.imageWidth = width;
 
@@ -997,7 +1129,13 @@ bindDividerEvents(block) {
     document.getElementById('divider-style')
         ?.addEventListener('change', (e) => {
 
-            const style = e.target.value;
+            const allowedStyles = ['solid', 'dashed', 'dotted', 'double'];
+
+            const style = allowedStyles.includes(e.target.value)
+                ? e.target.value
+                : 'solid';
+
+            e.target.value = style;
 
             // 区切り線の見た目を変更
             divider.style.borderTopStyle = style;
@@ -1038,7 +1176,7 @@ bindDividerEvents(block) {
     document.getElementById('divider-color')
         ?.addEventListener('input', (e) => {
 
-            const color = e.target.value;
+            const color = this.safeColor(e.target.value);
 
             // 区切り線に色を反映
             divider.style.borderTopColor = color;

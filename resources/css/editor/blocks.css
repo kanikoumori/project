@@ -274,6 +274,14 @@
     overflow-wrap: anywhere;
 }
 
+/* ここに追加 */
+.editor-text {
+    width: 100%;
+    min-height: 28px;
+    line-height: 1.7;
+    outline: none;
+}
+
 .list-block .editor-list li {
     display: list-item;
 

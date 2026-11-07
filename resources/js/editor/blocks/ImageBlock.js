@@ -9,11 +9,12 @@ export class ImageBlock{
         block.dataset.imageWidth = '100';
         block.dataset.src = '';
 
-        block.innerHTML = `
-            <div class="editor-image-placeholder">
-                画像を選択してください
-            </div>
-        `;
+        const placeholder = document.createElement('div');
+
+        placeholder.className = 'editor-image-placeholder';
+        placeholder.textContent = '画像を選択してください';
+
+        block.appendChild(placeholder);
         
         return block;
     }

@@ -53,7 +53,7 @@ export class Editor {
             });
 
         document.getElementById('save-button')
-            ?.addEventListener('click', async () => {
+            ?.addEventListener('click', () => {
                 this.save();
             });
     }
@@ -91,7 +91,15 @@ export class Editor {
     // ボタンセーブ
     async save() {
 
-        if (this.isSaving) return;
+        if (this.isSaving) {
+            return;
+        }
+
+        // 自動保存の予約を解除
+        if (this.autoSaveManager.timer) {
+            clearTimeout(this.autoSaveManager.timer);
+            this.autoSaveManager.timer = null;
+        }
 
         this.isSaving = true;
 
@@ -133,6 +141,15 @@ export class Editor {
             if (!response.ok) {
                 throw new Error('保存失敗');
             }
+            this.autoSaveManager.isDirty = false;
+            this.autoSaveManager.timer = null;
+
+            const saveStatus =
+                document.getElementById('save-status');
+
+            if (saveStatus) {
+                saveStatus.textContent = '保存済み';
+            }
 
         } finally {
 
@@ -143,13 +160,6 @@ export class Editor {
             }
         
         }
-        const saveStatus =
-            document.getElementById('save-status');
-
-        if (saveStatus) {
-            saveStatus.textContent = '保存済み';
-}
-
     }
     
 
