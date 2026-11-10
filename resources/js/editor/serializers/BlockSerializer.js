@@ -28,7 +28,7 @@ export class BlockSerializer {
                         underline: block.dataset.underline === 'true',
                         strike: block.dataset.strike === 'true',
                         align: block.dataset.align || 'left',
-                        lineHeight: block.dataset.lineHeight || '1.3',
+                        lineHeight: block.dataset.lineHeight || '1.0',
                         letterSpacing: block.dataset.letterSpacing || '0px'
                     }
                 };
@@ -50,7 +50,7 @@ export class BlockSerializer {
                         underline: block.dataset.underline === 'true',
                         strike: block.dataset.strike === 'true',
                         align: block.dataset.align || 'left',
-                        lineHeight: block.dataset.lineHeight || '1.7',
+                        lineHeight: block.dataset.lineHeight || '1.0',
                         letterSpacing: block.dataset.letterSpacing || '0px',
                         height: block.dataset.height || '',
                     }
@@ -69,6 +69,7 @@ export class BlockSerializer {
                     items,
                     style: {
                         listStyle: block.dataset.listStyle || 'disc',
+                        listPosition: block.dataset.listPosition || 'outside',
                         listColor: block.dataset.listColor || '#000000',
                         listFontSize: block.dataset.listFontSize || '16'
                     }
@@ -88,7 +89,12 @@ export class BlockSerializer {
                     style: {
                         buttonColor: block.dataset.buttonColor,
                         buttonTextColor: block.dataset.buttonTextColor,
-                        buttonRadius: block.dataset.buttonRadius
+                        buttonRadius: block.dataset.buttonRadius,
+                        buttonWidth: block.dataset.buttonWidth || '150',
+                        buttonHeight: block.dataset.buttonHeight || '48',
+                        buttonBorderWidth: block.dataset.buttonBorderWidth || '0',
+                        buttonBorderColor: block.dataset.buttonBorderColor || '#000000',
+                        buttonBorderStyle: block.dataset.buttonBorderStyle || 'solid'
                     }
                 };
 
@@ -97,30 +103,33 @@ export class BlockSerializer {
             }
 
             if (type === 'image') {
-                if (!block.dataset.src) {
-                    return;
-                }
-
                 data.data = {
-                    src: block.dataset.src,
+                    src: block.dataset.src || '',
+                    alt: block.dataset.alt || '',
                     style: {
-                        imageWidth: block.dataset.imageWidth,
+                        imageWidth: block.dataset.imageWidth || '100',
+                        imageAlign: block.dataset.imageAlign || 'left',
+                        imageRadius: block.dataset.imageRadius || '0',
+                        imageOpacity: block.dataset.imageOpacity ?? '100'
                     }
                 };
 
                 blocksData.push(data);
                 return;
             }
+        
 
             if (type === 'form') {
-                
+
                 data.data = {
+                    value: block.dataset.value || '',
+
                     style: {
                         placeholder:
                             block.dataset.placeholder || '入力してください',
 
                         inputType:
-                        block.dataset.inputType || 'text'
+                            block.dataset.inputType || 'text'
                     }
                 };
 
@@ -142,13 +151,75 @@ export class BlockSerializer {
                         block.dataset.dividerColor || '#000000',
                     
                     dividerMargin:
-                        block.dataset.dividerMargin || '10'
+                        block.dataset.dividerMargin ?? '10'
                 }
             };
 
             blocksData.push(data);
             return;
         }
+                        // テーブル
+    if (type === 'table') {
+
+        const table = block.querySelector('.editor-table');
+
+        const rows = table
+            ? [...table.querySelectorAll('tr')].map(tr =>
+                [...tr.querySelectorAll('td, th')].map(cell => ({
+                    text: cell.textContent,
+
+                    textColor: cell.style.color || '',
+
+                    backgroundColor: cell.style.backgroundColor || '',
+
+                    border: cell.style.border || '',
+
+                    colspan: Number(cell.colSpan) || 1,
+
+                    rowspan: Number(cell.rowSpan) || 1,
+
+                    mergedCells: cell.dataset.mergedCells || null
+                }))
+            )
+            : [];
+
+        let columnWidths = [];
+        let rowHeights = [];
+
+        try {
+            columnWidths = JSON.parse(
+                block.dataset.tableColumnWidths || '[]'
+            );
+
+            rowHeights = JSON.parse(
+                block.dataset.tableRowHeights || '[]'
+            );
+        } catch {
+            columnWidths = [];
+            rowHeights = [];
+        }
+
+        data.data = {
+            rows,
+            style: {
+                tableBorderStyle:
+                    block.dataset.tableBorderStyle || 'solid',
+
+                tableTextColor:
+                    block.dataset.tableTextColor || '#000000',
+
+                tableBackgroundColor:
+                    block.dataset.tableBackgroundColor || '#ffffff',
+
+                tableColumnWidths: columnWidths,
+
+                tableRowHeights: rowHeights
+            }
+        };
+
+        blocksData.push(data);
+        return;
+    }
 
         });
 
