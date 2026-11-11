@@ -34,11 +34,13 @@ export class Editor {
     }
 
     // ボタン操作
-    initialize() {
+    async initialize() {
         this.historyManager.initialize();
         this.blockManager.initialize();
         this.dragDrop.initialize();
-        this.loadPage();
+
+        // ページの読み込み完了を待つ
+        await this.loadPage();
 
         document.getElementById('undo-button')
             ?.addEventListener('click', () => {
@@ -57,7 +59,6 @@ export class Editor {
                 this.save();
             });
     }
-
     // ページの再読み込み
     async loadPage() {
 

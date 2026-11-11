@@ -20,6 +20,7 @@ export class ListBlock{
         block.dataset.type = 'list';
         block.dataset.listStyle = 'disc';
         block.dataset.listFontSize = '16';
+        block.dataset.listPosition = 'outside';
 
        return block;
     }

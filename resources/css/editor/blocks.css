@@ -310,3 +310,47 @@
     border-top: 2px solid #000000;
     margin: 10px 0;
 }
+
+/* テーブルブロック */
+.table-block {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+/* テーブル本体 */
+.editor-table {
+    width: 100%;
+    max-width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    box-sizing: border-box;
+}
+
+/* テーブルのセル */
+.editor-table td,
+.editor-table th {
+    border: 1px solid #000000;
+    padding: 8px;
+    min-width: 0;
+    height: 40px;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    outline: none;
+}
+
+/* ボタンのサイズ調整 */
+.editor-button {
+    box-sizing: border-box;
+
+    transition:
+        width 0.15s ease,
+        height 0.15s ease,
+        background 0.2s,
+        transform 0.2s,
+        box-shadow 0.2s;
+}
