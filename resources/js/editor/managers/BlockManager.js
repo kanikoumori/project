@@ -263,11 +263,11 @@ export class BlockManager {
         el.dataset.underline = style.underline;
         el.dataset.strike = style.strike;
         el.dataset.align = style.align;
-        el.dataset.lineHeight = style.lineHeight || '1.0';
+        el.dataset.lineHeight = style.lineHeight || '1.3';
         el.dataset.letterSpacing = style.letterSpacing || '0px';
 
         heading.style.color = style.color || '';
-        heading.style.lineHeight = style.lineHeight || '1.0';
+        heading.style.lineHeight = style.lineHeight || '1.3';
         heading.style.letterSpacing = style.letterSpacing || '0px';
 
         heading.style.fontWeight =
@@ -316,7 +316,7 @@ export class BlockManager {
         el.dataset.underline = style.underline;
         el.dataset.strike = style.strike;
         el.dataset.align = style.align;
-        el.dataset.lineHeight = style.lineHeight || '1.0';
+        el.dataset.lineHeight = style.lineHeight || '1.7';
         el.dataset.letterSpacing = style.letterSpacing || '0px';
 
         // ブロックの高さを復元
@@ -331,7 +331,7 @@ export class BlockManager {
 
         text.style.fontSize =
             (style.fontSize || 16) + 'px';
-        text.style.lineHeight = style.lineHeight || '1.0';
+        text.style.lineHeight = style.lineHeight || '1.7';
         text.style.letterSpacing = style.letterSpacing || '0px';
 
         text.style.fontStyle =

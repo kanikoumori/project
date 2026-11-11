@@ -2342,7 +2342,7 @@ bindTableEvents(block) {
                 return {
                     row: cellRow,
                     col: cellCol,
-                    html: cell.innerHTML,
+                    text: cell.textContent,
                     textColor: cell.style.color,
                     backgroundColor: cell.style.backgroundColor,
                     border: cell.style.border,
@@ -2410,7 +2410,7 @@ bindTableEvents(block) {
             cell.colSpan = mainBackup.colspan || 1;
             cell.rowSpan = mainBackup.rowspan || 1;
 
-            cell.innerHTML = mainBackup.html || '';
+            cell.textContent = mainBackup.text ?? mainBackup.html ?? '';
 
             cell.style.color = mainBackup.textColor || '';
             cell.style.backgroundColor = mainBackup.backgroundColor || '';
@@ -2449,7 +2449,7 @@ restoreCells.forEach(saved => {
         this.historyManager.save();
     });
 
-    newCell.innerHTML = saved.html || '';
+    newCell.textContent = saved.text ?? saved.html ?? '';
 
     newCell.style.color = saved.textColor || '';
     newCell.style.backgroundColor = saved.backgroundColor || '';
@@ -2465,6 +2465,7 @@ restoreCells.forEach(saved => {
 
     insertCellAtPosition(targetRow, newCell, saved.col);
 });
+
 
             clearCellSelection();
 
@@ -2688,25 +2689,139 @@ restoreCells.forEach(saved => {
 
         const oldRows = [...table.querySelectorAll('tr')];
 
-        // 結合セルをすべて解除する
+        // 変更前の結合情報を記録する
+const mergeRecords = [];
+const recordedMerges = new Set();
+
+const collectNestedMerges = (
+    row,
+    col,
+    rowspan,
+    colspan,
+    backupJson
+) => {
+
+    const key = `${row}:${col}:${rowspan}:${colspan}`;
+
+    if (recordedMerges.has(key)) return;
+
+    recordedMerges.add(key);
+
+    mergeRecords.push({
+        row,
+        col,
+        rowspan,
+        colspan
+    });
+
+    let backup;
+
+    try {
+        backup = JSON.parse(backupJson);
+    } catch {
+        return;
+    }
+
+    if (!Array.isArray(backup)) return;
+
+    // 結合セルの中にある、さらに結合されたセルも記録する
+    backup.forEach(saved => {
+
+        if (!saved.mergedCells) return;
+
+        collectNestedMerges(
+            saved.row,
+            saved.col,
+            Math.max(1, saved.rowspan || 1),
+            Math.max(1, saved.colspan || 1),
+            saved.mergedCells
+        );
+    });
+};
+
+        // 現在のテーブル配置から結合セルの位置を取得する
+        const currentGrid = Array.from(
+            { length: oldRows.length },
+            () => []
+        );
+
+        oldRows.forEach((tr, rowIndex) => {
+
+            let colIndex = 0;
+
+            [...tr.querySelectorAll('td, th')].forEach(cell => {
+
+                while (currentGrid[rowIndex][colIndex]) {
+                    colIndex++;
+                }
+
+                const rowspan = Math.max(1, cell.rowSpan || 1);
+                const colspan = Math.max(1, cell.colSpan || 1);
+
+                if (cell.dataset.mergedCells) {
+                    collectNestedMerges(
+                        rowIndex,
+                        colIndex,
+                        rowspan,
+                        colspan,
+                        cell.dataset.mergedCells
+                    );
+                }
+
+                for (
+                    let r = rowIndex;
+                    r < rowIndex + rowspan;
+                    r++
+                ) {
+                    for (
+                        let c = colIndex;
+                        c < colIndex + colspan;
+                        c++
+                    ) {
+                        if (currentGrid[r]) {
+                            currentGrid[r][c] = cell;
+                        }
+                    }
+                }
+
+                colIndex += colspan;
+            });
+        });
+
+                // 結合セルをすべて解除する（入れ子の結合にも対応）
         const mergedCells = [
             ...table.querySelectorAll(
                 'td[data-merged-cells], th[data-merged-cells]'
             )
         ];
 
-        mergedCells.forEach(cell => {
+        const mergeQueue = [...mergedCells];
+
+        while (mergeQueue.length > 0) {
+
+            const cell = mergeQueue.shift();
+
+            if (!cell.isConnected || !cell.dataset.mergedCells) {
+                continue;
+            }
+
+            const backupJson = cell.dataset.mergedCells;
+
+            // 処理済みとして一度結合情報を削除
+            delete cell.dataset.mergedCells;
 
             let backup;
 
             try {
-                backup = JSON.parse(cell.dataset.mergedCells);
+                backup = JSON.parse(backupJson);
             } catch {
                 console.error('セルの結合情報を読み込めませんでした。');
-                return;
+                continue;
             }
 
-            if (!Array.isArray(backup) || backup.length === 0) return;
+            if (!Array.isArray(backup) || backup.length === 0) {
+                continue;
+            }
 
             // 結合前のセル情報を位置順に並べる
             const restoreCells = [...backup].sort((a, b) => {
@@ -2718,16 +2833,16 @@ restoreCells.forEach(saved => {
 
             cell.colSpan = mainBackup.colspan || 1;
             cell.rowSpan = mainBackup.rowspan || 1;
-            cell.innerHTML = mainBackup.html || '';
+            cell.textContent = mainBackup.text ?? mainBackup.html ?? '';
 
             cell.style.color = mainBackup.textColor || '';
             cell.style.backgroundColor = mainBackup.backgroundColor || '';
             cell.style.border = mainBackup.border || '';
 
+            // 左上セルに入れ子の結合情報があれば再度処理する
             if (mainBackup.mergedCells) {
                 cell.dataset.mergedCells = mainBackup.mergedCells;
-            } else {
-                delete cell.dataset.mergedCells;
+                mergeQueue.push(cell);
             }
 
             // 残りのセルを元の位置に復元
@@ -2740,7 +2855,7 @@ restoreCells.forEach(saved => {
                 const newCell = document.createElement('td');
 
                 newCell.contentEditable = 'true';
-                newCell.innerHTML = saved.html || '';
+                newCell.textContent = saved.text ?? saved.html ?? '';
 
                 newCell.style.color = saved.textColor || '';
                 newCell.style.backgroundColor = saved.backgroundColor || '';
@@ -2749,26 +2864,24 @@ restoreCells.forEach(saved => {
                 newCell.colSpan = saved.colspan || 1;
                 newCell.rowSpan = saved.rowspan || 1;
 
+                // 入れ子の結合情報を引き継ぐ
                 if (saved.mergedCells) {
                     newCell.dataset.mergedCells = saved.mergedCells;
+                    mergeQueue.push(newCell);
                 }
 
-                // 編集内容を変更として記録
                 newCell.addEventListener('input', () => {
                     this.editor.markDirty();
                 });
 
-                // 編集終了時に履歴を保存
                 newCell.addEventListener('blur', () => {
                     this.historyManager.save();
                 });
 
-            // 元の列位置に挿入
-            insertCellAtPosition(targetRow, newCell, saved.col);
-
-            
+                // 元の列位置に挿入
+                insertCellAtPosition(targetRow, newCell, saved.col);
             });
-        });
+}
             // 結合解除後のセル配置表を作成
             const oldGrid = Array.from(
                 { length: oldRows.length },
@@ -2826,7 +2939,7 @@ restoreCells.forEach(saved => {
                     if (oldCell) {
 
                         // 文字内容を引き継ぐ
-                        td.innerHTML = oldCell.innerHTML;
+                        td.textContent = oldCell.textContent;
 
                         // セルごとの設定を引き継ぐ
                         td.style.color = oldCell.style.color;
@@ -2867,6 +2980,134 @@ restoreCells.forEach(saved => {
 
         // テーブルを再構築
         table.replaceChildren(tbody);
+
+        // 変更後のテーブルに結合セルを再適用する
+        const newRows = [...tbody.querySelectorAll('tr')];
+
+        const newGrid = newRows.map(tr => [
+            ...tr.querySelectorAll('td, th')
+        ]);
+
+        // セルの元の位置を記録する
+        const cellPositions = new Map();
+
+        newGrid.forEach((row, rowIndex) => {
+            row.forEach((cell, colIndex) => {
+                cellPositions.set(cell, {
+                    row: rowIndex,
+                    col: colIndex
+                });
+            });
+        });
+
+        // 入れ子の結合を先に復元するため、小さい結合から処理する
+        mergeRecords.sort((a, b) => {
+            return (a.rowspan * a.colspan) - (b.rowspan * b.colspan);
+        });
+
+        mergeRecords.forEach(record => {
+
+            // テーブルの範囲外にある結合は無視する
+            if (
+                record.row < 0 ||
+                record.col < 0 ||
+                record.row >= rows ||
+                record.col >= columns
+            ) {
+                return;
+            }
+
+            // 新しいテーブルの範囲内に結合範囲を収める
+            const clippedRowspan = Math.min(
+                record.rowspan,
+                rows - record.row
+            );
+
+            const clippedColspan = Math.min(
+                record.colspan,
+                columns - record.col
+            );
+
+            if (
+                clippedRowspan < 1 ||
+                clippedColspan < 1 ||
+                (clippedRowspan === 1 && clippedColspan === 1)
+            ) {
+                return;
+            }
+
+            const mainCell = newGrid[record.row][record.col];
+
+            if (!mainCell) return;
+
+            // 結合範囲内のセルを重複なく取得する
+            const uniqueCells = new Set();
+
+            for (
+                let r = record.row;
+                r < record.row + clippedRowspan;
+                r++
+            ) {
+                for (
+                    let c = record.col;
+                    c < record.col + clippedColspan;
+                    c++
+                ) {
+                    const cell = newGrid[r]?.[c];
+
+                    if (cell) {
+                        uniqueCells.add(cell);
+                    }
+                }
+            }
+
+            if (uniqueCells.size < 2) return;
+
+            // 結合前のセル情報を保存する
+            const backup = [...uniqueCells].map(cell => {
+
+                const position = cellPositions.get(cell);
+
+                return {
+                    row: position.row,
+                    col: position.col,
+                    text: cell.textContent,
+                    textColor: cell.style.color,
+                    backgroundColor: cell.style.backgroundColor,
+                    border: cell.style.border,
+                    colspan: cell.colSpan,
+                    rowspan: cell.rowSpan,
+                    mergedCells: cell.dataset.mergedCells || null
+                };
+            });
+
+            // 結合セルを作成する
+            mainCell.dataset.mergedCells = JSON.stringify(backup);
+            mainCell.colSpan = clippedColspan;
+            mainCell.rowSpan = clippedRowspan;
+
+            // 左上以外のセルを削除する
+            uniqueCells.forEach(cell => {
+                if (cell !== mainCell) {
+                    cell.remove();
+                }
+            });
+
+            // 配置表を更新する
+            for (
+                let r = record.row;
+                r < record.row + clippedRowspan;
+                r++
+            ) {
+                for (
+                    let c = record.col;
+                    c < record.col + clippedColspan;
+                    c++
+                ) {
+                    newGrid[r][c] = mainCell;
+                }
+            }
+        });
 
         // 行数・列数を保存
         block.dataset.tableRows = String(rows);

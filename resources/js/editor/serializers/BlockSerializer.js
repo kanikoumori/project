@@ -28,7 +28,7 @@ export class BlockSerializer {
                         underline: block.dataset.underline === 'true',
                         strike: block.dataset.strike === 'true',
                         align: block.dataset.align || 'left',
-                        lineHeight: block.dataset.lineHeight || '1.0',
+                        lineHeight: block.dataset.lineHeight || '1.3',
                         letterSpacing: block.dataset.letterSpacing || '0px'
                     }
                 };
@@ -50,7 +50,7 @@ export class BlockSerializer {
                         underline: block.dataset.underline === 'true',
                         strike: block.dataset.strike === 'true',
                         align: block.dataset.align || 'left',
-                        lineHeight: block.dataset.lineHeight || '1.0',
+                        lineHeight: block.dataset.lineHeight || '1.7',
                         letterSpacing: block.dataset.letterSpacing || '0px',
                         height: block.dataset.height || '',
                     }
