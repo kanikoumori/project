@@ -1,3 +1,4 @@
+
 <div class="toolbar">
 
     <a href="/dashboard" class="editor-logo">
@@ -28,6 +29,14 @@
 
         <button id="save-button" class="toolbar-button">
             一時保存
+        </button>
+
+        <button id="preview-button" class="toolbar-button">
+            プレビュー
+        </button>
+
+        <button id="back-to-edit-button" class="toolbar-button" hidden>
+            編集に戻る
         </button>
 
         <button class="toolbar-publish">

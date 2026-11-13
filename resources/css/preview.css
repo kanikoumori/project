@@ -1,0 +1,127 @@
+
+/* プレビュー画面全体 */
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #f3f4f6;
+    color: #1f2937;
+    font-family: sans-serif;
+}
+
+/* プレビュー上部 */
+.preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 24px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* タイトル */
+.preview-header h1 {
+    margin: 0;
+    font-size: 20px;
+}
+
+/* 編集画面に戻るリンク */
+.preview-header a {
+    color: #2563eb;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.preview-header a:hover {
+    text-decoration: underline;
+}
+
+/* プレビュー領域 */
+.preview-container {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 32px 20px;
+}
+
+/* キャンバス */
+#preview-canvas {
+    width: 100%;
+    max-width: 1200px;
+    min-height: calc(100vh - 160px);
+    box-sizing: border-box;
+    margin: 0 auto;
+    padding: 32px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* 各ブロック */
+.preview-block {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+/* スマートフォン */
+@media (max-width: 600px) {
+    .preview-header {
+        padding: 12px 16px;
+    }
+
+    .preview-header h1 {
+        font-size: 16px;
+    }
+
+    .preview-container {
+        padding: 12px 8px;
+    }
+
+    #preview-canvas {
+        padding: 16px;
+        border-radius: 8px;
+    }
+}
+/* プレビューエラー表示 */
+.preview-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    padding: 32px 16px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.preview-error h2 {
+    margin: 0 0 12px;
+    color: #dc2626;
+    font-size: 20px;
+}
+
+.preview-error p {
+    margin: 0 0 24px;
+    color: #6b7280;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.preview-retry-button {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 8px;
+    background-color: #2563eb;
+    color: #ffffff;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.preview-retry-button:hover {
+    background-color: #1d4ed8;
+}

@@ -8,6 +8,7 @@ export default defineConfig({
                 'resources/css/app.css',
                 'resources/css/style_main.css',
                 'resources/js/app.js',
+                'resources/js/preview.js',
             ],
             refresh: true,
         }),

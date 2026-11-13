@@ -8,6 +8,7 @@ use App\Http\Controllers\SiteController;
 use App\Http\Controllers\PageHistoryController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EditorController;
+use App\Http\Controllers\PreviewController;
 use App\Models\Site;
 
 Route::get('/', function () {
@@ -77,6 +78,9 @@ Route::middleware('auth')->group(function () {
     // Editor
     Route::get('/editor/{page}', [EditorController::class, 'show'])
         ->name('editor.show');
+    // Preview
+    Route::get('/preview/{page}', [PreviewController::class, 'show'])
+        ->name('preview.show');
 
     Route::delete('/pages/{page}/blocks', [BlockController::class, 'clear']);
 

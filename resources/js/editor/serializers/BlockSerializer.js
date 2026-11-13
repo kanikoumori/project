@@ -53,6 +53,11 @@ export class BlockSerializer {
                         lineHeight: block.dataset.lineHeight || '1.7',
                         letterSpacing: block.dataset.letterSpacing || '0px',
                         height: block.dataset.height || '',
+                        hrEnabled: block.dataset.hrEnabled === 'true',
+                        hrThickness: block.dataset.hrThickness || '1',
+                        hrColor: block.dataset.hrColor || '#000000',
+                        hrStyle: block.dataset.hrStyle || 'solid',
+                        hrMargin: block.dataset.hrMargin || '10',
                     }
                 };
 
@@ -67,12 +72,17 @@ export class BlockSerializer {
 
                 data.data = {
                     items,
-                    style: {
-                        listStyle: block.dataset.listStyle || 'disc',
-                        listPosition: block.dataset.listPosition || 'outside',
-                        listColor: block.dataset.listColor || '#000000',
-                        listFontSize: block.dataset.listFontSize || '16'
-                    }
+
+                        style: {
+                            listStyle: block.dataset.listStyle || 'disc',
+                            listPosition: block.dataset.listPosition || 'outside',
+                            listColor: block.dataset.listColor || '#000000',
+                            listFontSize: block.dataset.listFontSize || '16',
+                            listBold: block.dataset.listBold || 'false',
+                            listItalic: block.dataset.listItalic || 'false',
+                            listUnderline: block.dataset.listUnderline || 'false',
+                            listStrike: block.dataset.listStrike || 'false'
+                        }
                 };
 
                 blocksData.push(data);
@@ -117,7 +127,7 @@ export class BlockSerializer {
                 blocksData.push(data);
                 return;
             }
-        
+
 
             if (type === 'form') {
 
@@ -146,10 +156,10 @@ export class BlockSerializer {
 
                     dividerThickness:
                         block.dataset.dividerThickness || '2',
-                    
+
                     dividerColor:
                         block.dataset.dividerColor || '#000000',
-                    
+
                     dividerMargin:
                         block.dataset.dividerMargin ?? '10'
                 }
