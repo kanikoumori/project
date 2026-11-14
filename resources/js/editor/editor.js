@@ -34,11 +34,13 @@ export class Editor {
     }
 
     // ボタン操作
-    initialize() {
+    async initialize() {
         this.historyManager.initialize();
         this.blockManager.initialize();
         this.dragDrop.initialize();
-        this.loadPage();
+
+        // ページの読み込み完了を待つ
+        await this.loadPage();
 
         document.getElementById('undo-button')
             ?.addEventListener('click', () => {
@@ -56,8 +58,28 @@ export class Editor {
             ?.addEventListener('click', () => {
                 this.save();
             });
-    }
+        document.getElementById('preview-button')
+            ?.addEventListener('click', async () => {
+                if (this.isSaving) {
+                    return;
+                }
 
+                try {
+                    await this.save();
+                } catch (error) {
+                    console.error(error);
+                    alert('保存に失敗したため、プレビューを開けませんでした。再度お試しください。');
+                    return;
+                }
+
+                const pageId = document
+                    .getElementById('canvas')
+                    .dataset.pageId;
+
+                window.location.href = `/preview/${pageId}`;
+            });
+
+    }
     // ページの再読み込み
     async loadPage() {
 
@@ -158,10 +180,10 @@ export class Editor {
             if (saveButton) {
                 saveButton.disabled = false;
             }
-        
+
         }
     }
-    
+
 
     // 自動保存
     markDirty() {
@@ -176,4 +198,5 @@ export class Editor {
             this.blockManager.createFromData(block);
         });
     }
+
 }

@@ -5,6 +5,8 @@ import { ButtonBlock } from '../blocks/ButtonBlock.js';
 import { ImageBlock } from '../blocks/ImageBlock.js';
 import { FormBlock } from '../blocks/FormBlock.js';
 import { DividerBlock } from '../blocks/DividerBlock.js';
+import { TableBlock } from '../blocks/TableBlock.js';
+import { BlockRenderer } from '../renderers/BlockRenderer.js';
 
 import { BlockSerializer }
     from '../serializers/BlockSerializer.js';
@@ -43,12 +45,14 @@ export class BlockManager {
 
             case 'form':
                 return this.addFormFromData(block);
-            
+
             case 'divider':
                 return this.addDividerFromData(block);
+
+            case 'table':
+                return this.addTableFromData(block);
         }
     }
-
     setupBlock(block) {
         let dragHandle =
             block.querySelector('.drag-handle');
@@ -81,25 +85,27 @@ export class BlockManager {
             deleteButton.addEventListener('click', (e) => {
                 e.stopPropagation();
 
+
                 block.remove();
 
                 this.historyManager.save();
 
                 this.editor.markDirty();
             });
-        }       
+        }
 
         if (block.dataset.clickBound !== 'true') {
 
             block.dataset.clickBound = 'true';
 
             block.addEventListener('click', () => {
+
                 this.selectionManager.select(block);
                 this.propertyManager.show(block);
             });
         }
-        
-         // テキスト編集終了時
+
+                 // テキスト編集終了時
         block.querySelectorAll('[contenteditable="true"]')
             .forEach(element => {
 
@@ -108,14 +114,35 @@ export class BlockManager {
                 element.dataset.blurBound = 'true';
 
                 element.addEventListener('input', () => {
-                    this.editor.markDirty();
 
+
+                    this.editor.markDirty();
                 });
+
                 element.addEventListener('blur', () => {
+
+
                     this.historyManager.save();
                 });
             });
-    }
+                    // 入力欄の変更検知
+        const formInput = block.querySelector('.editor-input');
+
+            if (formInput && formInput.dataset.changeBound !== 'true') {
+                formInput.dataset.changeBound = 'true';
+
+                formInput.addEventListener('input', () => {
+
+                    block.dataset.value = formInput.value;
+                    this.editor.markDirty();
+                });
+
+                formInput.addEventListener('change', () => {
+
+                    this.historyManager.save();
+                });
+            }
+        }
 
     setupToolbar() {
         document.getElementById('add-heading')
@@ -135,9 +162,12 @@ export class BlockManager {
 
         document.getElementById('add-form')
             ?.addEventListener('click', () => this.addForm());
-        
+
         document.getElementById('add-divider')
             ?.addEventListener('click', () => this.addDivider());
+
+        document.getElementById('add-table')
+            ?.addEventListener('click', () => this.addTable());
     }
 
     // ------キャンバス内の追加表示------
@@ -195,6 +225,16 @@ export class BlockManager {
 
         this.editor.markDirty();
     }
+    addForm() {
+        const block = FormBlock.create();
+
+        this.setupBlock(block);
+        this.canvas.appendChild(block);
+
+        this.historyManager.save();
+
+        this.editor.markDirty();
+    }
 
     addDivider() {
         const block = DividerBlock.create();
@@ -206,246 +246,54 @@ export class BlockManager {
 
         this.editor.markDirty();
     }
+    addTable() {
+        const block = TableBlock.create();
 
-    // 保存復元用
+        this.setupBlock(block);
+        this.canvas.appendChild(block);
+
+        this.historyManager.save();
+        this.editor.markDirty();
+    }
+
+
     addHeadingFromData(block) {
+        const el = BlockRenderer.create(block, { mode: 'editor' });
 
-        const el = document.createElement('div');
-        el.classList.add('block');
-        el.dataset.type = 'heading';
-
-        const allowedTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
-
-        const tag = allowedTags.includes(block.data.tag)
-            ? block.data.tag
-            : 'h1';
-
-        const heading = document.createElement(tag);
-
-        heading.className = 'editor-heading';
-        heading.contentEditable = 'true';
-        heading.textContent = block.data.content || '';
-
-        el.appendChild(heading);
-
-        const style = block.data.style || {};
-
-        el.dataset.tag = tag;
-        el.dataset.color = style.color;
-        el.dataset.bold = style.bold;
-        el.dataset.italic = style.italic;
-        el.dataset.underline = style.underline;
-        el.dataset.strike = style.strike;
-        el.dataset.align = style.align;
-        el.dataset.lineHeight = style.lineHeight || '1.3';
-        el.dataset.letterSpacing = style.letterSpacing || '0px';
-
-        heading.style.color = style.color || '';
-        heading.style.lineHeight = style.lineHeight || '1.3';
-        heading.style.letterSpacing = style.letterSpacing || '0px';
-        heading.style.fontStyle =
-            style.italic ? 'italic' : 'normal';
-
-        heading.style.textDecoration = [
-            style.underline ? 'underline' : '',
-            style.strike ? 'line-through' : ''
-        ]
-        .filter(Boolean)
-        .join(' ');
-
-        el.style.textAlign =
-            style.align || 'left';
-
-        this.setupBlock(el);
-
-        document
-            .getElementById('canvas')
-            .appendChild(el);
-    }
-
-    addTextFromData(block) {
-
-        const el = document.createElement('div');
-        el.classList.add('block');
-        el.dataset.type = 'text';
-
-        const text = document.createElement('p');
-
-        text.className = 'editor-text';
-        text.contentEditable = 'true';
-        text.textContent = block.data.content || '';
-
-        el.appendChild(text);
-
-        const style = block.data.style || {};
-
-        el.dataset.color = style.color;
-        el.dataset.fontSize = style.fontSize;
-        el.dataset.bold = String(style.bold);
-        el.dataset.italic = style.italic;
-        el.dataset.underline = style.underline;
-        el.dataset.strike = style.strike;
-        el.dataset.align = style.align;
-        el.dataset.lineHeight = style.lineHeight || '1.7';
-        el.dataset.letterSpacing = style.letterSpacing || '0px';
-
-        // ブロックの高さを復元
-        el.dataset.height = style.height || '';
-
-        if (style.height) {
-            el.style.height = `${style.height}px`;
-        }
-
-
-        text.style.color = style.color || '#000000';
-
-        text.style.fontSize =
-            (style.fontSize || 16) + 'px';
-        text.style.lineHeight = style.lineHeight || '1.7';
-        text.style.letterSpacing = style.letterSpacing || '0px';
-
-        text.style.fontStyle =
-            style.italic ? 'italic' : 'normal';
-
-        text.style.fontWeight =
-            style.bold ? '700' : '400';
-
-        text.style.textDecoration = [
-            style.underline ? 'underline' : '',
-            style.strike ? 'line-through' : ''
-        ]
-        .filter(Boolean)
-        .join(' ');
-
-        el.style.textAlign =
-            style.align || 'left';
-
-        this.setupBlock(el);
-
-        document.getElementById('canvas').appendChild(el);
-    }
-
-    addListFromData(block) {
-
-        const el = document.createElement('div');
-        el.classList.add('block', 'list-block');
-        el.dataset.type = 'list';
-
-        const style = block.data.style || {};
-
-        const listColor = style.listColor || '#000000';
-        const listStyle = style.listStyle || 'disc';
-        const listFontSize = style.listFontSize || '16';
-
-        // リスト本体を作成
-        const ul = document.createElement('ul');
-
-        ul.className = 'editor-list';
-        ul.style.listStyleType = listStyle;
-        ul.style.color = listColor;
-
-        // 保存されたリスト項目を復元
-        const items = Array.isArray(block.data.items)
-            ? block.data.items
-            : [];
-
-        items.forEach((item) => {
-            const li = document.createElement('li');
-
-            li.contentEditable = 'true';
-            li.textContent = item || '';
-            li.style.fontSize = `${listFontSize}px`;
-
-            ul.appendChild(li);
-    });
-
-    el.appendChild(ul);
-
-    // 設定値を保存
-    el.dataset.listStyle = listStyle;
-    el.dataset.listColor = listColor;
-    el.dataset.listFontSize = listFontSize;
-
-    this.setupBlock(el);
-    this.canvas.appendChild(el);
-}
-
-    addButtonFromData(block) {
-
-        const el = document.createElement('div');
-        el.classList.add('block');
-        el.dataset.type = 'button';
-
-        const style = block.data.style || {};
-
-        // ボタン本体を作成
-        const btn = document.createElement('button');
-
-        btn.className = 'editor-button';
-        btn.contentEditable = 'true';
-        btn.textContent = block.data.label || 'ボタン';
-
-        // ボタンの設定を復元
-        btn.style.backgroundColor =
-            style.buttonColor || '#5B9DFF';
-
-        btn.style.color =
-            style.buttonTextColor || '#ffffff';
-
-        btn.style.borderRadius =
-            `${style.buttonRadius ?? 12}px`;
-
-        el.appendChild(btn);
-
-        // 設定値を保存
-        el.dataset.buttonColor =
-            style.buttonColor || '#5B9DFF';
-
-        el.dataset.buttonTextColor =
-            style.buttonTextColor || '#ffffff';
-
-        el.dataset.buttonRadius =
-            style.buttonRadius ?? '12';
-
-        el.dataset.url = block.data.url || '';
+        if (!el) return;
 
         this.setupBlock(el);
         this.canvas.appendChild(el);
-}
+    }
 
+    addTextFromData(block) {
+        const el = BlockRenderer.create(block, { mode: 'editor' });
+
+        if (!el) return;
+
+        this.setupBlock(el);
+        this.canvas.appendChild(el);
+    }
+
+
+    addButtonFromData(block) {
+
+        const el = BlockRenderer.create(block, {
+            mode: 'editor'
+        });
+
+        if (!el) return;
+
+        this.setupBlock(el);
+        this.canvas.appendChild(el);
+    }
     addImageFromData(block) {
 
-        const el = document.createElement('div');
-        el.classList.add('block');
-        el.dataset.type = 'image';
+        const el = BlockRenderer.create(block, {
+            mode: 'editor'
+        });
 
-        const style = block.data.style || {};
-        const src = block.data.src || '';
-        const imageWidth = style.imageWidth || '100';
-
-        // 画像が保存されている場合
-        if (src) {
-            const img = document.createElement('img');
-
-            img.className = 'editor-image';
-            img.src = src;
-            img.style.width = `${imageWidth}%`;
-
-            el.appendChild(img);
-
-        } else {
-            // 画像が未選択の場合
-            const placeholder = document.createElement('div');
-
-            placeholder.className = 'editor-image-placeholder';
-            placeholder.textContent = '画像を選択してください';
-
-            el.appendChild(placeholder);
-        }
-
-        // 設定値を保存
-        el.dataset.src = src;
-        el.dataset.imageWidth = imageWidth;
+        if (!el) return;
 
         this.setupBlock(el);
         this.canvas.appendChild(el);
@@ -453,66 +301,46 @@ export class BlockManager {
 
     addFormFromData(block) {
 
-        const el = document.createElement('div');
+        const el = BlockRenderer.create(block, {
+            mode: 'editor'
+        });
 
-        el.className = 'block p-4 rounded mb-4';
-        el.dataset.type = 'form';
-
-        const input = document.createElement('input');
-
-        input.className = 'editor-input';
-
-        input.type = block.data.style?.inputType || 'text';
-        input.placeholder = block.data.style?.placeholder || '入力してください';
-        input.value = '';
-
-        el.appendChild(input);
-
-        el.dataset.inputType = input.type;
-        el.dataset.placeholder = input.placeholder;
+        if (!el) return;
 
         this.setupBlock(el);
-        this.canvas.appendChild(el);    
+        this.canvas.appendChild(el);
     }
     // 独立した区切り線の保存復元
     addDividerFromData(block) {
 
-        const el = DividerBlock.create();
-        const savedStyle = block.data.style || {};
+        const el = BlockRenderer.create(block, {
+            mode: 'editor'
+        });
 
-        // 保存データから設定を取得
-        const style =
-            savedStyle.dividerStyle || 'solid';
-
-        const thickness =
-            savedStyle.dividerThickness || '2';
-
-        const color =
-            savedStyle.dividerColor || '#000000';
-
-        const margin =
-            savedStyle.dividerMargin || '10';
-
-        // 区切り線本体を取得
-        const divider =
-            el.querySelector('.editor-divider-element');
-
-        // 設定を復元
-        if (divider) {
-            divider.style.borderTopStyle = style;
-            divider.style.borderTopWidth = `${thickness}px`;
-            divider.style.borderTopColor = color;
-            divider.style.margin = `${margin}px 0`;
-        }
-
-        // 設定値を保存
-        el.dataset.dividerStyle = style;
-        el.dataset.dividerThickness = thickness;
-        el.dataset.dividerColor = color;
-        el.dataset.dividerMargin = margin;
+        if (!el) return;
 
         this.setupBlock(el);
         this.canvas.appendChild(el);
-    }   
+    }
+            // テーブルの保存データを復元
 
+    // テーブルの保存データを復元
+
+    addTableFromData(block) {
+        const el = BlockRenderer.create(block, { mode: 'editor' });
+
+        if (!el) return;
+
+        this.setupBlock(el);
+        this.canvas.appendChild(el);
+    }
+
+    addListFromData(block) {
+        const el = BlockRenderer.create(block, { mode: 'editor' });
+
+        if (!el) return;
+
+        this.setupBlock(el);
+        this.canvas.appendChild(el);
+    }
 }

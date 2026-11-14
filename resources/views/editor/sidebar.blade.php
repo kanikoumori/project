@@ -34,7 +34,11 @@
             </button>
 
             <button id="add-divider" class="sidebar-button">
-                区切り線
+                水平線
+            </button>
+
+            <button id="add-table" class="sidebar-button">
+                テーブル
             </button>
 
             <button id="add-container" class="sidebar-button">
