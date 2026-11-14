@@ -26,6 +26,7 @@ export class ButtonBlock {
         button.style.borderRadius = '12px';
         button.style.width = '150px';
         button.style.height = '48px';
+        button.style.lineHeight = '48px';
         button.style.boxSizing = 'border-box';
         button.textContent = 'ボタン';
 

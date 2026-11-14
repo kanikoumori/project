@@ -131,6 +131,7 @@ export class PropertyManager {
                         type="number"
                         id="heading-line-height"
                         min="1.0"
+                        max="3.0"
                         step="0.1"
                         value="${currentLineHeight}"
                     >
@@ -224,6 +225,7 @@ export class PropertyManager {
                         type="number"
                         id="text-line-height"
                         min="1.0"
+                        max="3.0"
                         step="0.1"
                         value="${currentLineHeight}"
                     >
@@ -284,8 +286,8 @@ export class PropertyManager {
                         </button>
 
                     </div>
-                `;
 
+                `;
                 this.bindTextEvents(block);
 
                 break;
@@ -324,7 +326,47 @@ export class PropertyManager {
                     <span id="list-font-size-value">
                         ${Math.min(72, Math.max(12, Number(block.dataset.listFontSize) || 16))}px
                     </span>
+                                        <div class="property-toggle-group">
+
+                        <button
+                            type="button"
+                            id="list-bold"
+                            class="toolbar-button property-toggle
+                                ${block.dataset.listBold === 'true' ? 'active' : ''}"
+                        >
+                            <strong>B</strong>
+                        </button>
+
+                        <button
+                            type="button"
+                            id="list-italic"
+                            class="toolbar-button property-toggle
+                                ${block.dataset.listItalic === 'true' ? 'active' : ''}"
+                        >
+                            <em>I</em>
+                        </button>
+
+                        <button
+                            type="button"
+                            id="list-underline"
+                            class="toolbar-button property-toggle
+                                ${block.dataset.listUnderline === 'true' ? 'active' : ''}"
+                        >
+                            <u>U</u>
+                        </button>
+
+                        <button
+                            type="button"
+                            id="list-strike"
+                            class="toolbar-button property-toggle
+                                ${block.dataset.listStrike === 'true' ? 'active' : ''}"
+                        >
+                            <s>S</s>
+                        </button>
+
+                    </div>
                 `;
+
 
                 this.bindListEvents(block);
                 break;
@@ -894,10 +936,12 @@ export class PropertyManager {
 
                 let lineHeight = parseFloat(e.target.value);
 
-                // 最小値を1.0にする
-                if (!Number.isFinite(lineHeight) || lineHeight < 1.0) {
+                // 最小値1.0、最大値3.0に制限
+                if (!Number.isFinite(lineHeight)) {
                     lineHeight = 1.0;
                 }
+
+                lineHeight = Math.max(1.0, Math.min(3.0, lineHeight));
 
                 // 入力欄にも補正後の値を反映
                 e.target.value = lineHeight;
@@ -1232,6 +1276,68 @@ export class PropertyManager {
 
         if (!ul) return;
 
+                // リスト文字装飾
+        const applyListDecoration = () => {
+
+            const items = ul.querySelectorAll('li');
+
+            items.forEach((li) => {
+
+                // 太字
+                li.style.fontWeight =
+                    block.dataset.listBold === 'true'
+                        ? '700'
+                        : '400';
+
+                // 斜体
+                li.style.fontStyle =
+                    block.dataset.listItalic === 'true'
+                        ? 'italic'
+                        : 'normal';
+
+                // 下線・取り消し線
+                li.style.textDecoration = [
+                    block.dataset.listUnderline === 'true'
+                        ? 'underline'
+                        : '',
+
+                    block.dataset.listStrike === 'true'
+                        ? 'line-through'
+                        : ''
+                ]
+                .filter(Boolean)
+                .join(' ');
+            });
+        };
+
+        this.toggleButton(
+            block,
+            'list-bold',
+            'listBold',
+            applyListDecoration
+        );
+
+        this.toggleButton(
+            block,
+            'list-italic',
+            'listItalic',
+            applyListDecoration
+        );
+
+        this.toggleButton(
+            block,
+            'list-underline',
+            'listUnderline',
+            applyListDecoration
+        );
+
+        this.toggleButton(
+            block,
+            'list-strike',
+            'listStrike',
+            applyListDecoration
+        );
+
         // リストタイプ設定
         document.getElementById('list-style')
             ?.addEventListener('change', (e) => {
@@ -1267,17 +1373,22 @@ export class PropertyManager {
         });
 
         // 文字色設定
-        document.getElementById('list-color')
-            ?.addEventListener('input', (e) => {
+    document.getElementById('list-color')
+        ?.addEventListener('input', (e) => {
 
-                const color = this.safeColor(e.target.value);
+            const color = this.safeColor(e.target.value);
 
-                ul.style.color = color;
-                block.dataset.listColor = color;
+            const items = block.querySelectorAll('li');
 
-                this.historyManager.save();
-                this.editor.markDirty();
+            items.forEach((li) => {
+                li.style.color = color;
             });
+
+            block.dataset.listColor = color;
+
+            this.historyManager.save();
+            this.editor.markDirty();
+        });
                     // 文字サイズ設定
         document.getElementById('list-font-size')
             ?.addEventListener('input', (e) => {
@@ -1317,7 +1428,7 @@ export class PropertyManager {
 
         if (!button) return;
 
-                // 編集画面ではボタンのリンク遷移を無効にする
+        // 編集画面ではボタンのリンク遷移を無効にする
         button.addEventListener('click', (e) => {
             e.preventDefault();
         });
