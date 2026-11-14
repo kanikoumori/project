@@ -10,12 +10,7 @@ class PreviewController extends Controller
     {
         $this->authorize('view', $page);
 
-        $page->load([
-            'site',
-            'blocks' => function ($query) {
-                $query->orderBy('sort_order');
-            },
-        ]);
+        $page->load('site');
 
         return view('preview.index', compact('page'));
     }

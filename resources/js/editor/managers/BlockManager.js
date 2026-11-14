@@ -85,10 +85,6 @@ export class BlockManager {
             deleteButton.addEventListener('click', (e) => {
                 e.stopPropagation();
 
-                // プレビュー中は削除できない
-                if (this.editor.isPreview) {
-                    return;
-                }
 
                 block.remove();
 
@@ -103,11 +99,6 @@ export class BlockManager {
             block.dataset.clickBound = 'true';
 
             block.addEventListener('click', () => {
-
-                // プレビュー中は設定画面を開かない
-                if (this.editor.isPreview) {
-                    return;
-                }
 
                 this.selectionManager.select(block);
                 this.propertyManager.show(block);
@@ -124,20 +115,12 @@ export class BlockManager {
 
                 element.addEventListener('input', () => {
 
-                    // プレビュー中は自動保存しない
-                    if (this.editor.isPreview) {
-                        return;
-                    }
 
                     this.editor.markDirty();
                 });
 
                 element.addEventListener('blur', () => {
 
-                    // プレビュー中は履歴を保存しない
-                    if (this.editor.isPreview) {
-                        return;
-                    }
 
                     this.historyManager.save();
                 });
@@ -149,14 +132,12 @@ export class BlockManager {
                 formInput.dataset.changeBound = 'true';
 
                 formInput.addEventListener('input', () => {
-                    if (this.editor.isPreview) return;
 
                     block.dataset.value = formInput.value;
                     this.editor.markDirty();
                 });
 
                 formInput.addEventListener('change', () => {
-                    if (this.editor.isPreview) return;
 
                     this.historyManager.save();
                 });

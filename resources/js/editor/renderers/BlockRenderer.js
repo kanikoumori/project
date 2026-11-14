@@ -220,10 +220,12 @@ export class BlockRenderer {
                 const width = Number(style.buttonWidth) || 150;
                 const height = Number(style.buttonHeight) || 48;
 
-                button.style.display = 'inline-block';
+                button.style.display = 'inline-flex';
                 button.style.width = `${width}px`;
                 button.style.height = `${height}px`;
-                button.style.lineHeight = `${height}px`;
+                button.style.lineHeight = 'normal';
+                button.style.alignItems = 'center';
+                button.style.justifyContent = 'center';
                 button.style.textAlign = 'center';
                 button.style.backgroundColor = style.buttonColor || '#5B9DFF';
                 button.style.color = style.buttonTextColor || '#ffffff';

@@ -23,8 +23,6 @@ export class Editor {
         );
         this.resize = new Resize();
         this.isSaving = false;
-        this.isPreview = false;
-        this.editableElements = [];
         this.blockManager = new BlockManager(
             this.propertyManager,
             this.historyManager,
@@ -81,10 +79,6 @@ export class Editor {
                 window.location.href = `/preview/${pageId}`;
             });
 
-        document.getElementById('back-to-edit-button')
-            ?.addEventListener('click', () => {
-                this.exitPreview();
-            });
     }
     // ページの再読み込み
     async loadPage() {
@@ -203,68 +197,6 @@ export class Editor {
         blocks.forEach(block => {
             this.blockManager.createFromData(block);
         });
-    }
-
-    // プレビュー画面へ切り替え
-    enterPreview() {
-        if (this.isPreview) {
-            return;
-        }
-
-        this.isPreview = true;
-
-        // 編集可能な要素を記録して無効化
-        this.editableElements = Array.from(
-            document.querySelectorAll('#canvas [contenteditable="true"]')
-        );
-
-        this.editableElements.forEach(element => {
-            element.contentEditable = 'false';
-        });
-
-        // 選択状態を解除
-        document.querySelectorAll('#canvas .block.selected')
-            .forEach(block => {
-                block.classList.remove('selected');
-            });
-
-        // ドラッグ操作を無効化
-        this.dragDrop.setDisabled(true);
-
-        // プレビュー用CSSを適用
-        document.getElementById('editor-app')
-            ?.classList.add('preview-mode');
-
-        // ボタン表示を切り替え
-        document.getElementById('preview-button')?.setAttribute('hidden', '');
-        document.getElementById('back-to-edit-button')?.removeAttribute('hidden');
-    }
-
-    // 編集画面へ戻る
-    exitPreview() {
-        if (!this.isPreview) {
-            return;
-        }
-
-        this.isPreview = false;
-
-        // 編集可能状態を復元
-        this.editableElements.forEach(element => {
-            element.contentEditable = 'true';
-        });
-
-        this.editableElements = [];
-
-        // ドラッグ操作を有効化
-        this.dragDrop.setDisabled(false);
-
-        // プレビュー用CSSを解除
-        document.getElementById('editor-app')
-            ?.classList.remove('preview-mode');
-
-        // ボタン表示を元に戻す
-        document.getElementById('preview-button')?.removeAttribute('hidden');
-        document.getElementById('back-to-edit-button')?.setAttribute('hidden', '');
     }
 
 }

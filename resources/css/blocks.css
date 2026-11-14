@@ -82,6 +82,7 @@ h6.editor-heading {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    max-width: 100%;
 }
 
 .editor-button:hover,

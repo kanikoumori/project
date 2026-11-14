@@ -1428,37 +1428,9 @@ export class PropertyManager {
 
         if (!button) return;
 
-        // 編集画面ではリンク遷移を無効にする
+        // 編集画面ではボタンのリンク遷移を無効にする
         button.addEventListener('click', (e) => {
-
-            // 編集画面では遷移しない
-            if (!this.editor.isPreview) {
-                e.preventDefault();
-                return;
-            }
-
-            // プレビュー中のリンク先を取得
-            const url = block.dataset.url?.trim();
-
-            if (!url) {
-                e.preventDefault();
-                return;
-            }
-
-            try {
-                const parsedUrl = new URL(url);
-
-                // HTTP・HTTPS以外のURLは許可しない
-                if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
-                    e.preventDefault();
-                    return;
-                }
-
-                window.location.href = parsedUrl.href;
-
-            } catch {
-                e.preventDefault();
-            }
+            e.preventDefault();
         });
                         // リンク先URL
         document.getElementById('button-url')
