@@ -111,6 +111,20 @@ export class BlockSerializer {
                 blocksData.push(data);
                 return;
             }
+            if (type === 'embed') {
+
+                data.data = {
+                    embedType: block.dataset.embedType || 'youtube',
+                    url: block.dataset.embedUrl || '',
+                    style: {
+                        embedWidth: block.dataset.embedWidth || '100',
+                        embedHeight: block.dataset.embedHeight || '400'
+                    }
+            };
+
+    blocksData.push(data);
+    return;
+}
 
             if (type === 'image') {
                 data.data = {
@@ -129,23 +143,33 @@ export class BlockSerializer {
             }
 
 
-            if (type === 'form') {
 
-                data.data = {
-                    value: block.dataset.value || '',
+        if (type === 'form') {
 
-                    style: {
-                        placeholder:
-                            block.dataset.placeholder || '入力してください',
+            data.data = {
+                value: block.dataset.value || '',
 
-                        inputType:
-                            block.dataset.inputType || 'text'
-                    }
-                };
+                // 入力欄のラベル
+                label: block.dataset.label || '',
 
-                blocksData.push(data);
-                return;
-            }
+                style: {
+                    placeholder:
+                        block.dataset.placeholder || '入力してください',
+
+                    inputType:
+                        block.dataset.inputType || 'text',
+                    // 数値入力の最小値
+                    min: block.dataset.min ?? '',
+
+                    // 数値入力の最大値
+                    max: block.dataset.max ?? ''
+                }
+            };
+
+            blocksData.push(data);
+            return;
+        }
+
             // 独立した区切り線
         if (type === 'divider') {
 

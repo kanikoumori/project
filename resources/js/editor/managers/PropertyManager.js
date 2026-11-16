@@ -1,3 +1,5 @@
+import { EmbedBlock } from '../blocks/EmbedBlock.js';
+
 export class PropertyManager {
 
     constructor(historyManager,editor) {
@@ -16,7 +18,7 @@ export class PropertyManager {
             ? v
             : '#000000';
     }
-    
+
     show(block) {
 
         const settings = document.getElementById('block-settings');
@@ -35,13 +37,13 @@ export class PropertyManager {
         // 区切り線の色
         const currentDividerColor =
             block.dataset.dividerColor || '#000000';
-        
+
         // 区切り線の余白
         const currentDividerMargin =
             block.dataset.dividerMargin ?? '10';
 
         // 見出し色
-        const currentColor = 
+        const currentColor =
             block.dataset.color || '#000000';
 
         // 見出し文字サイズ
@@ -125,7 +127,7 @@ export class PropertyManager {
                             右
                         </option>
                     </select>
-                    
+
                     <label>行間</label>
                     <input
                         type="number"
@@ -142,8 +144,8 @@ export class PropertyManager {
                         id="heading-letter-spacing"
                         step="0.1"
                         value="${Number.isFinite(parseFloat(currentLetterSpacing)) ? parseFloat(currentLetterSpacing) : 0}"
-                    >                   
-                    
+                    >
+
                     <label>装飾</label>
                     <div class="property-toggle-group">
 
@@ -173,7 +175,7 @@ export class PropertyManager {
 
                     </div>
 
-                    
+
                 `;
 
                 this.bindHeadingEvents(block);
@@ -371,7 +373,7 @@ export class PropertyManager {
                 this.bindListEvents(block);
                 break;
 
-            
+
         case 'button': {
             const buttonWidth = Math.min(500, Math.max(
                 50, Number(block.dataset.buttonWidth) || 150
@@ -623,10 +625,99 @@ export class PropertyManager {
                 this.bindImageEvents(block);
 
                 break;
+
+            case 'embed': {
+
+                this.elementPanel.innerHTML = `
+                    <div class="accordion-title">埋め込み設定</div>
+
+                    <label>埋め込みの種類</label>
+                    <select id="embed-type" class="editor-input">
+                        <option value="youtube">YouTube</option>
+                        <option value="maps">Googleマップ</option>
+                        <option value="instagram">Instagram</option>
+                        <option value="x">X（旧Twitter）</option>
+                    </select>
+
+                    <label>埋め込みURL</label>
+                    <input
+                        type="url"
+                        id="embed-url"
+                        class="editor-input"
+                        placeholder="https://..."
+                    >
+
+                    <hr>
+
+                    <label>横幅（%）</label>
+                    <input
+                        type="range"
+                        id="embed-width-range"
+                        min="20"
+                        max="100"
+                        step="1"
+                        value="100"
+                    >
+
+                    <input
+                        type="number"
+                        id="embed-width-number"
+                        class="editor-input"
+                        min="20"
+                        max="100"
+                        value="100"
+                    >
+
+                    <hr>
+
+                    <label>高さ（px）</label>
+                    <input
+                        type="range"
+                        id="embed-height-range"
+                        min="150"
+                        max="800"
+                        step="10"
+                        value="400"
+                    >
+
+                    <input
+                        type="number"
+                        id="embed-height-number"
+                        class="editor-input"
+                        min="150"
+                        max="800"
+                        value="400"
+                    >
+                `;
+                this.bindEmbedEvents(block);
+
+                break;
+            }
             case 'form':
 
             this.elementPanel.innerHTML = `
                 <div class="accordion-title">入力欄設定</div>
+
+
+                <label>入力タイプ</label>
+                <select id="form-input-type" class="editor-input">
+                    <option value="text">text（テキスト）</option>
+                    <option value="email">email（メールアドレス）</option>
+                    <option value="tel">tel（電話番号）</option>
+                    <option value="password">password（パスワード）</option>
+                    <option value="number">number（数値）</option>
+                </select>
+
+
+                <label>ラベル</label>
+                <input
+                    type="text"
+                    id="form-label"
+                    class="editor-input"
+                    placeholder="例：メールアドレス"
+                >
+
+
 
                 <label>プレースホルダー</label>
 
@@ -634,6 +725,21 @@ export class PropertyManager {
                     type="text"
                     id="form-placeholder"
                     class="editor-input"
+                >
+                <label>最小値（数値入力用）</label>
+                <input
+                    type="number"
+                    id="form-min"
+                    class="editor-input"
+                    placeholder="例：1"
+                >
+
+                <label>最大値（数値入力用）</label>
+                <input
+                    type="number"
+                    id="form-max"
+                    class="editor-input"
+                    placeholder="例：100"
                 >
             `;
 
@@ -715,7 +821,7 @@ export class PropertyManager {
 
             <div style="display: flex; flex-direction: column; gap: 8px;">
 
-            
+
 
                 <button
                     type="button"
@@ -735,7 +841,7 @@ export class PropertyManager {
 
             </div>
 
-            
+
             <hr>
 
             <div class="accordion-title">列幅設定</div>
@@ -955,7 +1061,7 @@ export class PropertyManager {
                 this.historyManager.save();
                 this.editor.markDirty();
             });
-     
+
 
         document
             .getElementById('heading-tag')
@@ -1018,7 +1124,7 @@ export class PropertyManager {
                     block.dataset.italic === 'true'
                         ? 'italic'
                         : 'normal';
-                
+
                 this.historyManager.save();
                 this.editor.markDirty();
             }
@@ -1124,7 +1230,7 @@ export class PropertyManager {
                 this.historyManager.save();
                 this.editor.markDirty();
             });
-        
+
                 // 行間設定
         document.getElementById('text-line-height')
             ?.addEventListener('change', (e) => {
@@ -1264,12 +1370,12 @@ export class PropertyManager {
                         'active',
                         nextState
                     );
-                    
+
                 this.historyManager.save();
                 this.editor.markDirty();
             });
     }
-    
+
     bindListEvents(block) {
 
         const ul = block.querySelector('ul');
@@ -1354,7 +1460,7 @@ export class PropertyManager {
                 this.historyManager.save();
                 this.editor.markDirty();
             });
-        
+
         // マーカー位置設定
     document.getElementById('list-position')
         ?.addEventListener('change', (e) => {
@@ -1698,7 +1804,7 @@ export class PropertyManager {
             this.historyManager.save();
             this.editor.markDirty();
         });
-        
+
                 document.getElementById('image-alt')
             ?.addEventListener('input', (e) => {
 
@@ -1819,11 +1925,11 @@ img.style.opacity = String(opacity / 100);
                 }
             });
 
-            block.appendChild(img);            
-        
+            block.appendChild(img);
+
                     this.historyManager.save();
             this.editor.markDirty();};
-        
+
             reader.onerror = () => {
                 alert('画像の読み込みに失敗しました。');
             };
@@ -1972,7 +2078,93 @@ img.style.opacity = String(opacity / 100);
         opacityNumber?.addEventListener('change', (e) => {
             updateImageOpacity(e.target.value);
         });
-                        
+
+    }
+        // 埋め込みブロックの設定
+    bindEmbedEvents(block) {
+        const container = block.querySelector('.editor-embed-container');
+        if (!container) return;
+
+        const typeInput = document.getElementById('embed-type');
+        const urlInput = document.getElementById('embed-url');
+
+        if (typeInput) {
+            typeInput.value = block.dataset.embedType || 'youtube';
+
+            typeInput.addEventListener('change', () => {
+                block.dataset.embedType = typeInput.value;
+
+                EmbedBlock.updatePreview(block);
+
+                this.historyManager.save();
+                this.editor.markDirty();
+            });
+        }
+
+        if (urlInput) {
+            urlInput.value = block.dataset.embedUrl || '';
+
+            urlInput.addEventListener('change', () => {
+                block.dataset.embedUrl = urlInput.value.trim();
+
+                EmbedBlock.updatePreview(block);
+
+                this.historyManager.save();
+                this.editor.markDirty();
+            });
+        }
+
+        const bindSize = (name, min, max, unit) => {
+            const range = document.getElementById(`embed-${name}-range`);
+            const number = document.getElementById(`embed-${name}-number`);
+
+            if (!range || !number) return;
+
+            const datasetKey = name === 'width'
+                ? 'embedWidth'
+                : 'embedHeight';
+
+            const defaultValue = name === 'width' ? 100 : 400;
+
+            const clamp = (value) => {
+                const parsed = Number(value);
+                return Number.isFinite(parsed)
+                    ? Math.min(max, Math.max(min, parsed))
+                    : defaultValue;
+            };
+
+            const initial = clamp(block.dataset[datasetKey] ?? defaultValue);
+            range.value = String(initial);
+            number.value = String(initial);
+
+            const update = (value) => {
+                const size = clamp(value);
+
+                range.value = String(size);
+                number.value = String(size);
+
+                block.dataset[datasetKey] = String(size);
+                container.style[name] = `${size}${unit}`;
+
+                this.editor.markDirty();
+            };
+
+            range.addEventListener('input', () => {
+                update(range.value);
+            });
+
+            range.addEventListener('change', () => {
+                this.historyManager.save();
+            });
+
+            number.addEventListener('change', () => {
+                update(number.value);
+                this.historyManager.save();
+            });
+        };
+
+        bindSize('width', 20, 100, '%');
+        bindSize('height', 150, 800, 'px');
     }
 
     // 入力欄の設定
@@ -1981,6 +2173,67 @@ bindFormEvents(block) {
     const input = block.querySelector('input');
 
     if (!input) return;
+
+
+    // ラベルの設定
+    const labelInput = document.getElementById('form-label');
+    const formLabel = block.querySelector('.editor-form-label');
+
+    if (labelInput && formLabel) {
+
+        // 現在のラベルを設定欄に表示
+        labelInput.value = block.dataset.label ?? '';
+
+        // ラベルを変更したとき
+        labelInput.addEventListener('input', (e) => {
+
+            const value = e.target.value;
+
+            // ラベルの文字を変更
+            formLabel.textContent = value;
+
+            // 空欄なら非表示
+            formLabel.style.display = value ? 'block' : 'none';
+
+            // ブロックのデータに保存
+            block.dataset.label = value;
+
+            this.historyManager.save();
+            this.editor.markDirty();
+        });
+    }
+
+
+        // 入力タイプの設定
+        const inputTypeSelect = document.getElementById('form-input-type');
+
+        if (inputTypeSelect) {
+            const allowedTypes = [
+                'text',
+                'email',
+                'tel',
+                'password',
+                'number'
+            ];
+
+            // 現在の入力タイプを設定画面に反映
+            inputTypeSelect.value = allowedTypes.includes(block.dataset.inputType)
+                ? block.dataset.inputType
+                : 'text';
+
+            // 入力タイプが変更されたとき
+            inputTypeSelect.addEventListener('change', (e) => {
+                const type = allowedTypes.includes(e.target.value)
+                    ? e.target.value
+                    : 'text';
+
+                input.type = type;
+                block.dataset.inputType = type;
+
+                this.historyManager.save();
+                this.editor.markDirty();
+            });
+        }
 
     document.getElementById('form-placeholder')
         ?.addEventListener('input', (e) => {
@@ -1991,6 +2244,36 @@ bindFormEvents(block) {
             this.historyManager.save();
             this.editor.markDirty();
         });
+        // 数値入力の最小値・最大値設定
+    [
+        ['form-min', 'min'],
+        ['form-max', 'max']
+    ].forEach(([id, key]) => {
+
+        const settingInput = document.getElementById(id);
+
+        if (!settingInput) return;
+
+        // 保存されている設定値を表示
+        settingInput.value = block.dataset[key] ?? '';
+
+        // 設定変更時にブロックへ反映
+        settingInput.addEventListener('change', () => {
+
+            const value = settingInput.value;
+
+            block.dataset[key] = value;
+
+            if (value === '') {
+                input.removeAttribute(key);
+            } else {
+                input.setAttribute(key, value);
+            }
+
+            this.historyManager.save();
+            this.editor.markDirty();
+        });
+    });
 }
 
 // 独立した区切り線の設定
@@ -2164,7 +2447,7 @@ bindTableEvents(block) {
         );
     };
 
-    
+
     // セルのドラッグ選択
     if (table.dataset.selectionBound !== 'true') {
 
@@ -2174,8 +2457,8 @@ bindTableEvents(block) {
 
         let isSelecting = false;
         let startCell = null;
-        
-    
+
+
 
         // 選択状態を解除
         const clearCellSelection = () => {
@@ -2475,10 +2758,15 @@ bindTableEvents(block) {
                 }
             });
 
+
             clearCellSelection();
 
             this.historyManager.save();
             this.editor.markDirty();
+
+            // セル結合後、右側の設定を最新の状態に更新
+            this.show(block);
+
         });
 
     // セルの結合解除
@@ -2499,7 +2787,7 @@ bindTableEvents(block) {
                 return;
             }
 
-    
+
             let backup;
 
             try {
@@ -2654,9 +2942,22 @@ restoreCells.forEach(saved => {
 
             tr.style.height = `${height}px`;
 
-            tr.querySelectorAll('td, th').forEach(cell => {
+
+        tr.querySelectorAll('td, th').forEach(cell => {
+            const rowspan = Math.max(1, cell.rowSpan || 1);
+
+            if (rowspan > 1) {
+                // 結合セルの高さは、結合範囲の行高さの合計
+                const totalHeight = heights
+                    .slice(i, i + rowspan)
+                    .reduce((sum, h) => sum + h, 0);
+
+                cell.style.height = `${totalHeight}px`;
+            } else {
                 cell.style.height = `${height}px`;
-            });
+            }
+        });
+
         });
     };
 
@@ -3250,11 +3551,31 @@ const collectNestedMerges = (
         this.show(block);
     };
 
-    document.getElementById('table-rows')
-        ?.addEventListener('change', updateTableSize);
+    // 行数・列数の変更を即時反映
+    ['table-rows', 'table-columns'].forEach(id => {
+        const input = document.getElementById(id);
 
-    document.getElementById('table-columns')
-        ?.addEventListener('change', updateTableSize);
+        if (!input) return;
+
+        input.addEventListener('input', () => {
+            // 数値が未入力・範囲外の場合は更新しない
+            const value = Number(input.value);
+            const min = Number(input.min);
+            const max = Number(input.max);
+
+            if (
+                input.value.trim() === '' ||
+                !Number.isInteger(value) ||
+                value < min ||
+                value > max
+            ) {
+                return;
+            }
+
+            updateTableSize();
+        });
+    });
+
 
     // 文字色
     document.getElementById('table-text-color')
