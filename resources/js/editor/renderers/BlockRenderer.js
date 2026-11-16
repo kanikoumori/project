@@ -1,4 +1,4 @@
-
+import { EmbedBlock } from '../blocks/EmbedBlock.js';
 export class BlockRenderer {
 
     /**
@@ -306,6 +306,24 @@ export class BlockRenderer {
 
             // 入力欄
             case 'form': {
+
+                // 入力欄のラベル
+                const label = document.createElement('label');
+
+                label.className = 'editor-form-label';
+                label.textContent = style.label ?? data.label ?? '';
+
+                // ラベルが空の場合は非表示
+                label.style.display = label.textContent
+                    ? 'block'
+                    : 'none';
+
+                // ラベル情報を保持
+                wrapper.dataset.label = label.textContent;
+
+                // 入力欄の上にラベルを追加
+                wrapper.appendChild(label);
+
                 const input = document.createElement('input');
 
                 const allowedTypes = [
@@ -313,7 +331,7 @@ export class BlockRenderer {
                     'email',
                     'number',
                     'tel',
-                    'url'
+                    'password'
                 ];
 
                 input.className = 'editor-input';
@@ -323,7 +341,26 @@ export class BlockRenderer {
 
                 input.placeholder = style.placeholder || '入力してください';
                 input.value = data.value || '';
-                input.disabled = !isEditor;
+                input.disabled = false;
+                // 数値入力の最小値・最大値を復元
+                const min = style.min ?? '';
+                const max = style.max ?? '';
+
+                // ブロックに設定値を保持
+                wrapper.dataset.min = min;
+                wrapper.dataset.max = max;
+
+                // 数値入力欄に設定を反映
+                if (input.type === 'number') {
+
+                    if (min !== '') {
+                        input.min = min;
+                    }
+
+                    if (max !== '') {
+                        input.max = max;
+                    }
+                }
 
                 wrapper.dataset.inputType = input.type;
                 wrapper.dataset.placeholder = input.placeholder;
@@ -340,31 +377,124 @@ export class BlockRenderer {
                 }
 
                 wrapper.appendChild(input);
-                break;
-            }
+                // プレビュー画面で入力エラーを表示
+                if (!isEditor) {
 
-            // 区切り線
-            case 'divider': {
-                const divider = document.createElement('hr');
+                    const errorMessage = document.createElement('div');
+                    errorMessage.className = 'editor-form-error';
+                    errorMessage.style.color = '#dc2626';
+                    errorMessage.style.fontSize = '13px';
+                    errorMessage.style.marginTop = '5px';
 
-                const thickness = Number(style.dividerThickness) || 2;
-                const color = style.dividerColor || '#000000';
-                const lineStyle = style.dividerStyle || 'solid';
-                const margin = Number(style.dividerMargin ?? 10);
+                    wrapper.appendChild(errorMessage);
 
-                divider.className = 'editor-divider-element';
-                divider.style.border = 'none';
-                divider.style.borderTop = `${thickness}px ${lineStyle} ${color}`;
-                divider.style.margin = `${margin}px 0`;
+                    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    // 数値が設定された範囲内か確認
+                    const isValidNumber = () => {
 
-                wrapper.dataset.dividerStyle = lineStyle;
-                wrapper.dataset.dividerThickness = thickness;
-                wrapper.dataset.dividerColor = color;
-                wrapper.dataset.dividerMargin = margin;
+                        if (input.value === '') return true;
 
-                wrapper.appendChild(divider);
-                break;
-            }
+                        return input.validity.valid &&
+                            (input.min === '' || input.valueAsNumber >= Number(input.min)) &&
+                            (input.max === '' || input.valueAsNumber <= Number(input.max));
+                    };
+
+                    // 電話番号の形式チェック（ハイフンあり・なしに対応）
+                    const isValidPhone = (value) => {
+
+                        // ハイフンを除去
+                        const numbers = value.replace(/-/g, '');
+
+                        // 数字のみ、10〜11桁か確認
+                        return /^0\d{9,10}$/.test(numbers);
+                    };
+
+                    // エラー表示後、正しい内容に修正したら消す
+                    input.addEventListener('input', () => {
+
+                        if (!errorMessage.textContent) return;
+
+                        if (
+                            input.type === 'email' &&
+                            emailPattern.test(input.value.trim())
+                        ) {
+                            errorMessage.textContent = '';
+                            input.style.borderColor = '';
+                        }
+                        // 電話番号が正しく修正されたらエラーを消す
+                        if (
+                            input.type === 'tel' &&
+                            isValidPhone(input.value.trim())
+                        ) {
+                            errorMessage.textContent = '';
+                            input.style.borderColor = '';
+                        }
+                    });
+
+                    // 入力欄から離れたときにチェック
+                    input.addEventListener('blur', () => {
+
+                        const value = input.value.trim();
+
+                        errorMessage.textContent = '';
+                        input.style.borderColor = '';
+
+                        if (
+                            input.type === 'email' &&
+                            value !== '' &&
+                            !emailPattern.test(value)
+                        ) {
+                            errorMessage.textContent =
+                                '正しいメールアドレスを入力してください。';
+
+                            input.style.borderColor = '#dc2626';
+                        }
+                        // 電話番号の形式をチェック
+                        if (
+                            input.type === 'tel' &&
+                            value !== '' &&
+                            !isValidPhone(value)
+                        ) {
+                            errorMessage.textContent =
+                                '正しい電話番号を入力してください。';
+
+                            input.style.borderColor = '#dc2626';
+                        }
+                        // 数値が正しい範囲に修正されたらエラーを消す
+                        if (
+                            input.type === 'number' &&
+                            isValidNumber()
+                        ) {
+                            errorMessage.textContent = '';
+                            input.style.borderColor = '';
+                        }
+                        // 数値の最小値・最大値をチェック
+                        if (
+                            input.type === 'number' &&
+                            value !== '' &&
+                            !isValidNumber()
+                        ) {
+
+                            if (input.validity.rangeUnderflow) {
+                                errorMessage.textContent =
+                                    `${input.min}以上の数値を入力してください。`;
+
+                            } else if (input.validity.rangeOverflow) {
+                                errorMessage.textContent =
+                                    `${input.max}以下の数値を入力してください。`;
+
+                            } else {
+                                errorMessage.textContent =
+                                    '正しい数値を入力してください。';
+                            }
+
+                            input.style.borderColor = '#dc2626';
+                        }
+                                            });
+                                        }
+
+                                        break;
+                                    }
 
             // テーブル
             case 'table': {
@@ -504,6 +634,42 @@ export class BlockRenderer {
                 table.style.border = `1px ${style.tableBorderStyle || 'solid'} #000000`;
 
                 wrapper.appendChild(table);
+                break;
+            }
+                        // 埋め込みブロック
+            case 'embed': {
+
+                const embedType = data.embedType || 'youtube';
+                const embedUrl = data.url || '';
+
+                const width = Number(style.embedWidth);
+                const height = Number(style.embedHeight);
+
+                const safeWidth =
+                    Number.isFinite(width) && width >= 20 && width <= 100
+                        ? width
+                        : 100;
+
+                const safeHeight =
+                    Number.isFinite(height) && height >= 150 && height <= 800
+                        ? height
+                        : 400;
+
+                const container = document.createElement('div');
+
+                container.className = 'editor-embed-container';
+                container.style.width = `${safeWidth}%`;
+                container.style.height = `${safeHeight}px`;
+
+                wrapper.dataset.embedType = embedType;
+                wrapper.dataset.embedUrl = embedUrl;
+                wrapper.dataset.embedWidth = String(safeWidth);
+                wrapper.dataset.embedHeight = String(safeHeight);
+
+                wrapper.appendChild(container);
+
+                EmbedBlock.updatePreview(wrapper);
+
                 break;
             }
 

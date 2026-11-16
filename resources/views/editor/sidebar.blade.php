@@ -41,6 +41,10 @@
                 テーブル
             </button>
 
+            <button id="add-embed" class="sidebar-button">
+                埋め込み
+            </button>
+
             <button id="add-container" class="sidebar-button">
                 コンテナ
             </button>
