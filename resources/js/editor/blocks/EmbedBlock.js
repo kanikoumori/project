@@ -189,7 +189,7 @@ export class EmbedBlock {
             }
 
             // 投稿URLを安全な形式に統一
-            return `https://twitter.com/${parts[0]}/status/${parts[2]}`;
+            return `https://x.com/${parts[0]}/status/${parts[2]}`;
 
         } catch {
             return null;
@@ -325,12 +325,12 @@ export class EmbedBlock {
                 renderTweet();
             } else {
                 let script = document.querySelector(
-                    'script[src="https://platform.twitter.com/widgets.js"]'
+                    'script[src="https://platform.x.com/widgets.js"]'
                 );
 
                 if (!script) {
                     script = document.createElement('script');
-                    script.src = 'https://platform.twitter.com/widgets.js';
+                    script.src = 'https://platform.x.com/widgets.js';
                     script.async = true;
                 }
 
@@ -341,8 +341,17 @@ export class EmbedBlock {
                 }, {
                     once: true
                 });
+                script.addEventListener('error', () => {
+                    if (!container.contains(quote)) return;
 
-                 // 新規スクリプトの場合はイベント登録後に読み込む
+                    // 読み込みに失敗した場合は投稿リンクを残す
+                    link.textContent =
+                        'Xの投稿を開く（埋め込みを読み込めませんでした）';
+                }, {
+                    once: true
+                });
+
+                // 新規スクリプトの場合はイベント登録後に読み込む
                 if (!script.isConnected) {
                     document.head.appendChild(script);
                 }
