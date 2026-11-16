@@ -10,7 +10,7 @@ import { AutoSaveManager } from './services/AutoSaveManager.js';
 export class Editor {
     constructor() {
         this.historyManager = new HistoryManager();
-        this.propertyManager = 
+        this.propertyManager =
             new PropertyManager(
                 this.historyManager,
                 this
@@ -35,11 +35,55 @@ export class Editor {
 
     // ボタン操作
     async initialize() {
+
         this.historyManager.initialize();
         this.blockManager.initialize();
         this.dragDrop.initialize();
 
-        // ページの読み込み完了を待つ
+        // 左右サイドバーの折りたたみ
+        const setupSidebarToggle = (buttonId, panelId, side) => {
+            const button = document.getElementById(buttonId);
+            const panel = document.getElementById(panelId);
+
+            if (!button || !panel) return;
+
+            const updateButton = (isClosed) => {
+                button.textContent = side === 'left'
+                    ? (isClosed ? '›' : '‹')
+                    : (isClosed ? '‹' : '›');
+
+                button.setAttribute(
+                    'aria-expanded',
+                    String(!isClosed)
+                );
+
+                button.setAttribute(
+                    'aria-label',
+                    `${side === 'left' ? '左' : '右'}サイドバーを${isClosed ? '開く' : '折りたたむ'}`
+                );
+            };
+
+            updateButton(panel.classList.contains('is-closed'));
+
+            button.addEventListener('click', () => {
+                const isClosed = panel.classList.toggle('is-closed');
+                updateButton(isClosed);
+            });
+        };
+
+        setupSidebarToggle(
+            'toggle-left-sidebar',
+            'editor-left-sidebar',
+            'left'
+        );
+
+        setupSidebarToggle(
+            'toggle-right-sidebar',
+            'editor-right-sidebar',
+            'right'
+        );
+
+        // 保存済みブロックを読み込む
         await this.loadPage();
 
         document.getElementById('undo-button')

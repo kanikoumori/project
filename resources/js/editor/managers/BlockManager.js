@@ -6,6 +6,7 @@ import { ImageBlock } from '../blocks/ImageBlock.js';
 import { FormBlock } from '../blocks/FormBlock.js';
 import { DividerBlock } from '../blocks/DividerBlock.js';
 import { TableBlock } from '../blocks/TableBlock.js';
+import { EmbedBlock } from '../blocks/EmbedBlock.js';
 import { BlockRenderer } from '../renderers/BlockRenderer.js';
 
 import { BlockSerializer }
@@ -51,6 +52,9 @@ export class BlockManager {
 
             case 'table':
                 return this.addTableFromData(block);
+
+            case 'embed':
+                return this.addEmbedFromData(block);
         }
     }
     setupBlock(block) {
@@ -168,6 +172,9 @@ export class BlockManager {
 
         document.getElementById('add-table')
             ?.addEventListener('click', () => this.addTable());
+
+        document.getElementById('add-embed')
+            ?.addEventListener('click', () => this.addEmbed());
     }
 
     // ------キャンバス内の追加表示------
@@ -235,6 +242,15 @@ export class BlockManager {
 
         this.editor.markDirty();
     }
+    addEmbed() {
+        const block = EmbedBlock.create();
+
+        this.setupBlock(block);
+        this.canvas.appendChild(block);
+
+        this.historyManager.save();
+        this.editor.markDirty();
+    }
 
     addDivider() {
         const block = DividerBlock.create();
@@ -278,11 +294,49 @@ export class BlockManager {
 
     addButtonFromData(block) {
 
-        const el = BlockRenderer.create(block, {
-            mode: 'editor'
-        });
+            const el = BlockRenderer.create(block, {
+                mode: 'editor'
+            });
 
-        if (!el) return;
+            if (!el) return;
+
+            this.setupBlock(el);
+            this.canvas.appendChild(el);
+        }
+        // 保存された埋め込みブロックを復元
+    addEmbedFromData(block) {
+
+        const data = block.data || {};
+        const style = data.style || {};
+
+        const el = EmbedBlock.create();
+
+        el.dataset.embedType = data.embedType || 'youtube';
+        el.dataset.embedUrl = data.url || '';
+
+        const width = Number(style.embedWidth);
+        const height = Number(style.embedHeight);
+
+        el.dataset.embedWidth = String(
+            Number.isFinite(width) && width >= 20 && width <= 100
+                ? width
+                : 100
+        );
+
+        el.dataset.embedHeight = String(
+            Number.isFinite(height) && height >= 150 && height <= 800
+                ? height
+                : 400
+        );
+
+        const container = el.querySelector('.editor-embed-container');
+
+        if (container) {
+            container.style.width = `${el.dataset.embedWidth}%`;
+            container.style.height = `${el.dataset.embedHeight}px`;
+        }
+
+        EmbedBlock.updatePreview(el);
 
         this.setupBlock(el);
         this.canvas.appendChild(el);
