@@ -10,7 +10,7 @@ import { AutoSaveManager } from './services/AutoSaveManager.js';
 export class Editor {
     constructor() {
         this.historyManager = new HistoryManager();
-        this.propertyManager = 
+        this.propertyManager =
             new PropertyManager(
                 this.historyManager,
                 this
@@ -34,11 +34,57 @@ export class Editor {
     }
 
     // ボタン操作
-    initialize() {
+    async initialize() {
+
         this.historyManager.initialize();
         this.blockManager.initialize();
         this.dragDrop.initialize();
-        this.loadPage();
+
+        // 左右サイドバーの折りたたみ
+        const setupSidebarToggle = (buttonId, panelId, side) => {
+            const button = document.getElementById(buttonId);
+            const panel = document.getElementById(panelId);
+
+            if (!button || !panel) return;
+
+            const updateButton = (isClosed) => {
+                button.textContent = side === 'left'
+                    ? (isClosed ? '›' : '‹')
+                    : (isClosed ? '‹' : '›');
+
+                button.setAttribute(
+                    'aria-expanded',
+                    String(!isClosed)
+                );
+
+                button.setAttribute(
+                    'aria-label',
+                    `${side === 'left' ? '左' : '右'}サイドバーを${isClosed ? '開く' : '折りたたむ'}`
+                );
+            };
+
+            updateButton(panel.classList.contains('is-closed'));
+
+            button.addEventListener('click', () => {
+                const isClosed = panel.classList.toggle('is-closed');
+                updateButton(isClosed);
+            });
+        };
+
+        setupSidebarToggle(
+            'toggle-left-sidebar',
+            'editor-left-sidebar',
+            'left'
+        );
+
+        setupSidebarToggle(
+            'toggle-right-sidebar',
+            'editor-right-sidebar',
+            'right'
+        );
+
+        // 保存済みブロックを読み込む
+        await this.loadPage();
 
         document.getElementById('undo-button')
             ?.addEventListener('click', () => {
@@ -56,8 +102,28 @@ export class Editor {
             ?.addEventListener('click', () => {
                 this.save();
             });
-    }
+        document.getElementById('preview-button')
+            ?.addEventListener('click', async () => {
+                if (this.isSaving) {
+                    return;
+                }
 
+                try {
+                    await this.save();
+                } catch (error) {
+                    console.error(error);
+                    alert('保存に失敗したため、プレビューを開けませんでした。再度お試しください。');
+                    return;
+                }
+
+                const pageId = document
+                    .getElementById('canvas')
+                    .dataset.pageId;
+
+                window.location.href = `/preview/${pageId}`;
+            });
+
+    }
     // ページの再読み込み
     async loadPage() {
 
@@ -158,10 +224,10 @@ export class Editor {
             if (saveButton) {
                 saveButton.disabled = false;
             }
-        
+
         }
     }
-    
+
 
     // 自動保存
     markDirty() {
@@ -176,4 +242,5 @@ export class Editor {
             this.blockManager.createFromData(block);
         });
     }
+
 }

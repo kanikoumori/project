@@ -1,3 +1,4 @@
+
 <div class="toolbar">
 
     <a href="/dashboard" class="editor-logo">
@@ -30,6 +31,9 @@
             一時保存
         </button>
 
+        <button id="preview-button" class="toolbar-button">
+            プレビュー
+        </button>
         <button class="toolbar-publish">
             公開
         </button>

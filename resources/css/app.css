@@ -1,3 +1,4 @@
+@import './blocks.css';
 @import './editor/editor.css';
 @import './editor/toolbar.css';
 @import './editor/sidebar.css';
