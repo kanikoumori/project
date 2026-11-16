@@ -360,14 +360,6 @@ export class EmbedBlock {
                 if (window.twttr?.widgets?.load) {
                     renderTweet();
                 }
-                                script.addEventListener('error', () => {
-                    if (!container.contains(quote)) return;
-
-                    // 読み込みに失敗した場合は投稿リンクを残す
-                    link.textContent = 'Xの投稿を開く（埋め込みを読み込めませんでした）';
-                }, {
-                    once: true
-                });
             }
 
         } else {
