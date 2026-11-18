@@ -16,14 +16,197 @@ export class BlockRenderer {
         const data = block.data || {};
         const style = data.style || {};
         const isEditor = mode === 'editor';
+        const allowedHtmlTags = [
+            'div',
+            'header',
+            'nav',
+            'main',
+            'footer',
+            'address'
+        ];
 
-        const wrapper = document.createElement('div');
+        const savedHtmlTag = data.blockSettings?.htmlTag;
 
+        const htmlTag = allowedHtmlTags.includes(savedHtmlTag)
+            ? savedHtmlTag
+            : 'div';
+
+        const wrapper = document.createElement(
+            isEditor ? 'div' : htmlTag
+        );
         wrapper.className = isEditor
             ? 'block'
             : 'preview-block';
 
         wrapper.dataset.type = block.type;
+        wrapper.dataset.htmlTag = htmlTag;
+
+        // 自由配置の位置情報を復元
+        const savedPosition = data.blockSettings?.position;
+
+        if (savedPosition?.mode === 'free') {
+            const rawX = Number(savedPosition.x);
+            const rawY = Number(savedPosition.y);
+
+            const x = Number.isFinite(rawX)
+                ? Math.max(0, rawX)
+                : 0;
+
+            const y = Number.isFinite(rawY)
+                ? Math.max(0, rawY)
+                : 0;
+
+            wrapper.classList.add('free-positioned');
+            wrapper.style.position = 'absolute';
+            // 横位置はキャンバス幅に対する割合で復元
+            wrapper.style.left = `${x}%`;
+
+            // 縦位置はピクセル単位で復元
+            wrapper.style.top = `${y}px`;
+        }
+
+        const savedWidth = Number(data.blockSettings?.width);
+
+        const blockWidth = Number.isFinite(savedWidth)
+            && savedWidth >= 1
+            && savedWidth <= 100
+            ? savedWidth
+            : 100;
+
+        wrapper.dataset.blockWidth = String(blockWidth);
+        wrapper.style.width = `${blockWidth}%`;
+        // 自由配置ブロックが右端からはみ出さないようにする
+        if (savedPosition?.mode === 'free') {
+            const maxLeft = Math.max(0, 100 - blockWidth);
+
+            const currentLeft = parseFloat(wrapper.style.left) || 0;
+
+            wrapper.style.left = `${Math.min(
+                Math.max(0, currentLeft),
+                maxLeft
+            )}%`;
+        }
+        const savedHeight = data.blockSettings?.height;
+
+        const heightValue = Number(savedHeight);
+
+        const blockHeight =
+            savedHeight !== null &&
+            savedHeight !== undefined &&
+            savedHeight !== '' &&
+            Number.isFinite(heightValue)
+                ? Math.max(1, Math.min(2000, heightValue))
+                : null;
+
+        if (blockHeight !== null) {
+            wrapper.dataset.blockHeight = String(blockHeight);
+            wrapper.style.height = `${blockHeight}px`;
+        }
+
+        // ブロック共通の枠線（border）を復元
+        const savedBorder = data.blockSettings?.border || {};
+
+        const rawBorderWidth = Number(savedBorder.width);
+
+        const borderWidth =
+            savedBorder.width !== undefined &&
+            savedBorder.width !== null &&
+            savedBorder.width !== '' &&
+            Number.isFinite(rawBorderWidth)
+                ? Math.max(0, Math.min(20, rawBorderWidth))
+                : 0;
+
+        const borderColor =
+            typeof savedBorder.color === 'string' &&
+            /^#[0-9a-fA-F]{6}$/.test(savedBorder.color)
+                ? savedBorder.color
+                : '#000000';
+
+        const allowedBorderStyles = [
+            'solid', 'dashed', 'dotted', 'double'
+        ];
+
+        const borderStyle = allowedBorderStyles.includes(savedBorder.style)
+            ? savedBorder.style
+            : 'solid';
+
+        wrapper.dataset.blockBorderWidth = String(borderWidth);
+        wrapper.dataset.blockBorderColor = borderColor;
+        wrapper.dataset.blockBorderStyle = borderStyle;
+
+        wrapper.style.border = borderWidth > 0
+            ? `${borderWidth}px ${borderStyle} ${borderColor}`
+            : '2px solid transparent';
+        // ブロック共通の角丸（border-radius）を復元
+        const savedBorderRadius = data.blockSettings?.borderRadius;
+        const parsedBorderRadius = Number(savedBorderRadius);
+
+        const borderRadius =
+            savedBorderRadius !== undefined &&
+            savedBorderRadius !== null &&
+            savedBorderRadius !== '' &&
+            Number.isFinite(parsedBorderRadius)
+                ? Math.max(0, Math.min(200, parsedBorderRadius))
+                : 12;
+
+        wrapper.dataset.blockBorderRadius = String(borderRadius);
+        wrapper.style.borderRadius = `${borderRadius}px`;
+        // ブロック共通の透明度（opacity）を復元
+        const savedOpacity = data.blockSettings?.opacity;
+        const parsedOpacity = Number(savedOpacity);
+
+        const blockOpacity =
+            savedOpacity !== undefined &&
+            savedOpacity !== null &&
+            savedOpacity !== '' &&
+            Number.isFinite(parsedOpacity)
+                ? Math.max(0, Math.min(100, parsedOpacity))
+                : 100;
+
+        wrapper.dataset.blockOpacity = String(blockOpacity);
+        wrapper.style.opacity = String(blockOpacity / 100);
+        const savedMargin = data.blockSettings?.margin || {};
+
+        ['top', 'right', 'bottom', 'left'].forEach((direction) => {
+            const rawValue = savedMargin[direction];
+            const parsed = Number(rawValue);
+
+            const margin =
+                rawValue !== null &&
+                rawValue !== undefined &&
+                rawValue !== '' &&
+                Number.isFinite(parsed)
+                    ? Math.max(0, Math.min(500, parsed))
+                    : 0;
+
+            const capitalized =
+                direction.charAt(0).toUpperCase() + direction.slice(1);
+
+            wrapper.dataset[`blockMargin${capitalized}`] = String(margin);
+            wrapper.style[`margin${capitalized}`] = `${margin}px`;
+        });
+
+                // ブロック共通の内側余白（padding）を復元
+        const savedPadding = data.blockSettings?.padding || {};
+
+        ['top', 'right', 'bottom', 'left'].forEach((direction) => {
+            const rawValue = savedPadding[direction];
+            const parsed = Number(rawValue);
+
+            const padding =
+                rawValue !== null &&
+                rawValue !== undefined &&
+                rawValue !== '' &&
+                Number.isFinite(parsed)
+                    ? Math.max(0, Math.min(500, parsed))
+                    : 16;
+
+            const capitalized =
+                direction.charAt(0).toUpperCase() + direction.slice(1);
+
+            wrapper.dataset[`blockPadding${capitalized}`] = String(padding);
+            wrapper.style[`padding${capitalized}`] = `${padding}px`;
+        });
 
         if (block.type === 'list') {
             wrapper.classList.add('list-block');
@@ -40,6 +223,97 @@ export class BlockRenderer {
         const editable = isEditor;
 
         switch (block.type) {
+           // コンテナ
+            case 'container': {
+
+                wrapper.classList.add('container-block');
+
+                const content = document.createElement('div');
+
+                content.className = 'container-content';
+
+                // 配置方向
+                const direction = ['column', 'row'].includes(style.direction)
+                    ? style.direction
+                    : 'column';
+
+                // 主軸方向の配置
+                const allowedJustify = [
+                    'flex-start',
+                    'center',
+                    'flex-end',
+                    'space-between',
+                    'space-around',
+                    'space-evenly'
+                ];
+
+                const justifyContent = allowedJustify.includes(style.justifyContent)
+                    ? style.justifyContent
+                    : 'flex-start';
+
+                // 交差軸方向の配置
+                const allowedAlign = [
+                    'stretch',
+                    'flex-start',
+                    'center',
+                    'flex-end'
+                ];
+
+                const alignItems = allowedAlign.includes(style.alignItems)
+                    ? style.alignItems
+                    : 'stretch';
+
+                // 要素間隔
+                const rawGap = Number(style.gap ?? 16);
+
+                const gap = Number.isFinite(rawGap)
+                    ? Math.max(0, Math.min(500, rawGap))
+                    : 16;
+
+                // 折り返し
+                const wrap = ['nowrap', 'wrap'].includes(style.wrap)
+                    ? style.wrap
+                    : 'nowrap';
+
+                // 編集用の設定値を復元
+                wrapper.dataset.direction = direction;
+                wrapper.dataset.justifyContent = justifyContent;
+                wrapper.dataset.alignItems = alignItems;
+                wrapper.dataset.gap = String(gap);
+                wrapper.dataset.wrap = wrap;
+
+                // コンテナの配置設定
+                content.style.display = 'flex';
+                content.style.flexDirection = direction;
+                content.style.justifyContent = justifyContent;
+                content.style.alignItems = alignItems;
+                content.style.gap = `${gap}px`;
+                content.style.flexWrap = wrap;
+                // 保存されたコンテナの高さを内部領域にも反映
+                if (blockHeight !== null) {
+                    content.style.height = '100%';
+                }
+
+                // 保存された子要素を復元
+                const children = Array.isArray(data.children)
+                    ? data.children
+                    : [];
+
+                children.forEach(child => {
+
+                    const childElement = this.create(child, {
+                        mode
+                    });
+
+                    if (childElement) {
+                        content.appendChild(childElement);
+                    }
+                });
+
+                wrapper.appendChild(content);
+
+                break;
+            }
 
             // 見出し
             case 'heading': {
@@ -87,20 +361,21 @@ export class BlockRenderer {
                 wrapper.dataset.align = style.align || 'left';
                 wrapper.dataset.lineHeight = style.lineHeight ?? 1.7;
                 wrapper.dataset.letterSpacing = style.letterSpacing || '0px';
-
-                const height = Number(style.height);
+                const legacyHeight = Number(style.height);
 
                 if (
+                    data.blockSettings?.height === undefined &&
                     style.height !== null &&
                     style.height !== undefined &&
                     style.height !== '' &&
-                    Number.isFinite(height) &&
-                    height > 0
+                    Number.isFinite(legacyHeight) &&
+                    legacyHeight > 0
                 ) {
-                    wrapper.dataset.height = height;
-                    wrapper.style.height = `${height}px`;
-                }
+                    const safeHeight = Math.max(1, Math.min(2000, legacyHeight));
 
+                    wrapper.dataset.blockHeight = String(safeHeight);
+                    wrapper.style.height = `${safeHeight}px`;
+                }
                 this.applyTextStyle(text, style, 1.7);
                 text.style.fontSize = `${Number(style.fontSize) || 16}px`;
 

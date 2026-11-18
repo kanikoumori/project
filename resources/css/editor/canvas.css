@@ -23,11 +23,13 @@
     max-width: 1200px;
     min-width: 0;
 
+    position: relative;
+
     min-height: calc(100vh - 140px);
 
     margin: 0 auto;
 
-    padding: 16px;
+    padding: 0;
 
     background: #ffffff;
 
@@ -76,4 +78,51 @@
 
     box-shadow:
         0 8px 20px rgba(0,0,0,0.08);
+}
+
+/* PowerPoint風スマートガイド */
+.smart-guide {
+    position: absolute;
+    display: none;
+    background-color: #f43f5e;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+/* 縦方向の補助線 */
+.smart-guide.vertical {
+    width: 1px;
+    top: 0;
+    bottom: 0;
+}
+
+/* 横方向の補助線 */
+.smart-guide.horizontal {
+    height: 1px;
+    left: 0;
+    right: 0;
+}
+
+/* 補助線を表示 */
+.smart-guide.visible {
+    display: block;
+}
+
+/* ドラッグ中の座標表示 */
+.drag-coordinate-label {
+    position: absolute;
+    display: none;
+    padding: 5px 8px;
+    background: #1e293b;
+    color: #ffffff;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 1002;
+}
+
+.drag-coordinate-label.visible {
+    display: block;
 }
