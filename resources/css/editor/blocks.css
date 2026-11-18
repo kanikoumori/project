@@ -18,13 +18,13 @@
 
 /* ホバー時 */
 .block:hover {
-    border-color: #dbeafe;
+    outline: 2px solid #dbeafe;
     background: rgba(255, 255, 255, 0.7);
 }
 
 /* 選択時 */
 .block.selected {
-    border-color: #5B9DFF;
+    outline: 2px solid #5B9DFF;
     box-shadow: 0 0 0 4px rgba(91, 157, 255, 0.15);
     background: rgba(255, 255, 255, 0.95);
 }
@@ -42,7 +42,7 @@
     cursor: pointer;
 }
 
-.block.selected .delete-button {
+.block.selected > .delete-button {
     display: block;
 }
 
@@ -96,4 +96,57 @@
     outline: none;
     border-color: #5B9DFF;
     box-shadow: 0 0 0 4px rgba(91, 157, 255, 0.15);
+}
+
+/* 自由配置されたブロック */
+.block.free-positioned {
+    position: absolute;
+    margin: 0;
+    z-index: 1;
+}
+
+/* 自由配置ブロックを選択したとき */
+.block.free-positioned.selected {
+    z-index: 2;
+}
+
+/* ドラッグ中の操作感 */
+.block.free-positioned .drag-handle {
+    cursor: grab;
+}
+
+.block.free-positioned .drag-handle:active {
+    cursor: grabbing;
+}
+/* 編集画面では透明度0%でもブロックを操作できるようにする */
+.block[data-block-opacity="0"] {
+    opacity: 0.15 !important;
+}
+
+.block[data-block-opacity="0"]:hover,
+.block[data-block-opacity="0"].selected {
+    opacity: 0.5 !important;
+}
+
+/* 空のコンテナ */
+.container-block > .container-content:empty {
+    border: 2px dashed #cbd5e1;
+    border-radius: 8px;
+}
+
+/* 空のコンテナの案内表示 */
+.container-block > .container-content:empty::before {
+    content: 'ここに要素を追加';
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+
+    color: #94a3b8;
+    font-size: 14px;
+
+    white-space: nowrap;
+    pointer-events: none;
 }

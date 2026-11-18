@@ -1,12 +1,24 @@
 export class BlockSerializer {
+
     serialize() {
+
         const canvas = document.getElementById('canvas');
 
-        const blocks = canvas.querySelectorAll('.block');
+        return this.serializeChildren(canvas);
+    }
+
+    serializeChildren(parent) {
+
+        if (!parent) return [];
+
+        const blocks = Array.from(parent.children)
+            .filter(element => element.classList.contains('block'));
+
         const blocksData = [];
 
         blocks.forEach((block, index) => {
             const type = block.dataset.type;
+
 
             let data = {
                 type,
@@ -14,6 +26,189 @@ export class BlockSerializer {
                 data: {}
             };
 
+            const allowedHtmlTags = [
+                'div',
+                'header',
+                'nav',
+                'main',
+                'footer',
+                'address'
+            ];
+
+            const htmlTag = allowedHtmlTags.includes(block.dataset.htmlTag)
+                ? block.dataset.htmlTag
+                : 'div';
+
+        const saveBlockSettings = () => {
+            const widthValue = Number(block.dataset.blockWidth);
+
+            let width = block.dataset.blockWidth !== undefined
+                && Number.isFinite(widthValue)
+                ? Math.max(1, Math.min(100, widthValue))
+                : 100;
+
+            // 自由配置の場合は、実際に表示されている幅を保存
+            if (block.classList.contains('free-positioned')) {
+                const canvasWidth = block.parentElement?.clientWidth || 0;
+
+                if (canvasWidth > 0) {
+                    width = Math.max(
+                        1,
+                        Math.min(100, block.getBoundingClientRect().width / canvasWidth * 100)
+                    );
+                }
+            }
+
+            const heightValue = Number(block.dataset.blockHeight);
+
+            const height = block.dataset.blockHeight !== undefined
+                && Number.isFinite(heightValue)
+                ? Math.max(1, Math.min(2000, heightValue))
+                : null;
+
+
+            const getMargin = (direction) => {
+                const key =
+                    `blockMargin${direction.charAt(0).toUpperCase()}${direction.slice(1)}`;
+
+                const value = Number(block.dataset[key]);
+
+                return block.dataset[key] !== undefined &&
+                    Number.isFinite(value)
+                    ? Math.max(0, Math.min(500, value))
+                    : 0;
+            };
+                        // 内側余白（padding）の保存用データ
+            const getPadding = (direction) => {
+                const key =
+                    `blockPadding${direction.charAt(0).toUpperCase()}${direction.slice(1)}`;
+
+                const value = Number(block.dataset[key]);
+
+                return block.dataset[key] !== undefined &&
+                    Number.isFinite(value)
+                    ? Math.max(0, Math.min(500, value))
+                    : 16;
+            };
+
+
+        data.data.blockSettings = {
+            htmlTag,
+            width,
+            height,
+            border: {
+            width: (() => {
+                const value = Number(block.dataset.blockBorderWidth);
+
+                return block.dataset.blockBorderWidth !== undefined &&
+                    Number.isFinite(value)
+                    ? Math.max(0, Math.min(20, value))
+                    : 0;
+            })(),
+
+            color: /^#[0-9a-fA-F]{6}$/.test(
+                block.dataset.blockBorderColor || ''
+            )
+                ? block.dataset.blockBorderColor
+                : '#000000',
+
+            style: ['solid', 'dashed', 'dotted', 'double'].includes(
+                block.dataset.blockBorderStyle
+            )
+                ? block.dataset.blockBorderStyle
+                : 'solid'
+},
+                borderRadius: (() => {
+                const value = Number(block.dataset.blockBorderRadius);
+
+                return block.dataset.blockBorderRadius !== undefined &&
+                    Number.isFinite(value)
+                        ? Math.max(0, Math.min(200, value))
+                        : 12;
+            })(),
+            opacity: (() => {
+                const value = Number(block.dataset.blockOpacity);
+
+                return block.dataset.blockOpacity !== undefined &&
+                    Number.isFinite(value)
+                        ? Math.max(0, Math.min(100, value))
+                        : 100;
+            })(),
+                        margin: {
+                top: getMargin('top'),
+                right: getMargin('right'),
+                bottom: getMargin('bottom'),
+                left: getMargin('left')
+            },
+            padding: {
+                top: getPadding('top'),
+                right: getPadding('right'),
+                bottom: getPadding('bottom'),
+                left: getPadding('left')
+            },
+            position: {
+                mode: block.classList.contains('free-positioned')
+                    ? 'free'
+                    : 'normal',
+
+        x: block.classList.contains('free-positioned')
+            ? (() => {
+                const canvas = block.parentElement;
+                if (!canvas || canvas.clientWidth <= 0) return 0;
+
+                const blockRect = block.getBoundingClientRect();
+                const canvasRect = canvas.getBoundingClientRect();
+
+                const xPixels =
+                    blockRect.left - canvasRect.left + canvas.scrollLeft;
+
+                return Math.max(
+                    0,
+                    xPixels / canvas.clientWidth * 100
+                );
+            })()
+            : 0,
+
+                y: block.classList.contains('free-positioned')
+                    ? Math.max(0, parseFloat(block.style.top) || 0)
+                    : 0
+            }
+
+        };
+
+        };
+            // コンテナ
+            if (type === 'container') {
+
+                data.data = {
+                    style: {
+                        direction:
+                            block.dataset.direction || 'column',
+
+                        justifyContent:
+                            block.dataset.justifyContent || 'flex-start',
+
+                        alignItems:
+                            block.dataset.alignItems || 'stretch',
+
+                        gap:
+                            block.dataset.gap ?? '16',
+
+                        wrap:
+                            block.dataset.wrap || 'nowrap'
+                    },
+
+                    children: this.serializeChildren(
+                        block.querySelector(':scope > .container-content')
+                    )
+                };
+
+                saveBlockSettings();
+
+                blocksData.push(data);
+
+                return;
+            }
             if (type === 'heading') {
                 const el = block.querySelector('.editor-heading');
                 const content = el?.textContent?.trim();
@@ -32,8 +227,10 @@ export class BlockSerializer {
                         letterSpacing: block.dataset.letterSpacing || '0px'
                     }
                 };
+                saveBlockSettings();
                 blocksData.push(data);
                 return;
+
             }
 
             if (type === 'text') {
@@ -52,7 +249,6 @@ export class BlockSerializer {
                         align: block.dataset.align || 'left',
                         lineHeight: block.dataset.lineHeight || '1.7',
                         letterSpacing: block.dataset.letterSpacing || '0px',
-                        height: block.dataset.height || '',
                         hrEnabled: block.dataset.hrEnabled === 'true',
                         hrThickness: block.dataset.hrThickness || '1',
                         hrColor: block.dataset.hrColor || '#000000',
@@ -61,8 +257,10 @@ export class BlockSerializer {
                     }
                 };
 
+                saveBlockSettings();
                 blocksData.push(data);
                 return;
+
             }
 
             if (type === 'list') {
@@ -84,7 +282,7 @@ export class BlockSerializer {
                             listStrike: block.dataset.listStrike || 'false'
                         }
                 };
-
+                saveBlockSettings();
                 blocksData.push(data);
                 return;
             }
@@ -107,7 +305,7 @@ export class BlockSerializer {
                         buttonBorderStyle: block.dataset.buttonBorderStyle || 'solid'
                     }
                 };
-
+                saveBlockSettings();
                 blocksData.push(data);
                 return;
             }
@@ -121,9 +319,10 @@ export class BlockSerializer {
                         embedHeight: block.dataset.embedHeight || '400'
                     }
             };
+        saveBlockSettings();
+        blocksData.push(data);
+        return;
 
-    blocksData.push(data);
-    return;
 }
 
             if (type === 'image') {
@@ -137,9 +336,9 @@ export class BlockSerializer {
                         imageOpacity: block.dataset.imageOpacity ?? '100'
                     }
                 };
-
-                blocksData.push(data);
-                return;
+            saveBlockSettings();
+            blocksData.push(data);
+            return;
             }
 
 
@@ -166,8 +365,10 @@ export class BlockSerializer {
                 }
             };
 
+            saveBlockSettings();
             blocksData.push(data);
             return;
+
         }
 
             // 独立した区切り線
@@ -189,8 +390,10 @@ export class BlockSerializer {
                 }
             };
 
+            saveBlockSettings();
             blocksData.push(data);
             return;
+
         }
                         // テーブル
     if (type === 'table') {
@@ -251,8 +454,9 @@ export class BlockSerializer {
             }
         };
 
-        blocksData.push(data);
-        return;
+        saveBlockSettings();
+    blocksData.push(data);
+    return;
     }
 
         });

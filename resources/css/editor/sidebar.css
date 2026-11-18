@@ -112,3 +112,132 @@
 .sidebar-button:active {
     transform: translateY(0);
 }
+/* レイヤー一覧 */
+.sidebar #layers-menu.open {
+    gap: 4px;
+}
+
+/* レイヤーの親子構造 */
+.layer-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    width: 100%;
+    min-width: 0;
+}
+
+/* レイヤーボタン */
+.layer-item {
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+    min-height: 38px;
+
+    box-sizing: border-box;
+
+    padding: 8px 12px;
+
+    background: transparent;
+
+    border: 1px solid transparent;
+    border-radius: 8px;
+
+    color: #374151;
+
+    font-size: 14px;
+    font-weight: 500;
+    text-align: left;
+
+    cursor: pointer;
+
+    transition: all 0.15s;
+}
+
+/* マウスを重ねたとき */
+.layer-item:hover {
+    background: #f3f4f6;
+}
+
+/* 選択中のレイヤー */
+.layer-item.selected {
+    background: #eaf2ff;
+
+    border-color: #5B9DFF;
+
+    color: #2563eb;
+
+    font-weight: 600;
+}
+
+/* キーボード操作時 */
+.layer-item:focus-visible {
+    outline: 2px solid #5B9DFF;
+    outline-offset: 2px;
+}
+
+/* 要素が存在しない場合 */
+.layers-empty {
+    padding: 12px;
+
+    color: #9ca3af;
+
+    font-size: 13px;
+    text-align: center;
+}
+/* レイヤーの横並び */
+.layer-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+}
+
+/* コンテナの開閉ボタン */
+.layer-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 28px;
+    flex-shrink: 0;
+    padding: 0;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    color: #64748b;
+    font-size: 10px;
+    cursor: pointer;
+}
+
+/* 開閉ボタンのホバー */
+.layer-toggle:hover {
+    background: #e2e8f0;
+    color: #334155;
+}
+
+/* 矢印がないブロックの位置調整 */
+.layer-toggle-spacer {
+    width: 22px;
+    flex-shrink: 0;
+}
+
+/* レイヤーの選択ボタン */
+.layer-row > .layer-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 1;
+    min-width: 0;
+    width: auto;
+    padding-left: 8px;
+}
+
+/* コンテナ内の要素数 */
+.layer-count {
+    flex-shrink: 0;
+    margin-left: 8px;
+    font-size: 11px;
+    color: #64748b;
+}

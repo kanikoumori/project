@@ -7,6 +7,7 @@ import { FormBlock } from '../blocks/FormBlock.js';
 import { DividerBlock } from '../blocks/DividerBlock.js';
 import { TableBlock } from '../blocks/TableBlock.js';
 import { EmbedBlock } from '../blocks/EmbedBlock.js';
+import { ContainerBlock } from '../blocks/ContainerBlock.js';
 import { BlockRenderer } from '../renderers/BlockRenderer.js';
 
 import { BlockSerializer }
@@ -55,11 +56,14 @@ export class BlockManager {
 
             case 'embed':
                 return this.addEmbedFromData(block);
+
+            case 'container':
+                return this.addContainerFromData(block);
         }
     }
     setupBlock(block) {
         let dragHandle =
-            block.querySelector('.drag-handle');
+            block.querySelector(':scope > .drag-handle');
 
         if (!dragHandle) {
 
@@ -71,7 +75,7 @@ export class BlockManager {
             block.prepend(dragHandle);
         }
         let deleteButton =
-            block.querySelector('.delete-button');
+            block.querySelector(':scope > .delete-button');
 
         if (!deleteButton) {
             deleteButton = document.createElement('button');
@@ -90,6 +94,15 @@ export class BlockManager {
                 e.stopPropagation();
 
 
+                // YouTube動画の監視処理を解除
+                block.querySelectorAll('.editor-embed-container')
+                    .forEach(container => {
+                        if (typeof container.youtubeCleanup === 'function') {
+                            container.youtubeCleanup();
+                            delete container.youtubeCleanup;
+                        }
+                    });
+
                 block.remove();
 
                 this.historyManager.save();
@@ -102,7 +115,12 @@ export class BlockManager {
 
             block.dataset.clickBound = 'true';
 
-            block.addEventListener('click', () => {
+            block.addEventListener('click', (e) => {
+
+                // クリックされたブロックだけを選択する
+                if (e.target.closest('.block') !== block) {
+                    return;
+                }
 
                 this.selectionManager.select(block);
                 this.propertyManager.show(block);
@@ -112,6 +130,9 @@ export class BlockManager {
                  // テキスト編集終了時
         block.querySelectorAll('[contenteditable="true"]')
             .forEach(element => {
+
+                // 自分自身の編集要素だけを対象にする
+                if (element.closest('.block') !== block) return;
 
                 if (element.dataset.blurBound === 'true') return;
 
@@ -130,7 +151,9 @@ export class BlockManager {
                 });
             });
                     // 入力欄の変更検知
-        const formInput = block.querySelector('.editor-input');
+        const formInput = Array.from(
+            block.querySelectorAll('.editor-input')
+        ).find(element => element.closest('.block') === block);
 
             if (formInput && formInput.dataset.changeBound !== 'true') {
                 formInput.dataset.changeBound = 'true';
@@ -175,14 +198,49 @@ export class BlockManager {
 
         document.getElementById('add-embed')
             ?.addEventListener('click', () => this.addEmbed());
-    }
 
+        document.getElementById('add-container')
+            ?.addEventListener('click', () => this.addContainer());
+    }
     // ------キャンバス内の追加表示------
+    // 新しいブロックの追加先を取得
+    getInsertionTarget() {
+
+        const selected = this.canvas.querySelector('.block.selected');
+
+        // コンテナを選択している場合
+        if (selected?.dataset.type === 'container') {
+
+            const content = selected.querySelector(
+                ':scope > .container-content'
+            );
+
+            if (content) {
+                return content;
+            }
+        }
+
+        // 通常はキャンバスに追加
+        return this.canvas;
+    }
+    // コンテナの追加
+    addContainer() {
+
+        const block = ContainerBlock.create();
+
+        this.setupBlock(block);
+
+        this.getInsertionTarget().appendChild(block);
+
+        this.historyManager.save();
+
+        this.editor.markDirty();
+    }
     addHeading() {
         const block = HeadingBlock.create();
 
         this.setupBlock(block);
-        this.canvas.appendChild(block);
+        this.getInsertionTarget().appendChild(block);
 
         this.historyManager.save();
 
@@ -193,7 +251,7 @@ export class BlockManager {
         const block = TextBlock.create();
 
         this.setupBlock(block);
-        this.canvas.appendChild(block);
+        this.getInsertionTarget().appendChild(block);
 
         this.historyManager.save();
 
@@ -204,7 +262,7 @@ export class BlockManager {
         const block = ListBlock.create();
 
         this.setupBlock(block);
-        this.canvas.appendChild(block);
+        this.getInsertionTarget().appendChild(block);
 
         this.historyManager.save();
 
@@ -215,7 +273,7 @@ export class BlockManager {
         const block = ButtonBlock.create();
 
         this.setupBlock(block);
-        this.canvas.appendChild(block);
+        this.getInsertionTarget().appendChild(block);
 
         this.historyManager.save();
 
@@ -226,7 +284,7 @@ export class BlockManager {
         const block = ImageBlock.create();
 
         this.setupBlock(block);
-        this.canvas.appendChild(block);
+        this.getInsertionTarget().appendChild(block);
 
         this.historyManager.save();
 
@@ -236,7 +294,7 @@ export class BlockManager {
         const block = FormBlock.create();
 
         this.setupBlock(block);
-        this.canvas.appendChild(block);
+        this.getInsertionTarget().appendChild(block);
 
         this.historyManager.save();
 
@@ -246,7 +304,7 @@ export class BlockManager {
         const block = EmbedBlock.create();
 
         this.setupBlock(block);
-        this.canvas.appendChild(block);
+        this.getInsertionTarget().appendChild(block);
 
         this.historyManager.save();
         this.editor.markDirty();
@@ -256,7 +314,7 @@ export class BlockManager {
         const block = DividerBlock.create();
 
         this.setupBlock(block);
-        this.canvas.appendChild(block);
+        this.getInsertionTarget().appendChild(block);
 
         this.historyManager.save();
 
@@ -266,7 +324,7 @@ export class BlockManager {
         const block = TableBlock.create();
 
         this.setupBlock(block);
-        this.canvas.appendChild(block);
+        this.getInsertionTarget().appendChild(block);
 
         this.historyManager.save();
         this.editor.markDirty();
@@ -278,8 +336,62 @@ export class BlockManager {
 
         if (!el) return;
 
+        // 埋め込みブロックの自由配置を復元
+        const savedPosition = block.data?.blockSettings?.position;
+
+        if (savedPosition?.mode === 'free') {
+            const x = Number(savedPosition.x);
+            const y = Number(savedPosition.y);
+
+            el.classList.add('free-positioned');
+            // 保存されたブロック幅を取得
+            const savedWidth = Number(block.data?.blockSettings?.width);
+
+            const blockWidth =
+                Number.isFinite(savedWidth) &&
+                savedWidth >= 1 &&
+                savedWidth <= 100
+                    ? savedWidth
+                    : 100;
+
+            // ブロックの幅に合わせて横位置を制限
+            const maxLeft = Math.max(0, 100 - blockWidth);
+
+            const safeX = Number.isFinite(x)
+                ? Math.min(Math.max(0, x), maxLeft)
+                : 0;
+
+            el.style.left = `${safeX}%`;
+
+            // 縦位置はピクセル単位で復元
+            el.style.top = `${Number.isFinite(y) ? Math.max(0, y) : 0}px`;
+        }
+
+
         this.setupBlock(el);
         this.canvas.appendChild(el);
+    }
+    // 保存されたコンテナを復元
+    addContainerFromData(block) {
+
+        const el = BlockRenderer.create(block, {
+            mode: 'editor'
+        });
+
+        if (!el) return;
+
+        // 親コンテナの編集イベントを登録
+        this.setupBlock(el);
+
+        // すべての子ブロックの編集イベントを登録
+        el.querySelectorAll('.block').forEach(child => {
+
+            this.setupBlock(child);
+        });
+
+        this.canvas.appendChild(el);
+
+        return el;
     }
 
     addTextFromData(block) {

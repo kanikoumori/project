@@ -1,5 +1,126 @@
 export class EmbedBlock {
 
+    static youtubeApiPromise = null;
+
+    // YouTube IFrame Player APIを読み込む
+    static loadYouTubeApi() {
+        if (window.YT?.Player) {
+            return Promise.resolve(window.YT);
+        }
+
+        if (this.youtubeApiPromise) {
+            return this.youtubeApiPromise;
+        }
+
+        this.youtubeApiPromise = new Promise((resolve, reject) => {
+            const previousCallback = window.onYouTubeIframeAPIReady;
+
+            window.onYouTubeIframeAPIReady = () => {
+                resolve(window.YT);
+
+                if (typeof previousCallback === 'function') {
+                    previousCallback();
+                }
+            };
+
+            let script = document.querySelector(
+                'script[src="https://www.youtube.com/iframe_api"]'
+            );
+
+            if (!script) {
+                script = document.createElement('script');
+                script.src = 'https://www.youtube.com/iframe_api';
+                script.async = true;
+            }
+
+            script.addEventListener('error', () => {
+                this.youtubeApiPromise = null;
+                script.remove();
+                reject(new Error('YouTube APIの読み込みに失敗しました'));
+            }, { once: true });
+
+            if (!script.isConnected) {
+                document.head.appendChild(script);
+            }
+        });
+
+        return this.youtubeApiPromise;
+    }
+
+        // YouTube動画の画面外移動を監視する
+    static observeYouTube(iframe) {
+        let player = null;
+        let isVisible = false;
+        let disposed = false;
+
+        // 画面外または別タブに移動した場合に一時停止
+        const pauseIfHidden = () => {
+            if (!isVisible || document.hidden) {
+                player?.pauseVideo?.();
+            }
+        };
+
+        // 動画が画面内にあるか監視
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                isVisible =
+                    entry.isIntersecting &&
+                    entry.intersectionRatio > 0;
+
+                pauseIfHidden();
+            });
+        }, {
+            threshold: 0
+        });
+
+        observer.observe(iframe);
+
+        // タブ切り替えを監視
+        document.addEventListener(
+            'visibilitychange',
+            pauseIfHidden
+        );
+
+        // YouTubeプレイヤーを初期化
+        this.loadYouTubeApi().then(YT => {
+            if (disposed || !iframe.isConnected) return;
+
+            player = new YT.Player(iframe, {
+                events: {
+                    onReady: event => {
+                        if (disposed) return;
+
+                        player = event.target;
+                        pauseIfHidden();
+                    },
+                    onStateChange: event => {
+                        if (disposed) return;
+
+                        if (event.data === YT.PlayerState.PLAYING) {
+                            pauseIfHidden();
+                        }
+                    }
+                }
+            });
+        }).catch(error => {
+            console.warn(error);
+        });
+
+        // 不要になった監視処理を解除
+        return () => {
+            disposed = true;
+
+            observer.disconnect();
+
+            document.removeEventListener(
+                'visibilitychange',
+                pauseIfHidden
+            );
+
+            player?.destroy?.();
+            player = null;
+        };
+    }
     static create() {
 
         const block = document.createElement('div');
@@ -63,7 +184,7 @@ export class EmbedBlock {
                 return null;
             }
 
-            return `https://www.youtube-nocookie.com/embed/${videoId}`;
+            return `https://www.youtube-nocookie.com/embed/${videoId}?enablejsapi=1&origin=${encodeURIComponent(window.location.origin)}`;
 
         } catch {
             return null;
@@ -205,6 +326,12 @@ export class EmbedBlock {
         const type = block.dataset.embedType;
         const url = block.dataset.embedUrl || '';
 
+        // 古いYouTubeプレイヤーと監視処理を解除
+        if (typeof container.youtubeCleanup === 'function') {
+            container.youtubeCleanup();
+            delete container.youtubeCleanup;
+        }
+
         container.replaceChildren();
 
         container.style.overflow = '';
@@ -234,12 +361,15 @@ export class EmbedBlock {
             iframe.allow =
                 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
 
-            iframe.allowFullscreen = true;
-            iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+                        iframe.allowFullscreen = true;
+                        iframe.referrerPolicy = 'strict-origin-when-cross-origin';
 
-            container.appendChild(iframe);
+                        container.appendChild(iframe);
 
-        } else if (type === 'maps') {
+                        // YouTube動画の自動一時停止
+                        container.youtubeCleanup = this.observeYouTube(iframe);
+
+                    } else if (type === 'maps') {
 
             const embedUrl = this.getGoogleMapsEmbedUrl(url);
 

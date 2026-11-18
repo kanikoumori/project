@@ -13,8 +13,12 @@ class Page extends Model
         'sort_order',
         'is_home',
         'status',
+        'background_color',
+        'background_image',
+        'background_size',
+        'background_position',
+        'background_repeat',
     ];
-
     public function site()
     {
         return $this->belongsTo(Site::class);

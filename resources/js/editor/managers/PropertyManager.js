@@ -7,7 +7,7 @@ export class PropertyManager {
             document.getElementById('block-settings');
 
         this.elementPanel =
-            document.getElementById('element-settings');
+            document.querySelector('#element-settings .accordion-content');
 
         this.historyManager = historyManager;
         this.editor = editor;
@@ -25,9 +25,760 @@ export class PropertyManager {
 
         if (!settings) return;
 
-        const type = block.dataset.type;
+                const type = block.dataset.type;
+                const allowedHtmlTags = [
+                    'div',
+                    'header',
+                    'nav',
+                    'main',
+                    'footer',
+                    'address'
+                ];
 
-        // 独立した区切り線の種類
+                const currentHtmlTag = allowedHtmlTags.includes(block.dataset.htmlTag)
+                    ? block.dataset.htmlTag
+                    : 'div';
+
+                settings.innerHTML = `
+                    ${type === 'container' ? `
+            <div class="property-layout-settings">
+
+                <label>レイアウト</label>
+
+                <label>配置方法</label>
+                <div class="property-layout-buttons">
+                    <button type="button" class="property-layout-button"
+                        data-layout-direction="column">縦並び</button>
+
+                    <button type="button" class="property-layout-button"
+                        data-layout-direction="row">横並び</button>
+                </div>
+
+                <label>横方向の配置</label>
+                <div class="property-layout-buttons">
+                    <button type="button" class="property-layout-button"
+                        data-layout-horizontal="flex-start">左</button>
+
+                    <button type="button" class="property-layout-button"
+                        data-layout-horizontal="center">中央</button>
+
+                    <button type="button" class="property-layout-button"
+                        data-layout-horizontal="flex-end">右</button>
+
+                    <button type="button" class="property-layout-button"
+                        data-layout-horizontal="space-evenly">均等</button>
+                </div>
+
+                <label>縦方向の配置</label>
+                <div class="property-layout-buttons">
+                    <button type="button" class="property-layout-button"
+                        data-layout-vertical="flex-start">上</button>
+
+                    <button type="button" class="property-layout-button"
+                        data-layout-vertical="center">中央</button>
+
+                    <button type="button" class="property-layout-button"
+                        data-layout-vertical="flex-end">下</button>
+                </div>
+
+                <div class="property-size-row">
+                    <label for="container-gap">要素間隔</label>
+
+                    <div class="property-size-input">
+                        <input
+                            type="number"
+                            id="container-gap"
+                            min="0"
+                            max="500"
+                            step="1"
+                            value="16"
+                        >
+                        <span>px</span>
+                    </div>
+                </div>
+
+                <label>折り返し</label>
+                <div class="property-layout-buttons">
+                    <button type="button" class="property-layout-button"
+                        data-layout-wrap="nowrap">なし</button>
+
+                    <button type="button" class="property-layout-button"
+                        data-layout-wrap="wrap">あり</button>
+                </div>
+
+            </div>
+
+            <hr>
+        ` : ''}
+            <label>サイズ</label>
+
+            <div class="property-size-row">
+                <label for="block-width-number">幅</label>
+
+                <div class="property-size-input">
+                    <input
+                        type="number"
+                        id="block-width-number"
+                        min="1"
+                        max="100"
+                        step="1"
+                        value="100"
+                    >
+                    <span>%</span>
+                </div>
+            </div>
+
+            <input
+                type="range"
+                id="block-width-range"
+                min="1"
+                max="100"
+                step="1"
+                value="100"
+            >
+
+            <div class="property-size-row">
+                <label for="block-height-number">高さ</label>
+
+                <div class="property-size-input">
+                    <input
+                        type="number"
+                        id="block-height-number"
+                        min="1"
+                        max="2000"
+                        step="1"
+                        placeholder="自動"
+                        value=""
+                    >
+                    <span>px</span>
+                </div>
+            </div>
+
+            <input
+                type="range"
+                id="block-height-range"
+                min="1"
+                max="2000"
+                step="1"
+                value="100"
+            >
+
+            <hr>
+
+            <label>外側余白（margin）</label>
+
+            <div class="property-spacing-grid">
+
+                <div class="property-spacing-field">
+                    <label for="block-margin-top">上（px）</label>
+                    <input type="number" id="block-margin-top" min="0" max="500" value="0">
+                </div>
+
+                <div class="property-spacing-field">
+                    <label for="block-margin-right">右（px）</label>
+                    <input type="number" id="block-margin-right" min="0" max="500" value="0">
+                </div>
+
+                <div class="property-spacing-field">
+                    <label for="block-margin-bottom">下（px）</label>
+                    <input type="number" id="block-margin-bottom" min="0" max="500" value="0">
+                </div>
+
+                <div class="property-spacing-field">
+                    <label for="block-margin-left">左（px）</label>
+                    <input type="number" id="block-margin-left" min="0" max="500" value="0">
+                </div>
+
+            </div>
+
+            <hr>
+
+            <label>内側余白（padding）</label>
+
+            <div class="property-spacing-grid">
+
+                <div class="property-spacing-field">
+                    <label for="block-padding-top">上（px）</label>
+                    <input type="number" id="block-padding-top" min="0" max="500" value="16">
+                </div>
+
+                <div class="property-spacing-field">
+                    <label for="block-padding-right">右（px）</label>
+                    <input type="number" id="block-padding-right" min="0" max="500" value="16">
+                </div>
+
+                <div class="property-spacing-field">
+                    <label for="block-padding-bottom">下（px）</label>
+                    <input type="number" id="block-padding-bottom" min="0" max="500" value="16">
+                </div>
+
+                <div class="property-spacing-field">
+                    <label for="block-padding-left">左（px）</label>
+                    <input type="number" id="block-padding-left" min="0" max="500" value="16">
+                </div>
+
+            </div>
+            <hr>
+
+            <label>枠線（border）</label>
+
+            <label for="block-border-width">枠線の太さ（px）</label>
+            <input
+                type="number"
+                id="block-border-width"
+                min="0"
+                max="20"
+                step="1"
+                value="0"
+            >
+
+            <label for="block-border-color">枠線の色</label>
+            <input
+                type="color"
+                id="block-border-color"
+                value="#000000"
+            >
+
+            <label for="block-border-style">枠線の種類</label>
+            <select id="block-border-style">
+                <option value="solid">実線</option>
+                <option value="dashed">破線</option>
+                <option value="dotted">点線</option>
+                <option value="double">二重線</option>
+            </select>
+            <hr>
+
+            <label for="block-border-radius">角丸（px）</label>
+            <input
+                type="number"
+                id="block-border-radius"
+                min="0"
+                max="200"
+                step="1"
+                value="12"
+            >
+            <hr>
+
+            <label for="block-opacity">透明度（%）</label>
+            <input
+                type="range"
+                id="block-opacity"
+                min="0"
+                max="100"
+                step="1"
+                value="100"
+            >
+
+            <output id="block-opacity-value">100%</output>
+        `;
+        // コンテナのレイアウト設定
+        if (type === 'container') {
+
+            const content = block.querySelector(
+                ':scope > .container-content'
+            );
+
+            if (content) {
+
+                const directionButtons = settings.querySelectorAll(
+                    '[data-layout-direction]'
+                );
+
+                const horizontalButtons = settings.querySelectorAll(
+                    '[data-layout-horizontal]'
+                );
+
+                const verticalButtons = settings.querySelectorAll(
+                    '[data-layout-vertical]'
+                );
+
+                const wrapButtons = settings.querySelectorAll(
+                    '[data-layout-wrap]'
+                );
+
+                const gapInput = settings.querySelector('#container-gap');
+
+                // 現在の設定値
+                let direction = block.dataset.direction || 'column';
+                let justifyContent = block.dataset.justifyContent || 'flex-start';
+                let alignItems = block.dataset.alignItems || 'stretch';
+                let gap = Number(block.dataset.gap ?? 16);
+                let wrap = block.dataset.wrap || 'nowrap';
+
+                // 選択中のボタンを更新
+                const updateButtons = () => {
+
+                    const horizontal = direction === 'row'
+                        ? justifyContent
+                        : alignItems;
+
+                    const vertical = direction === 'row'
+                        ? alignItems
+                        : justifyContent;
+
+                    directionButtons.forEach(button => {
+                        button.classList.toggle(
+                            'active',
+                            button.dataset.layoutDirection === direction
+                        );
+                    });
+
+                    horizontalButtons.forEach(button => {
+                        button.classList.toggle(
+                            'active',
+                            button.dataset.layoutHorizontal === horizontal ||
+                            (
+                                horizontal === 'stretch' &&
+                                button.dataset.layoutHorizontal === 'flex-start'
+                            )
+                        );
+
+                        button.disabled =
+                            direction === 'column' &&
+                            button.dataset.layoutHorizontal === 'space-evenly';
+                    });
+
+                    verticalButtons.forEach(button => {
+                        button.classList.toggle(
+                            'active',
+                            button.dataset.layoutVertical === vertical ||
+                            (
+                                vertical === 'stretch' &&
+                                button.dataset.layoutVertical === 'flex-start'
+                            )
+                        );
+                    });
+
+                    wrapButtons.forEach(button => {
+                        button.classList.toggle(
+                            'active',
+                            button.dataset.layoutWrap === wrap
+                        );
+                    });
+
+                    gapInput.value = gap;
+                };
+
+                // 設定をコンテナに反映
+                const applyLayout = () => {
+
+                    block.dataset.direction = direction;
+                    block.dataset.justifyContent = justifyContent;
+                    block.dataset.alignItems = alignItems;
+                    block.dataset.gap = String(gap);
+                    block.dataset.wrap = wrap;
+
+                    content.style.flexDirection = direction;
+                    content.style.justifyContent = justifyContent;
+                    content.style.alignItems = alignItems;
+                    content.style.gap = `${gap}px`;
+                    content.style.flexWrap = wrap;
+
+                    updateButtons();
+
+                    this.historyManager.save();
+                    this.editor.markDirty();
+                };
+
+                // 縦並び・横並び
+                directionButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+
+                        if (direction === button.dataset.layoutDirection) {
+                            return;
+                        }
+
+                        direction = button.dataset.layoutDirection;
+
+                        justifyContent = 'flex-start';
+                        alignItems = 'flex-start';
+
+                        applyLayout();
+                    });
+                });
+
+                // 横方向の配置
+                horizontalButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+
+                        const value = button.dataset.layoutHorizontal;
+
+                        if (direction === 'row') {
+                            justifyContent = value;
+                        } else {
+                            alignItems = value;
+                        }
+
+                        applyLayout();
+                    });
+                });
+
+                // 縦方向の配置
+                verticalButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+
+                        const value = button.dataset.layoutVertical;
+
+                        if (direction === 'row') {
+                            alignItems = value;
+                        } else {
+                            justifyContent = value;
+                        }
+
+                        applyLayout();
+                    });
+                });
+
+                // 要素間隔
+                gapInput.addEventListener('change', () => {
+
+                    const value = Number(gapInput.value);
+
+                    gap = Number.isFinite(value)
+                        ? Math.round(Math.max(0, Math.min(500, value)))
+                        : 16;
+
+                    applyLayout();
+                });
+
+                // 折り返し
+                wrapButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+
+                        wrap = button.dataset.layoutWrap;
+
+                        applyLayout();
+                    });
+                });
+
+                // 初期表示
+                updateButtons();
+            }
+        }
+
+        const widthRange = settings.querySelector('#block-width-range');
+        const widthNumber = settings.querySelector('#block-width-number');
+
+        const currentWidth = Number.parseFloat(block.dataset.blockWidth);
+        const initialWidth = Number.isFinite(currentWidth)
+            ? Math.round(Math.max(1, Math.min(100, currentWidth)))
+            : 100;
+
+        widthRange.value = initialWidth;
+        widthNumber.value = initialWidth;
+
+        const updateBlockWidth = (value) => {
+            const parsed = Number(value);
+
+            if (!Number.isFinite(parsed)) return;
+
+            const width = Math.round(Math.max(1, Math.min(100, parsed)));
+
+            widthRange.value = width;
+            widthNumber.value = width;
+
+            block.dataset.blockWidth = String(width);
+            block.style.width = `${width}%`;
+
+            this.historyManager.save();
+            this.editor.markDirty();
+        };
+
+        widthRange.addEventListener('input', (e) => {
+            updateBlockWidth(e.target.value);
+        });
+
+        widthNumber.addEventListener('change', (e) => {
+            updateBlockWidth(e.target.value);
+        });
+        const heightRange = settings.querySelector('#block-height-range');
+        const heightNumber = settings.querySelector('#block-height-number');
+
+        const savedHeight = Number(block.dataset.blockHeight);
+
+        const initialHeight =
+            block.dataset.blockHeight !== undefined &&
+            Number.isFinite(savedHeight) &&
+            savedHeight >= 1
+                ? Math.round(Math.max(1, Math.min(2000, savedHeight)))
+                : null;
+
+        heightRange.value = initialHeight ?? 100;
+        heightNumber.value = initialHeight ?? '';
+
+        const updateBlockHeight = (value) => {
+            // 空欄の場合は自動の高さに戻す
+            if (value === '') {
+                heightNumber.value = '';
+                heightRange.value = 100;
+
+                delete block.dataset.blockHeight;
+                block.style.height = '';
+
+                // コンテナ内部の高さも自動に戻す
+                if (type === 'container') {
+                    const content = block.querySelector(
+                        ':scope > .container-content'
+                    );
+
+                    if (content) {
+                        content.style.height = '';
+                        content.style.minHeight = '';
+                    }
+                }
+
+                this.historyManager.save();
+                this.editor.markDirty();
+                return;
+            }
+
+            const parsed = Number(value);
+
+            if (!Number.isFinite(parsed)) return;
+
+            const height = Math.round(Math.max(1, Math.min(2000, parsed)));
+
+            heightRange.value = height;
+            heightNumber.value = height;
+
+            block.dataset.blockHeight = String(height);
+            block.style.height = `${height}px`;
+
+            // コンテナ内部の高さも連動させる
+            if (type === 'container') {
+                const content = block.querySelector(
+                    ':scope > .container-content'
+                );
+
+                if (content) {
+                    content.style.minHeight = '';
+                    content.style.height = '100%';
+                }
+            }
+
+            this.historyManager.save();
+            this.editor.markDirty();
+        };
+
+        heightRange.addEventListener('input', (e) => {
+            updateBlockHeight(e.target.value);
+        });
+
+        heightNumber.addEventListener('change', (e) => {
+            updateBlockHeight(e.target.value);
+        });
+
+        // ブロックの外側余白（margin）
+        const marginDirections = ['top', 'right', 'bottom', 'left'];
+
+        marginDirections.forEach((direction) => {
+            const input = settings.querySelector(
+                `#block-margin-${direction}`
+            );
+
+            if (!input) return;
+
+            const datasetKey =
+                `blockMargin${direction.charAt(0).toUpperCase()}${direction.slice(1)}`;
+
+            const savedValue = Number(block.dataset[datasetKey]);
+
+            const initialValue =
+                block.dataset[datasetKey] !== undefined &&
+                Number.isFinite(savedValue)
+                    ? Math.max(0, Math.min(500, savedValue))
+                    : 0;
+
+            input.value = initialValue;
+
+            input.addEventListener('change', () => {
+                const parsed = Number(input.value);
+
+                const margin = Number.isFinite(parsed)
+                    ? Math.max(0, Math.min(500, parsed))
+                    : 0;
+
+                input.value = margin;
+
+                block.dataset[datasetKey] = String(margin);
+
+                block.style[
+                    `margin${direction.charAt(0).toUpperCase()}${direction.slice(1)}`
+                ] = `${margin}px`;
+
+                this.historyManager.save();
+                this.editor.markDirty();
+            });
+        });
+        // ブロックの内側余白（padding）
+        const paddingDirections = ['top', 'right', 'bottom', 'left'];
+
+        paddingDirections.forEach((direction) => {
+            const input = settings.querySelector(
+                `#block-padding-${direction}`
+            );
+
+            if (!input) return;
+
+            const capitalized =
+                direction.charAt(0).toUpperCase() + direction.slice(1);
+
+            const datasetKey = `blockPadding${capitalized}`;
+
+            const savedValue = Number(block.dataset[datasetKey]);
+
+            const initialValue =
+                block.dataset[datasetKey] !== undefined &&
+                Number.isFinite(savedValue)
+                    ? Math.max(0, Math.min(500, savedValue))
+                    : 16;
+
+            input.value = initialValue;
+
+            input.addEventListener('change', () => {
+                const parsed = Number(input.value);
+
+                const padding =
+                    input.value !== '' && Number.isFinite(parsed)
+                        ? Math.max(0, Math.min(500, parsed))
+                        : 16;
+
+                input.value = padding;
+
+                block.dataset[datasetKey] = String(padding);
+                block.style[`padding${capitalized}`] = `${padding}px`;
+
+                this.historyManager.save();
+                this.editor.markDirty();
+            });
+        });
+        // ブロック共通の枠線（border）
+        const borderWidthInput = settings.querySelector('#block-border-width');
+        const borderColorInput = settings.querySelector('#block-border-color');
+        const borderStyleSelect = settings.querySelector('#block-border-style');
+
+        const allowedBorderStyles = ['solid', 'dashed', 'dotted', 'double'];
+
+        const savedBorderWidth = Number(block.dataset.blockBorderWidth);
+
+        const initialBorderWidth =
+            block.dataset.blockBorderWidth !== undefined &&
+            Number.isFinite(savedBorderWidth)
+                ? Math.max(0, Math.min(20, savedBorderWidth))
+                : 0;
+
+        const initialBorderColor = this.safeColor(
+            block.dataset.blockBorderColor || '#000000'
+        );
+
+        const initialBorderStyle = allowedBorderStyles.includes(
+            block.dataset.blockBorderStyle
+        )
+            ? block.dataset.blockBorderStyle
+            : 'solid';
+
+        borderWidthInput.value = initialBorderWidth;
+        borderColorInput.value = initialBorderColor;
+        borderStyleSelect.value = initialBorderStyle;
+
+        const applyBlockBorder = () => {
+            const parsed = Number(borderWidthInput.value);
+
+            const width =
+                borderWidthInput.value !== '' && Number.isFinite(parsed)
+                    ? Math.max(0, Math.min(20, parsed))
+                    : 0;
+
+            const color = this.safeColor(borderColorInput.value);
+
+            const style = allowedBorderStyles.includes(borderStyleSelect.value)
+                ? borderStyleSelect.value
+                : 'solid';
+
+            borderWidthInput.value = width;
+
+            block.dataset.blockBorderWidth = String(width);
+            block.dataset.blockBorderColor = color;
+            block.dataset.blockBorderStyle = style;
+
+            block.style.border = width > 0
+                ? `${width}px ${style} ${color}`
+                : '2px solid transparent';
+
+            this.historyManager.save();
+            this.editor.markDirty();
+        };
+
+        borderWidthInput.addEventListener('change', applyBlockBorder);
+        borderColorInput.addEventListener('input', applyBlockBorder);
+        borderStyleSelect.addEventListener('change', applyBlockBorder);
+        // ブロック共通の角丸（border-radius）
+        const borderRadiusInput = settings.querySelector('#block-border-radius');
+
+        const savedBorderRadius = Number(block.dataset.blockBorderRadius);
+
+        const initialBorderRadius =
+            block.dataset.blockBorderRadius !== undefined &&
+            Number.isFinite(savedBorderRadius)
+                ? Math.max(0, Math.min(200, savedBorderRadius))
+                : 12;
+
+        borderRadiusInput.value = initialBorderRadius;
+
+        borderRadiusInput.addEventListener('input', () => {
+            const parsed = Number(borderRadiusInput.value);
+
+            if (
+                borderRadiusInput.value === '' ||
+                !Number.isFinite(parsed)
+            ) {
+                return;
+            }
+
+            const radius = Math.max(0, Math.min(200, parsed));
+
+            block.dataset.blockBorderRadius = String(radius);
+            block.style.borderRadius = `${radius}px`;
+
+            this.historyManager.save();
+            this.editor.markDirty();
+        });
+
+        borderRadiusInput.addEventListener('change', () => {
+            const parsed = Number(borderRadiusInput.value);
+
+            borderRadiusInput.value =
+                borderRadiusInput.value !== '' && Number.isFinite(parsed)
+                    ? Math.max(0, Math.min(200, parsed))
+                    : 12;
+        });
+        // ブロック共通の透明度（opacity）
+        const opacityInput = settings.querySelector('#block-opacity');
+        const opacityValue = settings.querySelector('#block-opacity-value');
+
+        const savedOpacity = Number(block.dataset.blockOpacity);
+
+        const initialOpacity =
+            block.dataset.blockOpacity !== undefined &&
+            Number.isFinite(savedOpacity)
+                ? Math.max(0, Math.min(100, savedOpacity))
+                : 100;
+
+        opacityInput.value = initialOpacity;
+        opacityValue.textContent = `${initialOpacity}%`;
+
+        opacityInput.addEventListener('input', () => {
+            const opacity = Number(opacityInput.value);
+
+            block.dataset.blockOpacity = String(opacity);
+            block.style.opacity = String(opacity / 100);
+            opacityValue.textContent = `${opacity}%`;
+
+            this.historyManager.save();
+            this.editor.markDirty();
+        });
+
+                // 独立した区切り線の種類
         const currentDividerStyle =
             block.dataset.dividerStyle || 'solid';
         //区切り線の太さ
@@ -64,16 +815,6 @@ export class PropertyManager {
             Number.isFinite(lineHeightValue)
                 ? Math.max(1, lineHeightValue)
                 : 1.0;
-
-        // テキストブロックの高さ
-        const heightValue = Number(block.dataset.height);
-
-        const currentHeight =
-            block.dataset.height === undefined || block.dataset.height === ''
-                ? ''
-                : (Number.isFinite(heightValue) && heightValue >= 1
-                    ? heightValue
-                    : '');
 
         // 見出し文字間隔
         const currentLetterSpacing =
@@ -145,10 +886,8 @@ export class PropertyManager {
                         step="0.1"
                         value="${Number.isFinite(parseFloat(currentLetterSpacing)) ? parseFloat(currentLetterSpacing) : 0}"
                     >
-
                     <label>装飾</label>
                     <div class="property-toggle-group">
-
                         <button
                             type="button"
                             id="heading-italic"
@@ -220,8 +959,6 @@ export class PropertyManager {
                         </option>
                     </select>
 
-                    <label>装飾</label>
-
                     <label>行間</label>
                     <input
                         type="number"
@@ -238,16 +975,7 @@ export class PropertyManager {
                         step="0.1"
                         value="${Number.isFinite(parseFloat(block.dataset.letterSpacing)) ? parseFloat(block.dataset.letterSpacing) : 0}"
                     >
-
-                    <label>ブロックの高さ（px）</label>
-                    <input
-                        type="number"
-                        id="text-height"
-                        min="1"
-                        step="1"
-                        placeholder="自動"
-                        value="${currentHeight}"
-                    >
+                    <label>装飾</label>
 
                     <div class="property-toggle-group">
 
@@ -869,6 +1597,7 @@ export class PropertyManager {
                         max="500"
                         value="${width}"
                     >
+                    <hr>
                 `;
             }).join('')}
 
@@ -971,11 +1700,34 @@ export class PropertyManager {
 
             // ここから下は元のまま
             default:
-                this.elementPanel.innerHTML = `
-                    <p>設定なし</p>
-                `;
-                        }
-    }
+                this.elementPanel.innerHTML = '';
+                break;
+            }
+
+            // HTMLの種類を要素設定に追加
+            this.elementPanel.insertAdjacentHTML('afterbegin', `
+                <label for="block-html-tag">HTMLの種類</label>
+                <select id="block-html-tag">
+                    <option value="div" ${currentHtmlTag === 'div' ? 'selected' : ''}>通常ブロック（div）</option>
+                    <option value="header" ${currentHtmlTag === 'header' ? 'selected' : ''}>ヘッダー（header）</option>
+                    <option value="nav" ${currentHtmlTag === 'nav' ? 'selected' : ''}>ナビゲーション（nav）</option>
+                    <option value="main" ${currentHtmlTag === 'main' ? 'selected' : ''}>メイン（main）</option>
+                    <option value="footer" ${currentHtmlTag === 'footer' ? 'selected' : ''}>フッター（footer）</option>
+                    <option value="address" ${currentHtmlTag === 'address' ? 'selected' : ''}>連絡先（address）</option>
+                </select>
+            `);
+
+            const htmlTagSelect =
+                this.elementPanel.querySelector('#block-html-tag');
+
+            htmlTagSelect.addEventListener('change', () => {
+                block.dataset.htmlTag = htmlTagSelect.value;
+
+                this.historyManager.save();
+                this.editor.markDirty();
+            });
+
+            }
 // ↑↑↑switch block関数↑↑↑
 
 // ↓↓↓bindEvents関数↓↓↓
@@ -1276,32 +2028,6 @@ export class PropertyManager {
                 // 文字間隔を保存用データに記録
                 block.dataset.letterSpacing = letterSpacing;
 
-                this.historyManager.save();
-                this.editor.markDirty();
-            });
-                            // ブロックの高さ設定
-        document.getElementById('text-height')
-            ?.addEventListener('change', (e) => {
-
-                const heightValue = e.target.value;
-
-                if (heightValue === '') {
-                    block.style.height = '';
-                    delete block.dataset.height;
-                } else {
-                    let height = Number(heightValue);
-
-                    if (!Number.isFinite(height)) {
-                        height = 100;
-                    }
-
-                    height = Math.max(1, Math.min(2000, height));
-
-                    e.target.value = height;
-
-                    block.style.height = `${height}px`;
-                    block.dataset.height = height;
-                }
                 this.historyManager.save();
                 this.editor.markDirty();
             });

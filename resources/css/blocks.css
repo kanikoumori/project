@@ -198,3 +198,16 @@ h6.editor-heading {
     overflow-wrap: anywhere;
     word-break: break-word;
 }
+/* コンテナ共通設定 */
+.container-block {
+    min-height: 120px;
+}
+
+/* コンテナ内部の子要素格納領域 */
+.container-block > .container-content {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+    min-height: 100px;
+    box-sizing: border-box;
+}

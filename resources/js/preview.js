@@ -11,7 +11,25 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const pageId = canvas.dataset.pageId;
 
+
     try {
+        // 保存済みのページ設定を取得
+        const pageResponse = await fetch(`/pages/${pageId}`, {
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+
+        if (!pageResponse.ok) {
+            throw new Error('ページ設定を取得できませんでした。');
+        }
+
+        const page = await pageResponse.json();
+
+        // プレビューの背景色を設定
+        canvas.style.backgroundColor =
+            page.background_color || '#ffffff';
+
         const response = await fetch(`/pages/${pageId}/blocks`, {
             headers: { 'Accept': 'application/json' }
         });
@@ -42,6 +60,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 canvas.appendChild(element);
             }
         });
+        updatePreviewCanvasHeight();
 
     } catch (error) {
         console.error(error);
@@ -72,3 +91,29 @@ document.addEventListener('DOMContentLoaded', async () => {
         canvas.replaceChildren(errorContainer);
         }
 });
+
+/**
+ * 自由配置されたブロックに合わせて
+ * プレビュー画面の高さを調整する
+ */
+function updatePreviewCanvasHeight() {
+    const canvas = document.getElementById('preview-canvas');
+
+    if (!canvas) return;
+
+    const blocks = canvas.querySelectorAll(
+        '.preview-block.free-positioned'
+    );
+
+    let maxBottom = 0;
+
+    blocks.forEach((block) => {
+        const top = parseFloat(block.style.top) || 0;
+        const bottom = top + block.offsetHeight;
+
+        maxBottom = Math.max(maxBottom, bottom);
+    });
+
+    canvas.style.minHeight =
+        `${Math.max(maxBottom + 32, window.innerHeight - 70)}px`;
+}
