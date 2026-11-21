@@ -23,6 +23,7 @@ export class Editor {
         );
         this.resize = new Resize();
         this.isSaving = false;
+        this.savePromise = null;
         this.blockManager = new BlockManager(
             this.propertyManager,
             this.historyManager,
@@ -86,6 +87,24 @@ export class Editor {
         // 保存済みブロックを読み込む
         await this.loadPage();
 
+        // 未保存の変更がある場合、画面を離れる前に警告する
+        window.addEventListener('beforeunload', (event) => {
+            if (this.autoSaveManager.isDirty || this.isSaving) {
+                event.preventDefault();
+                event.returnValue = '';
+            }
+        });
+        // ブラウザがオンラインに戻った際の案内
+        window.addEventListener('online', () => {
+            if (!this.autoSaveManager.isDirty) {
+                return;
+            }
+
+            this.autoSaveManager.setSaveStatus(
+                '通信が復旧しました。「一時保存」を押してください。'
+            );
+        });
+
         document.getElementById('undo-button')
             ?.addEventListener('click', () => {
                 this.historyManager.undo();
@@ -99,28 +118,76 @@ export class Editor {
             });
 
         document.getElementById('save-button')
-            ?.addEventListener('click', () => {
-                this.save();
-            });
-        document.getElementById('preview-button')
             ?.addEventListener('click', async () => {
-                if (this.isSaving) {
-                    return;
-                }
-
                 try {
                     await this.save();
                 } catch (error) {
-                    console.error(error);
-                    alert('保存に失敗したため、プレビューを開けませんでした。再度お試しください。');
-                    return;
+                    console.error('手動保存に失敗しました:', error);
                 }
+            });
+        document.getElementById('preview-button')
+            ?.addEventListener('click', async () => {
+                const previewButton =
+                    document.getElementById('preview-button');
 
-                const pageId = document
-                    .getElementById('canvas')
-                    .dataset.pageId;
+                if (previewButton.disabled) return;
 
-                window.location.href = `/preview/${pageId}`;
+                previewButton.disabled = true;
+
+                const timeoutMs = 30000;
+                const startedAt = Date.now();
+
+
+                const waitForSave = async () => {
+                    if (!this.savePromise) return;
+
+                    const remaining = timeoutMs - (Date.now() - startedAt);
+
+                    if (remaining <= 0) {
+                        throw new Error('保存待機がタイムアウトしました');
+                    }
+
+                    await Promise.race([
+                        this.savePromise,
+                        new Promise((_, reject) =>
+                            setTimeout(
+                                () => reject(new Error('保存待機がタイムアウトしました')),
+                                remaining
+                            )
+                        )
+                    ]);
+                };
+
+                try {
+                    while (true) {
+                        await waitForSave();
+
+                        if (Date.now() - startedAt >= timeoutMs) {
+                            throw new Error('保存処理がタイムアウトしました');
+                        }
+
+                        await this.save();
+
+                        if (!this.autoSaveManager.isDirty) {
+                            break;
+                        }
+                    }
+
+                    const pageId = document
+                        .getElementById('canvas')
+                        .dataset.pageId;
+
+                    window.location.href = `/preview/${pageId}`;
+
+                } catch (error) {
+                    console.error(error);
+
+                    alert(
+                        '保存を完了できなかったため、プレビューを開けませんでした。再度お試しください。'
+                    );
+                } finally {
+                    previewButton.disabled = false;
+                }
             });
 
     }
@@ -140,6 +207,7 @@ export class Editor {
         this.autoSaveManager.isDirty = false;
     }
 
+
     // ブロックの復元
     restoreBlocks(blocks) {
 
@@ -157,8 +225,8 @@ export class Editor {
     // ボタンセーブ
     async save() {
 
-        if (this.isSaving) {
-            return;
+        if (this.savePromise) {
+            return await this.savePromise;
         }
 
         // 自動保存の予約を解除
@@ -169,62 +237,87 @@ export class Editor {
 
         this.isSaving = true;
 
-        const saveButton =
-            document.getElementById('save-button');
+        this.savePromise = (async () => {
 
-        if (saveButton) {
-            saveButton.disabled = true;
-        }
-
-        try {
-
-            const csrfToken = document
-                .querySelector('meta[name="csrf-token"]')
-                .getAttribute('content');
-
-            const pageId = document
-                .getElementById('canvas')
-                .dataset.pageId;
-
-            const serializer = new BlockSerializer();
-            const blocksData = serializer.serialize();
-
-            const response = await fetch(
-                `/pages/${pageId}/blocks/bulk`,
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken
-                    },
-                    body: JSON.stringify({
-                        blocks: blocksData
-                    })
-                }
-            );
-
-            if (!response.ok) {
-                throw new Error('保存失敗');
-            }
-            this.autoSaveManager.isDirty = false;
-            this.autoSaveManager.timer = null;
-
-            const saveStatus =
-                document.getElementById('save-status');
-
-            if (saveStatus) {
-                saveStatus.textContent = '保存済み';
-            }
-
-        } finally {
-
-            this.isSaving = false;
+            const saveButton =
+                document.getElementById('save-button');
 
             if (saveButton) {
-                saveButton.disabled = false;
+                saveButton.disabled = true;
+            }
+            this.autoSaveManager.setSaveStatus('保存中...');
+
+            try {
+
+                const csrfToken = document
+                    .querySelector('meta[name="csrf-token"]')
+                    .getAttribute('content');
+
+                const pageId = document
+                    .getElementById('canvas')
+                    .dataset.pageId;
+                const savingVersion = this.autoSaveManager.changeVersion;
+                const serializer = new BlockSerializer();
+                const blocksData = serializer.serialize();
+
+
+                const response = await fetch(
+                    `/pages/${pageId}/blocks/bulk`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken
+                        },
+                        body: JSON.stringify({
+                            blocks: blocksData
+                        }),
+                        signal: AbortSignal.timeout(30000)
+                    }
+                );
+
+
+                if (!response.ok) {
+                    const error = new Error(`保存失敗 (HTTP ${response.status})`);
+                    error.status = response.status;
+                    throw error;
+                }
+                const hasNewChanges =
+                    this.autoSaveManager.changeVersion !== savingVersion;
+
+                this.autoSaveManager.isDirty = hasNewChanges;
+
+                if (hasNewChanges) {
+                    this.autoSaveManager.schedule();
+                }
+
+                this.autoSaveManager.setSaveStatus(
+                    hasNewChanges ? '未保存' : '保存済み'
+                );
+
+                } catch (error) {
+                this.autoSaveManager.isDirty = true;
+
+                this.autoSaveManager.setSaveStatus(
+                    '保存できませんでした。もう一度「一時保存」を押してください。'
+                );
+                throw error;
+
+            } finally {
+                this.isSaving = false;
+
+                if (saveButton) {
+                    saveButton.disabled = false;
+                }
             }
 
+        })();
+
+        try {
+            return await this.savePromise;
+        } finally {
+            this.savePromise = null;
         }
     }
 
