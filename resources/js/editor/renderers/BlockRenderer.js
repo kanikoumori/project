@@ -55,7 +55,7 @@ export class BlockRenderer {
 
                 wrapper.dataset.tag = tag;
                 wrapper.dataset.color = style.color || '#000000';
-                wrapper.dataset.bold = String(style.bold === true || style.bold === 'true');
+                wrapper.dataset.bold = 'true';
                 wrapper.dataset.italic =String(style.italic === true || style.italic === 'true');
                 wrapper.dataset.underline = String(style.underline === true || style.underline === 'true');
                 wrapper.dataset.strike =String(style.strike === true || style.strike === 'true');
@@ -63,7 +63,7 @@ export class BlockRenderer {
                 wrapper.dataset.lineHeight = style.lineHeight ?? 1.3;
                 wrapper.dataset.letterSpacing = style.letterSpacing || '0px';
 
-                this.applyTextStyle(heading, style, 1.3);
+                this.applyTextStyle(heading, { ...style, bold: true }, 1.3);
                 wrapper.style.textAlign = style.align || 'left';
 
                 wrapper.appendChild(heading);
