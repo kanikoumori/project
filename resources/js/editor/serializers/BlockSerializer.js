@@ -7,8 +7,13 @@ export class BlockSerializer {
 
         blocks.forEach((block, index) => {
             const type = block.dataset.type;
+            const blockId = Number(block.dataset.blockId);
 
             let data = {
+                ...(Number.isSafeInteger(blockId) && blockId > 0
+                    ? { id: blockId }
+                    : {}),
+                clientKey: block.dataset.clientKey,
                 type,
                 sortOrder: index,
                 data: {}

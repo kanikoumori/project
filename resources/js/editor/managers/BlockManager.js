@@ -25,41 +25,85 @@ export class BlockManager {
         this.setupToolbar();
     }
 
+
     createFromData(block) {
+        const beforeCount = this.canvas.children.length;
 
         switch (block.type) {
-
             case 'heading':
-                return this.addHeadingFromData(block);
+                this.addHeadingFromData(block);
+                break;
 
             case 'text':
-                return this.addTextFromData(block);
+                this.addTextFromData(block);
+                break;
 
             case 'button':
-                return this.addButtonFromData(block);
+                this.addButtonFromData(block);
+                break;
 
             case 'list':
-                return this.addListFromData(block);
+                this.addListFromData(block);
+                break;
 
             case 'image':
-                return this.addImageFromData(block);
+                this.addImageFromData(block);
+                break;
 
             case 'form':
-                return this.addFormFromData(block);
+                this.addFormFromData(block);
+                break;
 
             case 'divider':
-                return this.addDividerFromData(block);
+                this.addDividerFromData(block);
+                break;
 
             case 'table':
-                return this.addTableFromData(block);
+                this.addTableFromData(block);
+                break;
 
             case 'embed':
-                return this.addEmbedFromData(block);
+                this.addEmbedFromData(block);
+                break;
+
+            default:
+                return null;
         }
+
+        // 復元処理でブロックが1つ追加されたことを確認
+        if (this.canvas.children.length !== beforeCount + 1) {
+            return null;
+        }
+
+        const el = this.canvas.lastElementChild;
+
+        // Undo・Redoでも同じブロックとして識別できるようにする
+        if (
+            typeof block.clientKey === 'string' &&
+            block.clientKey.trim() !== ''
+        ) {
+            el.dataset.clientKey = block.clientKey;
+        }
+
+        // DBのIDをHTML要素に保持する
+        const blockId = Number(block.id);
+
+        if (Number.isSafeInteger(blockId) && blockId > 0) {
+            el.dataset.blockId = String(blockId);
+        }
+
+        return el;
     }
+
     setupBlock(block) {
+        // 画面内でブロックを識別するための固有ID
+        if (!block.dataset.clientKey) {
+            block.dataset.clientKey = crypto.randomUUID();
+        }
+
         let dragHandle =
             block.querySelector('.drag-handle');
+
 
         if (!dragHandle) {
 
