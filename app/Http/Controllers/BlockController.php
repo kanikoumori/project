@@ -54,28 +54,45 @@ class BlockController extends Controller
 
         $validated = $request->validate([
             'blocks' => ['present', 'array'],
-            'blocks.*.type' => 'required|string',
-            'blocks.*.data' => 'required|array',
-            'blocks.*.sortOrder' => 'required|integer',
+            'blocks.*.id' => ['sometimes', 'required', 'integer', 'distinct'],
+            'blocks.*.type' => ['required', 'string'],
+            'blocks.*.data' => ['required', 'array'],
+            'blocks.*.sortOrder' => ['required', 'integer'],
         ]);
 
-        $blocks = $validated['blocks'];
+        $savedIds = DB::transaction(function () use ($validated, $page) {
+            $savedIds = [];
 
-        DB::transaction(function () use ($blocks, $page) {
+            foreach ($validated['blocks'] as $blockData) {
+                $attributes = [
+                    'type' => $blockData['type'],
+                    'data' => $blockData['data'],
+                    'sort_order' => $blockData['sortOrder'],
+                ];
 
-            $page->blocks()->delete();
+                if (isset($blockData['id'])) {
+                    // このページに属する既存ブロックだけを更新
+                    $block = $page->blocks()->findOrFail($blockData['id']);
+                    $block->update($attributes);
+                } else {
+                    // IDのないブロックだけを新規作成
+                    $block = $page->blocks()->create($attributes);
+                }
 
-            foreach ($blocks as $block) {
-                $page->blocks()->create([
-                    'type' => $block['type'],
-                    'data' => $block['data'],
-                    'sort_order' => $block['sortOrder']
-                ]);
+                $savedIds[] = $block->id;
             }
+
+            // 今回の保存データから除外されたブロックだけを削除
+            $page->blocks()
+                ->whereNotIn('id', $savedIds)
+                ->delete();
+
+            return $savedIds;
         });
 
         return response()->json([
-            'success' => true
+            'success' => true,
+            'blockIds' => $savedIds,
         ]);
     }
     /**
@@ -97,7 +114,7 @@ class BlockController extends Controller
     public function reorder(Request $request, Page $page)
     {
         $this->authorize('update', $page);
-        
+
         $validated = $request->validate([
             'blocks' => ['required', 'array'],
             'blocks.*.id' => ['required', 'exists:blocks,id'],

@@ -201,6 +201,13 @@ export class Editor {
         const res = await fetch(`/pages/${pageId}/blocks`);
         const blocks = await res.json();
 
+        // 現在DBに存在するブロックIDを記録
+        this.persistedBlockIds = new Set(
+            blocks
+                .map(block => Number(block.id))
+                .filter(id => Number.isSafeInteger(id) && id > 0)
+        );
+
         this.restoreBlocks(blocks);
         this.historyManager.save();
 
@@ -260,6 +267,17 @@ export class Editor {
                 const serializer = new BlockSerializer();
                 const blocksData = serializer.serialize();
 
+                const clientKeys = blocksData.map(block => block.clientKey);
+
+                if (
+                    clientKeys.some(
+                        key => typeof key !== 'string' || key.trim() === ''
+                    ) ||
+                    new Set(clientKeys).size !== clientKeys.length
+                ) {
+                    throw new Error('保存対象のブロック識別子が不正です');
+                }
+
 
                 const response = await fetch(
                     `/pages/${pageId}/blocks/bulk`,
@@ -283,6 +301,74 @@ export class Editor {
                     error.status = response.status;
                     throw error;
                 }
+            const result = await response.json();
+
+            // サーバーから返されたIDを検証
+            if (
+                result.success !== true ||
+                !Array.isArray(result.blockIds) ||
+                result.blockIds.length !== blocksData.length ||
+                !result.blockIds.every(
+                    id => Number.isSafeInteger(id) && id > 0
+                ) ||
+                new Set(result.blockIds).size !== result.blockIds.length
+            ) {
+                throw new Error('保存結果のブロックIDが不正です');
+            }
+
+
+            // 保存対象をclientKeyとDBのIDで対応付ける
+            const savedIdsByClientKey = new Map();
+
+            blocksData.forEach((block, index) => {
+                const key = block.clientKey;
+
+                if (
+                    typeof key !== 'string' ||
+                    key.length === 0 ||
+                    savedIdsByClientKey.has(key)
+                ) {
+                    throw new Error('ブロックの識別子が不正です');
+                }
+
+                savedIdsByClientKey.set(
+                    key,
+                    result.blockIds[index]
+                );
+            });
+
+            // 現在画面に存在するブロックへIDを反映
+            const canvas = document.getElementById('canvas');
+
+            canvas.querySelectorAll('.block').forEach(element => {
+                const key = element.dataset.clientKey;
+
+                // 保存開始後に追加されたブロックは対象外
+                if (!savedIdsByClientKey.has(key)) {
+                    return;
+                }
+                const savedId = savedIdsByClientKey.get(key);
+
+                // 同じclientKeyのブロックにはサーバーが確定したIDを反映する
+                element.dataset.blockId = String(savedId);
+
+            });
+
+            // 保存後のブロックIDをUndo・Redoの履歴にも反映
+            this.historyManager.syncSavedBlockIds(blocksData, result.blockIds);
+            // 保存成功時点でDBに存在するブロックIDを記録
+            this.persistedBlockIds = new Set(result.blockIds);
+            // DBから削除されたブロックの古いIDを操作履歴から解除
+            this.historyManager.removeDeletedBlockIds(result.blockIds);
+            // DBに存在しなくなったブロックIDを画面から解除
+            document.querySelectorAll('#canvas .block[data-block-id]')
+                .forEach(block => {
+                    const id = Number(block.dataset.blockId);
+
+                    if (!this.persistedBlockIds.has(id)) {
+                        delete block.dataset.blockId;
+                    }
+                });
                 const hasNewChanges =
                     this.autoSaveManager.changeVersion !== savingVersion;
 
