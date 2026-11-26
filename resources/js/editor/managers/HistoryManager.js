@@ -21,14 +21,18 @@ export class HistoryManager {
         this.currentIndex++;
     }
 
+
     restore() {
         if (this.currentIndex < 0) return;
 
         const blocks = this.history[this.currentIndex];
 
+        // Undo・Redoの履歴から画面を復元
         this.blockManager.editor.refreshFromHistory(blocks);
-    }
 
+        // 復元による変更も自動保存の対象にする
+        this.blockManager.editor.markDirty();
+    }
 
     undo() {
         if (this.currentIndex <= 0) return;

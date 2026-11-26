@@ -1,4 +1,5 @@
 import { EmbedBlock } from '../blocks/EmbedBlock.js';
+import { ContainerBlock } from '../blocks/ContainerBlock.js';
 export class BlockRenderer {
 
     /**
@@ -11,6 +12,10 @@ export class BlockRenderer {
 
         if (!block || typeof block !== 'object') {
             return null;
+        }
+        // コンテナブロックは専用クラスで描画する
+        if (block.type === 'container') {
+            return ContainerBlock.create(block, { mode });
         }
 
         const data = block.data || {};

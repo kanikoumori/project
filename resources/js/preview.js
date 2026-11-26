@@ -33,15 +33,67 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
 
-        blocks.forEach(block => {
+
+        // 親ごとの表示順序を維持する
+        const orderedBlocks = [...blocks].sort((a, b) => {
+            const orderA = Number(a.sort_order ?? 0);
+            const orderB = Number(b.sort_order ?? 0);
+            return orderA - orderB;
+        });
+
+        const elementsById = new Map();
+        const rendered = [];
+
+        // 第1段階：すべてのブロックを生成する
+        for (const block of orderedBlocks) {
             const element = BlockRenderer.create(block, {
                 mode: 'preview'
             });
 
-            if (element) {
-                canvas.appendChild(element);
+            // 従来どおり、未対応のブロックは表示しない
+            if (!element) continue;
+
+            const id = Number(block.id);
+
+            if (
+                !Number.isSafeInteger(id) ||
+                id <= 0 ||
+                elementsById.has(id)
+            ) {
+                throw new Error('ブロックIDが不正です');
             }
-        });
+
+            elementsById.set(id, element);
+            rendered.push({ block, element });
+        }
+
+        // 第2段階：親コンテナの内部へ配置する
+        for (const { block, element } of rendered) {
+            const parentId = block.parent_id;
+
+            // 親がない場合はページ直下に配置
+            if (parentId === null || parentId === undefined) {
+                canvas.appendChild(element);
+                continue;
+            }
+
+            const parent = elementsById.get(Number(parentId));
+
+            if (!parent || parent.dataset.type !== 'container') {
+                throw new Error('親コンテナが見つかりません');
+            }
+
+            const content = Array.from(parent.children).find(
+                child => child.classList.contains('container-content')
+            );
+
+            if (!content) {
+                throw new Error('コンテナの配置領域が見つかりません');
+            }
+
+            content.appendChild(element);
+        }
+
 
     } catch (error) {
         console.error(error);

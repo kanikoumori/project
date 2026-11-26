@@ -1,23 +1,63 @@
 export class BlockSerializer {
     serialize() {
         const canvas = document.getElementById('canvas');
-
         const blocks = canvas.querySelectorAll('.block');
         const blocksData = [];
 
-        blocks.forEach((block, index) => {
+        // 親ごとにブロックの表示順序を管理
+        const orderByParent = new Map();
+
+        blocks.forEach((block) => {
+            // このブロックが所属するコンテナを取得
+            const parentContent =
+                block.parentElement?.closest('.container-content') ?? null;
+
+            const parentKey =
+                parentContent?.parentElement?.dataset.clientKey ?? null;
+
+            if (parentContent && !parentKey) {
+                throw new Error('親コンテナの識別子がありません');
+            }
+
+            // ページ直下とコンテナ内部で個別に順序を数える
+            const group = parentContent ?? canvas;
+            const sortOrder = orderByParent.get(group) ?? 0;
+
+            orderByParent.set(group, sortOrder + 1);
+
             const type = block.dataset.type;
             const blockId = Number(block.dataset.blockId);
-
             let data = {
                 ...(Number.isSafeInteger(blockId) && blockId > 0
                     ? { id: blockId }
                     : {}),
                 clientKey: block.dataset.clientKey,
+                ...(parentKey ? { parentClientKey: parentKey } : {}),
                 type,
-                sortOrder: index,
+                sortOrder,
                 data: {}
             };
+
+            // コンテナの基本設定を保存
+            if (type === 'container') {
+                const gapValue = Number(block.dataset.gap);
+
+                data.data = {};
+
+                data.settings = {
+                    direction: block.dataset.direction === 'row'
+                        ? 'row'
+                        : 'column',
+                    gap: Number.isFinite(gapValue) &&
+                        gapValue >= 0 && gapValue <= 200
+                            ? gapValue
+                            : 16
+                };
+
+                blocksData.push(data);
+                return;
+            }
+
 
             if (type === 'heading') {
                 const el = block.querySelector('.editor-heading');
