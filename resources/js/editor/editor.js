@@ -215,19 +215,94 @@ export class Editor {
     }
 
 
-    // ブロックの復元
+
+    // ページ読み込み・Undo・Redoで共通使用する復元処理
     restoreBlocks(blocks) {
-
         const canvas = document.getElementById('canvas');
+        canvas.innerHTML = '';
 
-        canvas.innerHTML = ''; // 一旦クリア
+        const elementsById = new Map();
+        const elementsByClientKey = new Map();
+        const restored = [];
 
-        blocks
-            .sort((a, b) => a.sort_order - b.sort_order)
-            .forEach(block => {
-                this.blockManager.createFromData(block);
-            });
+        // 同じ親に属するブロックの表示順序を維持する
+        const orderedBlocks = [...blocks].sort((a, b) => {
+            const orderA = Number(a.sortOrder ?? a.sort_order ?? 0);
+            const orderB = Number(b.sortOrder ?? b.sort_order ?? 0);
+            return orderA - orderB;
+        });
+
+        // 第1段階：すべてのブロックを生成する
+        for (const block of orderedBlocks) {
+            const element = this.blockManager.createFromData(block);
+
+            if (!element) {
+                throw new Error(
+                    `ブロックを復元できません: ${block.type}`
+                );
+            }
+
+            restored.push({ block, element });
+
+            const clientKey = element.dataset.clientKey;
+
+            if (!clientKey || elementsByClientKey.has(clientKey)) {
+                throw new Error('ブロックの識別子が不正です');
+            }
+
+            elementsByClientKey.set(clientKey, element);
+
+            const id = Number(block.id);
+
+            if (Number.isSafeInteger(id) && id > 0) {
+                if (elementsById.has(id)) {
+                    throw new Error('ブロックIDが重複しています');
+                }
+
+                elementsById.set(id, element);
+            }
+        }
+
+        // 第2段階：親コンテナの内部へ移動する
+        for (const { block, element } of restored) {
+            const hasParentId =
+                block.parent_id !== null &&
+                block.parent_id !== undefined;
+
+            const hasParentKey =
+                typeof block.parentClientKey === 'string' &&
+                block.parentClientKey !== '';
+
+            // 親がなければページ直下のブロック
+            if (!hasParentId && !hasParentKey) {
+                continue;
+            }
+
+            // DB読み込みではparent_id、
+            // Undo・RedoではparentClientKeyを使用
+            const parent = hasParentId
+                ? elementsById.get(Number(block.parent_id))
+                : elementsByClientKey.get(block.parentClientKey);
+
+            if (!parent || parent.dataset.type !== 'container') {
+                throw new Error('親コンテナを復元できません');
+            }
+
+            const content = Array.from(parent.children).find(
+                child => child.classList.contains('container-content')
+            );
+
+            if (!content) {
+                throw new Error('コンテナの配置領域がありません');
+            }
+            content.appendChild(element);
+        }
+
+        // 親子関係をすべて復元してから、
+        // 各コンテナにドラッグ＆ドロップを登録する
+        this.dragDrop?.refreshContainers();
     }
+
 
     // ボタンセーブ
     async save() {
@@ -413,13 +488,8 @@ export class Editor {
         this.autoSaveManager.markDirty();
     }
 
-    refreshFromHistory(blocks) {
-        const canvas = document.getElementById('canvas');
-        canvas.innerHTML = '';
-
-        blocks.forEach(block => {
-            this.blockManager.createFromData(block);
-        });
+        refreshFromHistory(blocks) {
+        this.restoreBlocks(blocks);
     }
 
 }
